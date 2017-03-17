@@ -1,0 +1,6 @@
+[clone]
+path = "../artifacts/grit-git"
+
+[providers.codeworx]
+type = "github"
+location = "github.codeworx.com.au"

@@ -1,4 +1,16 @@
-hash: 46db82dbf86c2d5c7012fe5e5f479d4d3f00c7bfbd50132bce000f3641940c7e
-updated: 2017-03-17T08:55:20.450100236+10:00
-imports: []
+hash: 0b2ff1b82b242e1ff488f97eb3817f2853e42509f6c3da6ef0225b268eb99626
+updated: 2017-03-17T09:53:34.566464702+10:00
+imports:
+- name: github.com/boltdb/bolt
+  version: 583e8937c61f1af6513608ccc75c97b6abdf4ff9
+- name: github.com/BurntSushi/toml
+  version: bbd5bb678321a0d6e58f1099321dfa73391c1b6f
+- name: github.com/davecgh/go-spew
+  version: 346938d642f2ec3594ed81d874461961cd0faa76
+  subpackages:
+  - spew
+- name: github.com/urfave/cli
+  version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
+- name: github.com/yookoala/realpath
+  version: c416d99ab5ed256fa30c1f3bab73152deb59bb69
 testImports: []
