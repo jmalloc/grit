@@ -17,19 +17,19 @@ type Provider struct {
 	BasePath string
 }
 
-// ClonePath returns the path that r is cloned into.
-func (p *Provider) ClonePath(r string) string {
-	return path.Join(p.BasePath, r)
+// Path returns the path that slug is cloned into.
+func (p *Provider) Path(slug string) string {
+	return path.Join(p.BasePath, slug)
 }
 
-// Open attempts to the repository r.
-func (p *Provider) Open(r string) (*git.Repository, error) {
-	url, err := p.Driver.URL(r)
+// Open attempts to the repository by slug.
+func (p *Provider) Open(slug string) (*git.Repository, error) {
+	url, err := p.Driver.URL(slug)
 	if err != nil {
 		return nil, err
 	}
 
-	d := p.ClonePath(r)
+	d := p.Path(slug)
 	repo, err := git.PlainOpen(d)
 	if err != nil {
 		return nil, err
@@ -47,33 +47,33 @@ func (p *Provider) Open(r string) (*git.Repository, error) {
 	return repo, nil
 }
 
-// Clone clones the repo named r.
-func (p *Provider) Clone(r string) (string, bool, error) {
-	d := p.ClonePath(r)
-	ok, err := p.CloneInto(d, r)
-	return d, ok, err
+// Clone clones a repo to the standard location.
+func (p *Provider) Clone(slug string) (string, bool, error) {
+	dir := p.Path(slug)
+	ok, err := p.CloneInto(dir, slug)
+	return dir, ok, err
 }
 
-// CloneInto clones the repo named r into the directory d.
-func (p *Provider) CloneInto(d, r string) (bool, error) {
-	url, err := p.Driver.URL(r)
+// CloneInto clones a repo to a specific location.
+func (p *Provider) CloneInto(dir, slug string) (bool, error) {
+	url, err := p.Driver.URL(slug)
 	if err != nil {
 		return false, err
 	}
 
-	_, err = os.Stat(d)
+	_, err = os.Stat(dir)
 	if err == nil {
 		return false, errors.New("directory already exists")
 	} else if !os.IsNotExist(err) {
 		return false, err
 	}
 
-	_, err = git.PlainClone(d, false, &git.CloneOptions{
+	_, err = git.PlainClone(dir, false, &git.CloneOptions{
 		URL: url,
 	})
 
 	if err != nil {
-		_ = os.RemoveAll(d)
+		_ = os.RemoveAll(dir)
 
 		if err == transport.ErrRepositoryNotFound {
 			return false, nil

@@ -34,6 +34,35 @@ func Open(f string, p []*provider.Provider) (*Index, error) {
 	return &Index{db, p}, nil
 }
 
+// Find returns a list of paths containing a repository with the given slug.
+func (i *Index) Find(slug string) (dirs []string, err error) {
+	err = i.db.View(func(tx *bolt.Tx) error {
+		meta := tx.Bucket(metaBucket)
+		if meta == nil {
+			return nil
+		}
+
+		active := meta.Get(activeBucketKey)
+		if active == nil {
+			return nil
+		}
+
+		b := tx.Bucket(active)
+		if b == nil {
+			return nil
+		}
+
+		dir := b.Get([]byte(slug))
+		if dir != nil {
+			dirs = append(dirs, string(dir))
+		}
+
+		return nil
+	})
+
+	return
+}
+
 // Add a clone path to the index.
 func (i *Index) Add(dir string) error {
 	fn, err := i.indexer(dir)

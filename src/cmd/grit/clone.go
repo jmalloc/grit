@@ -10,18 +10,18 @@ import (
 )
 
 func clone(c *config.Config, ctx *cli.Context) error {
-	repo := ctx.Args().First()
-	if repo == "" {
+	slug := ctx.Args().First()
+	if slug == "" {
 		return usageError("not enough arguments")
 	}
 
 	for _, p := range c.Providers {
-		if _, err := p.Open(repo); err == nil {
-			fmt.Println(p.ClonePath(repo))
+		if _, err := p.Open(slug); err == nil {
+			fmt.Println(p.Path(slug))
 			return nil
 		}
 
-		dir, ok, err := p.Clone(repo)
+		dir, ok, err := p.Clone(slug)
 		if err != nil {
 			return err
 		}
@@ -33,4 +33,26 @@ func clone(c *config.Config, ctx *cli.Context) error {
 	}
 
 	return transport.ErrRepositoryNotFound
+}
+
+func find(c *config.Config, ctx *cli.Context) error {
+	slug := ctx.Args().First()
+	if slug == "" {
+		return usageError("not enough arguments")
+	}
+
+	dirs, err := c.Index.Find(slug)
+	if err != nil {
+		return err
+	}
+
+	if len(dirs) == 0 {
+		return cli.NewExitError("", 1)
+	}
+
+	for _, dir := range dirs {
+		fmt.Println(dir)
+	}
+
+	return nil
 }

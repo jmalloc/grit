@@ -12,7 +12,7 @@ func main() {
 	app := cli.NewApp()
 
 	app.Name = "grit"
-	app.Usage = "Index your Git clones."
+	app.Usage = "Index your git clones."
 	app.Version = "0.0.0"
 	app.EnableBashCompletion = true
 	app.Flags = []cli.Flag{
@@ -28,8 +28,14 @@ func main() {
 		{
 			Name:      "clone",
 			Usage:     "Clone a git repository.",
-			ArgsUsage: "<repo>",
+			ArgsUsage: "<slug>",
 			Action:    action(clone),
+		},
+		{
+			Name:      "find",
+			Usage:     "List all directories containing a specific repository.",
+			ArgsUsage: "<slug>",
+			Action:    action(find),
 		},
 		{
 			Name:  "index",

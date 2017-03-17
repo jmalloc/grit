@@ -18,9 +18,9 @@ type GitHubDriver struct {
 	Host string
 }
 
-// URL returns the git URL used to clone the repo r.
-func (d *GitHubDriver) URL(r string) (string, error) {
-	return fmt.Sprintf(gitHubURLFormat, d.host(), r), nil
+// URL gets the URL for a repo slug.
+func (d *GitHubDriver) URL(slug string) (string, error) {
+	return fmt.Sprintf(gitHubURLFormat, d.host(), slug), nil
 }
 
 // Slugs returns the repo "slugs" for a repository.
