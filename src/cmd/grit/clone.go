@@ -1,34 +1,36 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 
+	"gopkg.in/src-d/go-git.v4/plumbing/transport"
+
+	"github.com/jmalloc/grit/src/config"
 	"github.com/urfave/cli"
 )
 
-func clone(ctx *cli.Context) error {
+func clone(c *config.Config, ctx *cli.Context) error {
 	repo := ctx.Args().First()
 	if repo == "" {
 		return usageError("not enough arguments")
 	}
 
-	providers, err := loadProviders(ctx)
-	if err != nil {
-		return err
-	}
+	for _, p := range c.Providers {
+		if _, err := p.Open(repo); err == nil {
+			fmt.Println(p.ClonePath(repo))
+			return nil
+		}
 
-	for _, p := range providers {
-		ok, err := p.Clone(repo)
+		dir, ok, err := p.Clone(repo)
 		if err != nil {
 			return err
 		}
 
 		if ok {
-			fmt.Println(p.ClonePath(repo))
+			fmt.Println(dir)
 			return nil
 		}
 	}
 
-	return errors.New("repository not found")
+	return transport.ErrRepositoryNotFound
 }

@@ -1,15 +1,17 @@
 package config
 
-// config is the entire Grit configuration.
-type config struct {
+type schema struct {
 	Clone struct {
 		Path  string
 		Order []string
 	}
-	Providers map[string]provider
+	Index struct {
+		Path string
+	}
+	Providers map[string]providerSchema
 }
 
-type provider struct {
+type providerSchema struct {
 	Driver string
 	Host   string
 }

@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/jmalloc/grit/src/config"
-	"github.com/jmalloc/grit/src/grit"
 	"github.com/urfave/cli"
 )
 
@@ -21,7 +20,7 @@ func main() {
 			Name:   "config, c",
 			Usage:  "The path to the Grit configuration file.",
 			EnvVar: "GRIT_CONFIG",
-			Value:  os.Getenv("HOME") + "/.grit.toml",
+			Value:  os.Getenv("HOME") + "/.grit/config",
 		},
 	}
 
@@ -32,31 +31,22 @@ func main() {
 			ArgsUsage: "<repo>",
 			Action:    action(clone),
 		},
-		// {
-		// 	Name:  "where",
-		// 	Usage: "Print the path(s) to a repository.",
-		// 	Action: func(ctx *cli.Context) error {
-		// 		c, err := loadConfig(ctx)
-		// 		if err != nil {
-		// 			return err
-		// 		}
-		// 		spew.Dump(c)
-		// 		return nil
-		// 	},
-		// },
-		// {
-		// 	Name:  "index",
-		// 	Usage: "Manage the index.",
-		// 	Subcommands: []cli.Command{
-		// 		{
-		// 			Name:  "rebuild",
-		// 			Usage: "Rebuild the entire index.",
-		// 			Action: func(ctx *cli.Context) error {
-		// 				return nil
-		// 			},
-		// 		},
-		// 	},
-		// },
+		{
+			Name:  "index",
+			Usage: "Manage the repository index.",
+			Subcommands: []cli.Command{
+				{
+					Name:   "rebuild",
+					Usage:  "Rebuild the index.",
+					Action: action(indexRebuild),
+				},
+				{
+					Name:   "print",
+					Usage:  "Print the entire index.",
+					Action: action(indexPrint),
+				},
+			},
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -64,14 +54,19 @@ func main() {
 	}
 }
 
-func loadProviders(ctx *cli.Context) (p []*grit.Provider, err error) {
-	p, err = config.Load(ctx.GlobalString("config"))
-	return
+func loadConfig(ctx *cli.Context) (*config.Config, error) {
+	return config.Load(ctx.GlobalString("config"))
 }
 
-func action(fn cli.ActionFunc) cli.ActionFunc {
+func action(fn func(*config.Config, *cli.Context) error) cli.ActionFunc {
 	return func(ctx *cli.Context) error {
-		err := fn(ctx)
+		c, err := loadConfig(ctx)
+		if err != nil {
+			return err
+		}
+		defer c.Index.Close()
+
+		err = fn(c, ctx)
 
 		if _, ok := err.(usageError); ok {
 			cli.ShowCommandHelp(ctx, ctx.Command.Name)

@@ -2,6 +2,9 @@
 path = "../artifacts/grit-git"
 order = ['codeworx', 'github']
 
+[index]
+path = "../artifacts/grit.cache"
+
 [providers.codeworx]
 driver = "github"
 host = "github.codeworx.com.au"
