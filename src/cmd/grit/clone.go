@@ -6,11 +6,11 @@ import (
 
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 
-	"github.com/jmalloc/grit/src/config"
+	"github.com/jmalloc/grit/src/grit"
 	"github.com/urfave/cli"
 )
 
-func clone(c *config.Config, ctx *cli.Context) error {
+func clone(c *grit.Config, ctx *cli.Context) error {
 	slug := ctx.Args().First()
 	if slug == "" {
 		return usageError("not enough arguments")
@@ -36,7 +36,7 @@ func clone(c *config.Config, ctx *cli.Context) error {
 	return transport.ErrRepositoryNotFound
 }
 
-func find(c *config.Config, ctx *cli.Context) error {
+func find(c *grit.Config, ctx *cli.Context) error {
 	slug := ctx.Args().First()
 	if slug == "" {
 		return usageError("not enough arguments")

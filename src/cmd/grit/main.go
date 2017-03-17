@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jmalloc/grit/src/config"
+	"github.com/jmalloc/grit/src/grit"
 	"github.com/urfave/cli"
 )
 
@@ -60,11 +60,11 @@ func main() {
 	}
 }
 
-func loadConfig(ctx *cli.Context) (*config.Config, error) {
-	return config.Load(ctx.GlobalString("config"))
+func loadConfig(ctx *cli.Context) (*grit.Config, error) {
+	return grit.LoadConfig(ctx.GlobalString("config"))
 }
 
-func action(fn func(*config.Config, *cli.Context) error) cli.ActionFunc {
+func action(fn func(*grit.Config, *cli.Context) error) cli.ActionFunc {
 	return func(ctx *cli.Context) error {
 		c, err := loadConfig(ctx)
 		if err != nil {

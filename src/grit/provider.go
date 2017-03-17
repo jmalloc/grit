@@ -1,4 +1,4 @@
-package provider
+package grit
 
 import (
 	"errors"

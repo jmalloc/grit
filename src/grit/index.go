@@ -1,4 +1,4 @@
-package index
+package grit
 
 import (
 	"bytes"
@@ -11,17 +11,16 @@ import (
 	git "gopkg.in/src-d/go-git.v4"
 
 	"github.com/boltdb/bolt"
-	"github.com/jmalloc/grit/src/provider"
 )
 
 // Index is an index of repository locations.
 type Index struct {
 	db        *bolt.DB
-	providers []*provider.Provider
+	providers []*Provider
 }
 
-// Open opens the index database at path f.
-func Open(f string, p []*provider.Provider) (*Index, error) {
+// OpenIndex opens the index database at path f.
+func OpenIndex(f string, p []*Provider) (*Index, error) {
 	if err := os.MkdirAll(path.Dir(f), 0755); err != nil {
 		return nil, err
 	}

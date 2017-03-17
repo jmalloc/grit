@@ -1,4 +1,4 @@
-package config
+package grit
 
 import (
 	"errors"
@@ -8,18 +8,16 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"github.com/jmalloc/grit/src/index"
-	"github.com/jmalloc/grit/src/provider"
 )
 
 // Config holds Grit configuration.
 type Config struct {
-	Index     *index.Index
-	Providers []*provider.Provider
+	Index     *Index
+	Providers []*Provider
 }
 
-// Load loads the Grit configuration from a file.
-func Load(file string) (c *Config, err error) {
+// LoadConfig loads the Grit configuration from a file.
+func LoadConfig(file string) (c *Config, err error) {
 	var s schema
 
 	_, err = toml.DecodeFile(file, &s)
@@ -54,11 +52,11 @@ func Load(file string) (c *Config, err error) {
 
 	// providers ...
 	for _, n := range s.Clone.Order {
-		var d provider.Driver
+		var d Driver
 		if p, ok := s.Providers[n]; ok {
 			d, err = makeDriver(s, p)
 		} else if n == "github" {
-			d = &provider.GitHubDriver{}
+			d = &GitHubDriver{}
 		} else {
 			err = fmt.Errorf("unknown provider in clone order: %s", n)
 		}
@@ -67,22 +65,22 @@ func Load(file string) (c *Config, err error) {
 			break
 		}
 
-		c.Providers = append(c.Providers, &provider.Provider{
+		c.Providers = append(c.Providers, &Provider{
 			Name:     n,
 			Driver:   d,
 			BasePath: path.Join(s.Clone.Path, n),
 		})
 	}
 
-	c.Index, err = index.Open(s.Index.Path, c.Providers)
+	c.Index, err = OpenIndex(s.Index.Path, c.Providers)
 
 	return
 }
 
-func makeDriver(s schema, p providerSchema) (provider.Driver, error) {
+func makeDriver(s schema, p providerSchema) (Driver, error) {
 	switch p.Driver {
 	case "github":
-		return &provider.GitHubDriver{
+		return &GitHubDriver{
 			Host: p.Host,
 		}, nil
 	default:
@@ -111,11 +109,25 @@ func expandPath(f, p string) (string, error) {
 
 	p = strings.TrimPrefix(p, "~/")
 
-	home := os.Getenv("HOME")
-
-	if home == "" {
-		return "", errors.New("user home directory is unknown")
+	if home, ok := HomeDir(); ok {
+		return path.Join(home, p), nil
 	}
 
-	return path.Join(home, p), nil
+	return "", errors.New("user home directory is unknown")
+}
+
+type schema struct {
+	Clone struct {
+		Path  string
+		Order []string
+	}
+	Index struct {
+		Path string
+	}
+	Providers map[string]providerSchema
+}
+
+type providerSchema struct {
+	Driver string
+	Host   string
 }
