@@ -31,21 +31,23 @@ func (d *GitHubDriver) Slugs(r *git.Repository) (slugs []string, err error) {
 	}
 
 	for _, rem := range remotes {
-		if s, ok := d.slug(rem.Config().URL); ok {
-			slugs = append(slugs, s)
-		}
+		slugs = append(slugs, d.slugs(rem.Config().URL)...)
 	}
 
 	return
 }
 
-func (d *GitHubDriver) slug(u string) (string, bool) {
+func (d *GitHubDriver) slugs(u string) []string {
 	matches := gitHubURLPattern.FindStringSubmatch(u)
+
 	if len(matches) == 0 || matches[1] != d.host() {
-		return "", false
+		return nil
 	}
 
-	return matches[2], true
+	return []string{
+		matches[2] + "/" + matches[3],
+		matches[3],
+	}
 }
 
 func (d *GitHubDriver) host() string {
@@ -58,5 +60,5 @@ func (d *GitHubDriver) host() string {
 
 var (
 	gitHubURLFormat  = "git@%s:%s.git"
-	gitHubURLPattern = regexp.MustCompile("^git@(.+?):(.+?).git$")
+	gitHubURLPattern = regexp.MustCompile("^git@(.+?):(.+?)/(.+?).git$")
 )

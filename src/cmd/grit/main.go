@@ -76,7 +76,7 @@ func action(fn func(*config.Config, *cli.Context) error) cli.ActionFunc {
 
 		if _, ok := err.(usageError); ok {
 			_ = cli.ShowCommandHelp(ctx, ctx.Command.Name)
-			fmt.Println("")
+			fmt.Fprintln(ctx.App.Writer, "")
 		}
 
 		return err

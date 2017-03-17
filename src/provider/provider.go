@@ -3,6 +3,7 @@ package provider
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path"
 
@@ -48,14 +49,14 @@ func (p *Provider) Open(slug string) (*git.Repository, error) {
 }
 
 // Clone clones a repo to the standard location.
-func (p *Provider) Clone(slug string) (string, bool, error) {
+func (p *Provider) Clone(w io.Writer, slug string) (string, bool, error) {
 	dir := p.Path(slug)
-	ok, err := p.CloneInto(dir, slug)
+	ok, err := p.CloneInto(w, dir, slug)
 	return dir, ok, err
 }
 
 // CloneInto clones a repo to a specific location.
-func (p *Provider) CloneInto(dir, slug string) (bool, error) {
+func (p *Provider) CloneInto(w io.Writer, dir, slug string) (bool, error) {
 	url, err := p.Driver.URL(slug)
 	if err != nil {
 		return false, err
@@ -69,7 +70,8 @@ func (p *Provider) CloneInto(dir, slug string) (bool, error) {
 	}
 
 	_, err = git.PlainClone(dir, false, &git.CloneOptions{
-		URL: url,
+		URL:      url,
+		Progress: w,
 	})
 
 	if err != nil {

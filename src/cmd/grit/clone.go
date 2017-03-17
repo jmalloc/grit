@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 
@@ -17,17 +18,17 @@ func clone(c *config.Config, ctx *cli.Context) error {
 
 	for _, p := range c.Providers {
 		if _, err := p.Open(slug); err == nil {
-			fmt.Println(p.Path(slug))
+			fmt.Fprintln(ctx.App.Writer, p.Path(slug))
 			return nil
 		}
 
-		dir, ok, err := p.Clone(slug)
+		dir, ok, err := p.Clone(os.Stderr, slug)
 		if err != nil {
 			return err
 		}
 
 		if ok {
-			fmt.Println(dir)
+			fmt.Fprintln(ctx.App.Writer, dir)
 			return c.Index.Add(dir)
 		}
 	}
@@ -51,7 +52,7 @@ func find(c *config.Config, ctx *cli.Context) error {
 	}
 
 	for _, dir := range dirs {
-		fmt.Println(dir)
+		fmt.Fprintln(ctx.App.Writer, dir)
 	}
 
 	return nil

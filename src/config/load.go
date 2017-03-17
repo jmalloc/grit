@@ -29,7 +29,7 @@ func Load(file string) (c *Config, err error) {
 
 	// clone path ...
 	if s.Clone.Path == "" {
-		s.Clone.Path = "git"
+		s.Clone.Path = "~/grit"
 	}
 	s.Clone.Path, err = expandPath(file, s.Clone.Path)
 	if err != nil {
