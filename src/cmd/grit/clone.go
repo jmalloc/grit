@@ -28,7 +28,7 @@ func clone(c *config.Config, ctx *cli.Context) error {
 
 		if ok {
 			fmt.Println(dir)
-			return nil
+			return c.Index.Add(dir)
 		}
 	}
 

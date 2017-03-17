@@ -1,9 +1,9 @@
 [clone]
-path = "../artifacts/grit-git"
+path = "/tmp/grit-test/clone"
 order = ['codeworx', 'github']
 
 [index]
-path = "../artifacts/grit.cache"
+path = "/tmp/grit-test/cache"
 
 [providers.codeworx]
 driver = "github"

@@ -69,7 +69,7 @@ func action(fn func(*config.Config, *cli.Context) error) cli.ActionFunc {
 		err = fn(c, ctx)
 
 		if _, ok := err.(usageError); ok {
-			cli.ShowCommandHelp(ctx, ctx.Command.Name)
+			_ = cli.ShowCommandHelp(ctx, ctx.Command.Name)
 			fmt.Println("")
 		}
 
