@@ -1,7 +1,6 @@
 package grit
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -27,7 +26,7 @@ func LoadConfig(file string) (c *Config, err error) {
 
 	// clone path ...
 	if s.Clone.Path == "" {
-		s.Clone.Path = "~/grit"
+		s.Clone.Path = path.Join(HomeDir(), "grit")
 	}
 	s.Clone.Path, err = expandPath(file, s.Clone.Path)
 	if err != nil {
@@ -41,7 +40,7 @@ func LoadConfig(file string) (c *Config, err error) {
 
 	// index path ...
 	if s.Index.Path == "" {
-		s.Index.Path = ".grit/index.db"
+		s.Index.Path = "index.db"
 	}
 	s.Index.Path, err = expandPath(file, s.Index.Path)
 	if err != nil {
@@ -109,11 +108,7 @@ func expandPath(f, p string) (string, error) {
 
 	p = strings.TrimPrefix(p, "~/")
 
-	if home, ok := HomeDir(); ok {
-		return path.Join(home, p), nil
-	}
-
-	return "", errors.New("user home directory is unknown")
+	return path.Join(HomeDir(), p), nil
 }
 
 type schema struct {

@@ -280,7 +280,7 @@ func (i *Index) indexer(dir string) (func(*bolt.Tx, *bolt.Bucket) error, error) 
 func (i *Index) slugs(r *git.Repository) (slugs []string, err error) {
 	var s []string
 	for _, p := range i.providers {
-		s, err = p.Driver.Slugs(r)
+		s, err = p.Driver.IndexKeys(r)
 		if err != nil {
 			return
 		}

@@ -13,25 +13,24 @@ func GoPath() (string, bool) {
 		return dir, true
 	}
 
-	home, ok := HomeDir()
-	if ok {
-		return path.Join(home, "go"), true
-	}
-
-	return "", false
+	return path.Join(HomeDir(), "go"), true
 }
 
 // HomeDir returns the current user's home directory.
-func HomeDir() (string, bool) {
+func HomeDir() string {
 	dir := os.Getenv("HOME")
 	if dir != "" {
-		return dir, true
+		return dir
 	}
 
 	usr, err := user.Current()
-	if err != nil || usr.HomeDir == "" {
-		return "", false
+	if err != nil {
+		panic(err)
 	}
 
-	return usr.HomeDir, true
+	if usr.HomeDir == "" {
+		panic("could not determine home directory")
+	}
+
+	return usr.HomeDir
 }

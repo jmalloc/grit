@@ -20,7 +20,7 @@ func main() {
 			Name:   "config, c",
 			Usage:  "The path to the Grit configuration file.",
 			EnvVar: "GRIT_CONFIG",
-			Value:  os.Getenv("HOME") + "/.grit/config",
+			Value:  grit.HomeDir() + "/.grit/config",
 		},
 	}
 
@@ -29,7 +29,13 @@ func main() {
 			Name:      "clone",
 			Usage:     "Clone a git repository.",
 			ArgsUsage: "<slug>",
-			Action:    action(clone),
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "go",
+					Usage: "Clone into the appropriate sub-folder of $GOPATH.",
+				},
+			},
+			Action: action(clone),
 		},
 		{
 			Name:      "find",

@@ -2,7 +2,6 @@ package grit
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path"
@@ -18,51 +17,46 @@ type Provider struct {
 	BasePath string
 }
 
-// Path returns the path that slug is cloned into.
-func (p *Provider) Path(slug string) string {
+// StandardPath returns the standard location a repo is cloned to.
+func (p *Provider) StandardPath(slug string) string {
 	return path.Join(p.BasePath, slug)
 }
 
-// Open attempts to the repository by slug.
-func (p *Provider) Open(slug string) (*git.Repository, error) {
-	url, err := p.Driver.URL(slug)
-	if err != nil {
-		return nil, err
-	}
-
-	d := p.Path(slug)
-	repo, err := git.PlainOpen(d)
-	if err != nil {
-		return nil, err
-	}
-
-	rem, err := repo.Remote("origin")
-	if err != nil {
-		return nil, err
-	}
-
-	if rem.Config().URL != url {
-		return nil, fmt.Errorf("found unexpected repo %s at %s", rem.Config().URL, d)
-	}
-
-	return repo, nil
+// RelativeGoPath returns the $GOPATH location for a repo.
+func (p *Provider) RelativeGoPath(slug string) string {
+	return p.Driver.RelativeGoPath(slug)
 }
 
 // Clone clones a repo to the standard location.
 func (p *Provider) Clone(w io.Writer, slug string) (string, bool, error) {
-	dir := p.Path(slug)
+	dir := p.StandardPath(slug)
+	ok, err := p.CloneInto(w, dir, slug)
+	return dir, ok, err
+}
+
+// CloneIntoGoPath clones a repo to the appropriate $GOPATH location.
+func (p *Provider) CloneIntoGoPath(w io.Writer, goPath, slug string) (string, bool, error) {
+	if goPath == "" {
+		panic("empty gopath")
+	}
+	if !p.Driver.IsValidSlug(slug) {
+		return "", false, nil
+	}
+
+	dir := path.Join(goPath, p.RelativeGoPath(slug))
 	ok, err := p.CloneInto(w, dir, slug)
 	return dir, ok, err
 }
 
 // CloneInto clones a repo to a specific location.
 func (p *Provider) CloneInto(w io.Writer, dir, slug string) (bool, error) {
-	url, err := p.Driver.URL(slug)
-	if err != nil {
-		return false, err
+	if !p.Driver.IsValidSlug(slug) {
+		return false, nil
 	}
 
-	_, err = os.Stat(dir)
+	url := p.Driver.URL(slug)
+
+	_, err := os.Stat(dir)
 	if err == nil {
 		return false, errors.New("directory already exists")
 	} else if !os.IsNotExist(err) {

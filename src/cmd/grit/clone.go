@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -16,13 +17,27 @@ func clone(c *grit.Config, ctx *cli.Context) error {
 		return usageError("not enough arguments")
 	}
 
+	useGoPath := ctx.Bool("go")
+	var goPath string
+	if useGoPath {
+		var ok bool
+		goPath, ok = grit.GoPath()
+		if !ok {
+			return errors.New("could not determine $GOPATH")
+		}
+	}
+
 	for _, p := range c.Providers {
-		if _, err := p.Open(slug); err == nil {
-			fmt.Fprintln(ctx.App.Writer, p.Path(slug))
-			return nil
+		var dir string
+		var ok bool
+		var err error
+
+		if useGoPath {
+			dir, ok, err = p.CloneIntoGoPath(os.Stderr, goPath, slug)
+		} else {
+			dir, ok, err = p.Clone(os.Stderr, slug)
 		}
 
-		dir, ok, err := p.Clone(os.Stderr, slug)
 		if err != nil {
 			return err
 		}
