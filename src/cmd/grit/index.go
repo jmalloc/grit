@@ -38,3 +38,18 @@ func indexSearch(c *grit.Config, ctx *cli.Context) error {
 
 	return nil
 }
+
+func indexList(c *grit.Config, ctx *cli.Context) error {
+	prefix := ctx.Args().First()
+
+	slugs, err := c.Index.List(prefix)
+	if err != nil {
+		return err
+	}
+
+	for _, slug := range slugs {
+		fmt.Fprintln(ctx.App.Writer, slug)
+	}
+
+	return nil
+}

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	git "gopkg.in/src-d/go-git.v4"
 
@@ -31,6 +32,36 @@ func OpenIndex(f string, p []*Provider) (*Index, error) {
 	}
 
 	return &Index{db, p}, nil
+}
+
+// List returns a list of any slugs starting with prefix.
+func (i *Index) List(prefix string) (slugs []string, err error) {
+	err = i.db.View(func(tx *bolt.Tx) error {
+		meta := tx.Bucket(metaBucket)
+		if meta == nil {
+			return nil
+		}
+
+		active := meta.Get(activeBucketKey)
+		if active == nil {
+			return nil
+		}
+
+		b := tx.Bucket(active)
+		if b == nil {
+			return nil
+		}
+
+		return b.ForEach(func(k []byte, _ []byte) error {
+			slug := string(k)
+			if strings.HasPrefix(slug, prefix) {
+				slugs = append(slugs, slug)
+			}
+			return nil
+		})
+	})
+
+	return
 }
 
 // Find returns a list of paths containing a repository with the given slug.

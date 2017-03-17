@@ -47,6 +47,15 @@ func main() {
 					Usage:     "List the location of all clones of <slug>.",
 					ArgsUsage: "<slug>",
 					Action:    action(indexSearch),
+					BashComplete: func(c *cli.Context) {
+						_ = action(indexList)(c)
+					},
+				},
+				{
+					Name:      "list",
+					Usage:     "List entries in the index.",
+					ArgsUsage: "[prefix]",
+					Action:    action(indexList),
 				},
 				{
 					Name:   "rebuild",
