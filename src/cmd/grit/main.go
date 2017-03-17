@@ -52,6 +52,15 @@ func main() {
 					},
 				},
 				{
+					Name:      "select",
+					Usage:     "Interactively prompt for selection of a clone for <slug>.",
+					ArgsUsage: "<slug>",
+					Action:    action(indexSelect),
+					BashComplete: func(c *cli.Context) {
+						_ = action(indexList)(c)
+					},
+				},
+				{
 					Name:      "list",
 					Usage:     "List entries in the index.",
 					ArgsUsage: "[prefix]",
