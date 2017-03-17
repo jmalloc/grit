@@ -1,10 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/davecgh/go-spew/spew"
-	grit "github.com/jmalloc/grit/src"
+	"github.com/jmalloc/grit/src/config"
+	"github.com/jmalloc/grit/src/grit"
 	"github.com/urfave/cli"
 )
 
@@ -26,30 +27,36 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
-			Name:  "where",
-			Usage: "Print the path(s) to a repository.",
-			Action: func(ctx *cli.Context) error {
-				c, err := loadConfig(ctx)
-				if err != nil {
-					return err
-				}
-				spew.Dump(c)
-				return nil
-			},
+			Name:      "clone",
+			Usage:     "Clone a git repository.",
+			ArgsUsage: "<repo>",
+			Action:    action(clone),
 		},
-		{
-			Name:  "index",
-			Usage: "Manage the index.",
-			Subcommands: []cli.Command{
-				{
-					Name:  "rebuild",
-					Usage: "Rebuild the entire index.",
-					Action: func(ctx *cli.Context) error {
-						return nil
-					},
-				},
-			},
-		},
+		// {
+		// 	Name:  "where",
+		// 	Usage: "Print the path(s) to a repository.",
+		// 	Action: func(ctx *cli.Context) error {
+		// 		c, err := loadConfig(ctx)
+		// 		if err != nil {
+		// 			return err
+		// 		}
+		// 		spew.Dump(c)
+		// 		return nil
+		// 	},
+		// },
+		// {
+		// 	Name:  "index",
+		// 	Usage: "Manage the index.",
+		// 	Subcommands: []cli.Command{
+		// 		{
+		// 			Name:  "rebuild",
+		// 			Usage: "Rebuild the entire index.",
+		// 			Action: func(ctx *cli.Context) error {
+		// 				return nil
+		// 			},
+		// 		},
+		// 	},
+		// },
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -57,6 +64,26 @@ func main() {
 	}
 }
 
-func loadConfig(ctx *cli.Context) (grit.Config, error) {
-	return grit.LoadConfig(ctx.GlobalString("config"))
+func loadProviders(ctx *cli.Context) (p []*grit.Provider, err error) {
+	p, err = config.Load(ctx.GlobalString("config"))
+	return
+}
+
+func action(fn cli.ActionFunc) cli.ActionFunc {
+	return func(ctx *cli.Context) error {
+		err := fn(ctx)
+
+		if _, ok := err.(usageError); ok {
+			cli.ShowCommandHelp(ctx, ctx.Command.Name)
+			fmt.Println("")
+		}
+
+		return err
+	}
+}
+
+type usageError string
+
+func (e usageError) Error() string {
+	return string(e)
 }

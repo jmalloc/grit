@@ -1,5 +1,5 @@
-hash: 0b2ff1b82b242e1ff488f97eb3817f2853e42509f6c3da6ef0225b268eb99626
-updated: 2017-03-17T09:53:34.566464702+10:00
+hash: e36b3c8240e18faa97af845183eea8afbc61606fe1c5a7742f9d5ca338c8e0b0
+updated: 2017-03-17T12:16:04.780363944+10:00
 imports:
 - name: github.com/boltdb/bolt
   version: 583e8937c61f1af6513608ccc75c97b6abdf4ff9
@@ -7,10 +7,68 @@ imports:
   version: bbd5bb678321a0d6e58f1099321dfa73391c1b6f
 - name: github.com/davecgh/go-spew
   version: 346938d642f2ec3594ed81d874461961cd0faa76
+- name: github.com/sergi/go-diff
+  version: 24e2351369ec4949b2ed0dc5c477afdd4c4034e8
   subpackages:
-  - spew
+  - diffmatchpatch
+- name: github.com/src-d/gcfg
+  version: f187355171c936ac84a82793659ebb4936bc1c23
+  subpackages:
+  - scanner
+  - token
+  - types
 - name: github.com/urfave/cli
   version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
-- name: github.com/yookoala/realpath
-  version: c416d99ab5ed256fa30c1f3bab73152deb59bb69
+- name: golang.org/x/crypto
+  version: 728b753d0135da6801d45a38e6f43ff55779c5c2
+  subpackages:
+  - curve25519
+  - ed25519
+  - ed25519/internal/edwards25519
+  - ssh
+  - ssh/agent
+- name: gopkg.in/src-d/go-billy.v2
+  version: 0dfa3dd2e89c570b8e1e25f5b28647525c44c3ca
+  subpackages:
+  - osfs
+- name: gopkg.in/src-d/go-git.v4
+  version: 4eef16a98d093057f1e4c560da4ed3bbba67cd76
+  subpackages:
+  - config
+  - internal/revision
+  - plumbing
+  - plumbing/cache
+  - plumbing/filemode
+  - plumbing/format/config
+  - plumbing/format/idxfile
+  - plumbing/format/index
+  - plumbing/format/objfile
+  - plumbing/format/packfile
+  - plumbing/format/pktline
+  - plumbing/object
+  - plumbing/protocol/packp
+  - plumbing/protocol/packp/capability
+  - plumbing/protocol/packp/sideband
+  - plumbing/revlist
+  - plumbing/storer
+  - plumbing/transport
+  - plumbing/transport/client
+  - plumbing/transport/file
+  - plumbing/transport/git
+  - plumbing/transport/http
+  - plumbing/transport/internal/common
+  - plumbing/transport/server
+  - plumbing/transport/ssh
+  - storage
+  - storage/filesystem
+  - storage/filesystem/internal/dotgit
+  - storage/memory
+  - utils/binary
+  - utils/diff
+  - utils/ioutil
+  - utils/merkletrie
+  - utils/merkletrie/internal/frame
+  - utils/merkletrie/noder
+- name: gopkg.in/warnings.v0
+  version: 8a331561fe74dadba6edfc59f3be66c22c3b065d
 testImports: []

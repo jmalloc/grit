@@ -1,6 +1,7 @@
 [clone]
 path = "../artifacts/grit-git"
+order = ['codeworx', 'github']
 
 [providers.codeworx]
-type = "github"
-location = "github.codeworx.com.au"
+driver = "github"
+host = "github.codeworx.com.au"
