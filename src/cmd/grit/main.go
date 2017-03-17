@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path"
 
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/urfave/cli"
@@ -20,7 +21,7 @@ func main() {
 			Name:   "config, c",
 			Usage:  "The path to the Grit configuration file.",
 			EnvVar: "GRIT_CONFIG",
-			Value:  grit.HomeDir() + "/.grit/config",
+			Value:  path.Join(grit.HomeDir(), ".grit", "config.toml"),
 		},
 	}
 
@@ -32,21 +33,21 @@ func main() {
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "go",
-					Usage: "Clone into the appropriate sub-folder of $GOPATH.",
+					Usage: "Place the clone under $GOPATH.",
 				},
 			},
 			Action: action(clone),
 		},
 		{
-			Name:      "find",
-			Usage:     "List all directories containing a specific repository.",
-			ArgsUsage: "<slug>",
-			Action:    action(find),
-		},
-		{
 			Name:  "index",
 			Usage: "Manage the repository index.",
 			Subcommands: []cli.Command{
+				{
+					Name:      "search",
+					Usage:     "List the location of all clones of <slug>.",
+					ArgsUsage: "<slug>",
+					Action:    action(indexSearch),
+				},
 				{
 					Name:   "rebuild",
 					Usage:  "Rebuild the index.",

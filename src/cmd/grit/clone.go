@@ -50,25 +50,3 @@ func clone(c *grit.Config, ctx *cli.Context) error {
 
 	return transport.ErrRepositoryNotFound
 }
-
-func find(c *grit.Config, ctx *cli.Context) error {
-	slug := ctx.Args().First()
-	if slug == "" {
-		return usageError("not enough arguments")
-	}
-
-	dirs, err := c.Index.Find(slug)
-	if err != nil {
-		return err
-	}
-
-	if len(dirs) == 0 {
-		return cli.NewExitError("", 1)
-	}
-
-	for _, dir := range dirs {
-		fmt.Fprintln(ctx.App.Writer, dir)
-	}
-
-	return nil
-}
