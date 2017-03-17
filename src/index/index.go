@@ -52,12 +52,15 @@ func (i *Index) Find(slug string) (dirs []string, err error) {
 			return nil
 		}
 
-		dir := b.Get([]byte(slug))
-		if dir != nil {
-			dirs = append(dirs, string(dir))
+		sub := b.Bucket([]byte(slug))
+		if sub == nil {
+			return nil
 		}
 
-		return nil
+		return sub.ForEach(func(dir []byte, _ []byte) error {
+			dirs = append(dirs, string(dir))
+			return nil
+		})
 	})
 
 	return
@@ -162,23 +165,41 @@ func (i *Index) Close() {
 }
 
 // WriteTo dumps a string representation of the database to w.
-func (i *Index) WriteTo(w io.Writer) (n int64, err error) {
-	err = i.db.View(func(tx *bolt.Tx) error {
+func (i *Index) WriteTo(w io.Writer) (int64, error) {
+	var size int
+	return int64(size), i.db.View(func(tx *bolt.Tx) error {
 		return tx.ForEach(func(name []byte, b *bolt.Bucket) error {
-			s, err := fmt.Fprintf(w, "- %s\n", name)
-			n += int64(s)
-			if err != nil {
-				return err
-			}
-			return b.ForEach(func(k []byte, v []byte) error {
-				s, err := fmt.Fprintf(w, "  - %s = %s\n", k, v)
-				n += int64(s)
-				return err
-			})
+			n, err := writeBucket(w, b, name, "")
+			size += n
+			return err
 		})
 	})
+}
 
-	return
+func writeBucket(w io.Writer, b *bolt.Bucket, name []byte, indent string) (int, error) {
+	size, err := fmt.Fprintf(w, "%s* %s\n", indent, name)
+
+	if err == nil {
+		err = b.ForEach(func(k []byte, v []byte) error {
+			var (
+				n int
+				e error
+			)
+
+			if v == nil {
+				n, e = writeBucket(w, b.Bucket(k), k, indent+"  ")
+			} else if len(v) == 0 {
+				n, e = fmt.Fprintf(w, "%s  - '%s' (empty)\n", indent, k)
+			} else {
+				n, e = fmt.Fprintf(w, "%s  - '%s' : '%s'\n", indent, k, v)
+			}
+
+			size += n
+			return e
+		})
+	}
+
+	return size, err
 }
 
 func (i *Index) newBucket() (name []byte, err error) {
@@ -243,7 +264,12 @@ func (i *Index) indexer(dir string) (func(*bolt.Tx, *bolt.Bucket) error, error) 
 
 	return func(tx *bolt.Tx, b *bolt.Bucket) error {
 		for _, slug := range slugs {
-			if err := b.Put([]byte(slug), []byte(dir)); err != nil {
+			sub, err := b.CreateBucketIfNotExists([]byte(slug))
+			if err != nil {
+				return err
+			}
+
+			if err := sub.Put([]byte(dir), []byte{}); err != nil {
 				return err
 			}
 		}
