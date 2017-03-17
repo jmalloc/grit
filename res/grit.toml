@@ -1,10 +1,10 @@
 [clone]
 path = "/tmp/grit-test/clone"
-order = ['codeworx', 'github']
+order = ['my-company', 'github']
 
 [index]
 path = "/tmp/grit-test/cache"
 
-[providers.codeworx]
+[providers.my-company]
 driver = "github"
-host = "github.codeworx.com.au"
+host = "github.example.com"
