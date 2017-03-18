@@ -1,52 +1,39 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"os"
 
-	"gopkg.in/src-d/go-git.v4/plumbing/transport"
-
-	"github.com/jmalloc/grit/src/grit"
+	"github.com/jmalloc/grit/src/clone"
+	"github.com/jmalloc/grit/src/config"
+	"github.com/jmalloc/grit/src/index"
 	"github.com/urfave/cli"
 )
 
-func clone(c *grit.Config, ctx *cli.Context) error {
+func cloneCommand(c config.Config, ctx *cli.Context) error {
 	slug := ctx.Args().First()
 	if slug == "" {
 		return usageError("not enough arguments")
 	}
 
-	useGoPath := ctx.Bool("go")
-	var goPath string
-	if useGoPath {
-		var ok bool
-		goPath, ok = grit.GoPath()
-		if !ok {
-			return errors.New("could not determine $GOPATH")
-		}
+	var dir string
+	var err error
+
+	if ctx.Bool("go") {
+		dir, err = clone.ToGoPath(c, slug)
+	} else {
+		dir, err = clone.ToCloneRoot(c, slug)
 	}
 
-	for _, p := range c.Providers {
-		var dir string
-		var ok bool
-		var err error
-
-		if useGoPath {
-			dir, ok, err = p.CloneIntoGoPath(os.Stderr, goPath, slug)
-		} else {
-			dir, ok, err = p.Clone(os.Stderr, slug)
-		}
-
-		if err != nil {
-			return err
-		}
-
-		if ok {
-			fmt.Fprintln(ctx.App.Writer, dir)
-			return c.Index.Add(dir)
-		}
+	if err != nil {
+		return err
 	}
 
-	return transport.ErrRepositoryNotFound
+	idx, err := index.Open(c.Index.Store)
+	if err != nil {
+		return err
+	}
+	defer idx.Close()
+
+	fmt.Fprintln(ctx.App.Writer, dir)
+	return idx.Add(dir, index.All())
 }

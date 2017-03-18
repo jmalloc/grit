@@ -1,5 +1,5 @@
-hash: e36b3c8240e18faa97af845183eea8afbc61606fe1c5a7742f9d5ca338c8e0b0
-updated: 2017-03-17T12:16:04.780363944+10:00
+hash: efd255eff79b63527c87b6198d0124c9906dacbee8ea6e88b2f5200a69942b72
+updated: 2017-03-18T12:15:49.322885573+10:00
 imports:
 - name: github.com/boltdb/bolt
   version: 583e8937c61f1af6513608ccc75c97b6abdf4ff9
@@ -7,6 +7,8 @@ imports:
   version: bbd5bb678321a0d6e58f1099321dfa73391c1b6f
 - name: github.com/davecgh/go-spew
   version: 346938d642f2ec3594ed81d874461961cd0faa76
+- name: github.com/logrusorgru/aurora
+  version: 962a6974312dde57d1f6f5738b4f83e1af9f38a4
 - name: github.com/sergi/go-diff
   version: 24e2351369ec4949b2ed0dc5c477afdd4c4034e8
   subpackages:
@@ -27,6 +29,10 @@ imports:
   - ed25519/internal/edwards25519
   - ssh
   - ssh/agent
+- name: golang.org/x/sys
+  version: 99f16d856c9836c42d24e7ab64ea72916925fa97
+  subpackages:
+  - unix
 - name: gopkg.in/src-d/go-billy.v2
   version: 0dfa3dd2e89c570b8e1e25f5b28647525c44c3ca
   subpackages:

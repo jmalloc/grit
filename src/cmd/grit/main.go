@@ -5,12 +5,14 @@ import (
 	"os"
 	"path"
 
-	"github.com/jmalloc/grit/src/grit"
+	"github.com/jmalloc/grit/src/config"
+	"github.com/jmalloc/grit/src/pathutil"
 	"github.com/urfave/cli"
 )
 
 func main() {
 	app := cli.NewApp()
+	homeDir, _ := pathutil.HomeDir()
 
 	app.Name = "grit"
 	app.Usage = "Index your git clones."
@@ -21,7 +23,7 @@ func main() {
 			Name:   "config, c",
 			Usage:  "The path to the Grit configuration file.",
 			EnvVar: "GRIT_CONFIG",
-			Value:  path.Join(grit.HomeDir(), ".grit", "config.toml"),
+			Value:  path.Join(homeDir, ".grit", "config.toml"),
 		},
 	}
 
@@ -33,48 +35,59 @@ func main() {
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "go",
-					Usage: "Place the clone under $GOPATH.",
+					Usage: "Place the clone under the $GOPATH directory.",
 				},
 			},
-			Action: action(clone),
+			Action: withConfig(cloneCommand),
+		},
+		{
+			Name:  "config",
+			Usage: "Manage the Grit configuration.",
+			Subcommands: []cli.Command{
+				{
+					Name:   "show",
+					Usage:  "Display the Grit configuration.",
+					Action: withConfig(configShowCommand),
+				},
+			},
 		},
 		{
 			Name:  "index",
 			Usage: "Manage the repository index.",
 			Subcommands: []cli.Command{
 				{
-					Name:      "search",
-					Usage:     "List the location of all clones of <slug>.",
+					Name:      "find",
+					Usage:     "List all possible locations for clones of a repository.",
 					ArgsUsage: "<slug>",
-					Action:    action(indexSearch),
+					Action:    withConfig(indexFindCommand),
 					BashComplete: func(c *cli.Context) {
-						_ = action(indexList)(c)
+						_ = withConfig(indexListCommand)
 					},
 				},
 				{
 					Name:      "select",
-					Usage:     "Interactively prompt for selection of a clone for <slug>.",
+					Usage:     "Interactively prompt for selection of a clone directory.",
 					ArgsUsage: "<slug>",
-					Action:    action(indexSelect),
+					Action:    withConfig(indexSelectCommand),
 					BashComplete: func(c *cli.Context) {
-						_ = action(indexList)(c)
+						_ = withConfig(indexListCommand)
 					},
 				},
 				{
 					Name:      "list",
-					Usage:     "List entries in the index.",
+					Usage:     "List entries in the index, optionally limited to those matching a prefix.",
 					ArgsUsage: "[prefix]",
-					Action:    action(indexList),
+					Action:    withConfig(indexListCommand),
 				},
 				{
 					Name:   "rebuild",
-					Usage:  "Rebuild the index.",
-					Action: action(indexRebuild),
+					Usage:  "Rebuild the entire index.",
+					Action: withConfig(indexRebuildCommand),
 				},
 				{
-					Name:   "print",
-					Usage:  "Print the entire index.",
-					Action: action(indexPrint),
+					Name:   "show",
+					Usage:  "Display the entire index database.",
+					Action: withConfig(indexShowCommand),
 				},
 			},
 		},
@@ -85,17 +98,16 @@ func main() {
 	}
 }
 
-func loadConfig(ctx *cli.Context) (*grit.Config, error) {
-	return grit.LoadConfig(ctx.GlobalString("config"))
+func loadConfig(ctx *cli.Context) (config.Config, error) {
+	return config.Load(ctx.GlobalString("config"))
 }
 
-func action(fn func(*grit.Config, *cli.Context) error) cli.ActionFunc {
+func withConfig(fn func(config.Config, *cli.Context) error) cli.ActionFunc {
 	return func(ctx *cli.Context) error {
 		c, err := loadConfig(ctx)
 		if err != nil {
 			return err
 		}
-		defer c.Index.Close()
 
 		err = fn(c, ctx)
 
