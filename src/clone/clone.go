@@ -24,7 +24,7 @@ func ToGoPath(c config.Config, slug string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return clone(c, slug, gopath, pathutil.GetGoPath)
+	return clone(c, slug, path.Join(gopath, "src"), pathutil.GetGoPath)
 }
 
 func clone(
