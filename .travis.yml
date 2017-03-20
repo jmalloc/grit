@@ -7,4 +7,17 @@ matrix:
   allow_failures:
   - go: tip
 script: make ci -j 8
-after_script: bash <(curl -s https://codecov.io/bash)
+before_deploy: make archives
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: lheBe2aFhPe7i62Wp9TPN+jEZ022jEsKmnwndM78ITCq+EmeCRCDEzr+s2D9M2dUzSGDJU0FazSsZ14K5aY+wCjl+6JvKkl7Hc47FWP/5LlPfUbO1sJeFjxDJIlMgHKxhs4m08hl+G1m3SYw5GvklpvcYaThCpU6Pv2oSS4RswT39pv1C12YZ4ueb/qPZ8gee+4X+w9B2DX7i/pRMOUMl0ka2E0thUo8deZqzCS9qWWLJg/6vCBUM3wBmpV9Yj4jwiUCkvxgIn/f7guXhmBpyJFIROl++B1+j+5UMb9o5LyKtxwj54GLWJ2lxsiP8GypdZDvDqWWCy8b4zRqeZJkE6hSykvVywYjWFGNXdKLKAzRvJv84e8W9/iQJ/4rrtLvjYGwG3MV5R3Vo+PRj5VBodj0Z9wySk1iPBdg2/YMjaR/CQpxHCUXDfYZoM/70rzOPWBhOnnshVr8lTWKUW0Yc2cZ+U6GCcDTf0FpmcjAgTeQL/BA/Xa4uh/xWK0KS7fKv2z+jmnq7UMyoYXmoXT0voX1jnAH1SQu+xjNBxDqEG18yOa71yAqAjuz5fUaNA75wdhObpbsSxjgMhnZQYa6E5bjl6VsLiyygrlDRGYsePRk0o98AK6d1l+iYnXRw/TEnk2bbXeJj4L66wVw5IPfedpogibzOePHYKJkSjttcGU=
+  file:
+  - artifacts/archives/hive-darwin-amd64.tar.gz
+  - artifacts/archives/hive-linux-amd64.tar.gz
+  - artifacts/archives/hive-windows-amd64.zip
+  go: '1.8'
+  on:
+    repo: jmalloc/grit
+    tags: true

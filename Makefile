@@ -1,3 +1,4 @@
+MATRIX_OS := darwin linux windows
 SHELL := /bin/bash
 -include artifacts/make/go.mk
 
