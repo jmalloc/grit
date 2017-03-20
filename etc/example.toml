@@ -1,0 +1,70 @@
+#
+# This is a "complete" Grit configuration file.
+#
+# It is written in TOML - https://github.com/toml-lang/toml
+# All directives have sensible defaults... well, I think they're sensible.
+#
+
+#
+# The clone section controls how Grit clones from your Git providers.
+#
+[clone]
+
+# "root" is the base directory for all Git clones created via Grit.
+#
+# The target directory is <root>/<git host>/<repo slug>.
+#
+# The slug is simply the path portion of the Git URL, without the .git extension,
+# or any other extension.
+#
+# For example, using a
+# root of "~/grit" (which happens to be the default), the command:
+#
+#   grit clone jmalloc/grit
+#
+# Will clone git@github.com:jmalloc/grit.git to ~/grit/github.com/jmalloc/grit
+root = "~/my-repos"
+
+# "order" controls the order that Grit checks the "clone.providers" list.
+#
+# The repository is cloned from the first provider that has a
+# repository with a matching name.
+#
+# The default value is built from the list of "clone.providers" (see below) in
+# random order, plus 'github' last.
+order = ['my-company', 'github']
+
+# "clone.providers" is a list of additional Git sources.
+#
+# The key is an arbitrary label for the provider, referenced by the "order"
+# configuration directive, but otherwise unused by Grit.
+#
+# The value is a Git URL, with an asterisk (*) in place of the repository "slug".
+# When cloning, the asterisk is substituted with the "<slug>" command-line
+# argument.
+#
+# The provider list always includes an implicit 'github' entry, which uses
+# the URL "git@github.com:*.git". This can be explicitly overriden if you wanted
+# to use the HTTPS URLs instead, for example.
+[clone.providers]
+my-company = "git@github.example.com:*.git"
+
+#
+# The index section controls how Grit indexes your Git clones.
+#
+[index]
+
+# "root" is the base directory that is indexed when performing a complete
+# rebuild of the index. The $GOPATH/src directory is also indexed.
+#
+# The default value is the same as the "clone.root" configuration directive,
+# which itself defaults to "~/grit".
+#
+# Cloning a repository using Grit *always* adds that repository to the index,
+# even if it's not inside the index root. However, any repositories outside the
+# index root will be removed from the index if the index is rebuilt.
+root = "~"
+
+# "store" is the location to store the index database.
+# The default value is "~/.grit/index.db".
+store = "/tmp/grit-test/cache"
