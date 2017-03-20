@@ -24,8 +24,8 @@ on the location of your Git clones.
 Grit is the logical evolution of those original scripts into a standalone
 project that handles multiple Git sources and Go's peculiarities. It's hacked
 together, there are no tests, and there are other more general solutions for
-navigating your filesystem; but this works for me, and I've published it on
-GitHub in case it works for you too.
+navigating your filesystem; but this works for me. I've published it to GitHub
+in case it works for you too.
 
 ## How?
 
@@ -57,11 +57,9 @@ the configuration file can be omitted entirely. For a complete list of the
 available configuration directives, see the [example](etc/example.toml)
 configuration file.
 
-For the rest of this document, I'll assume you're using the configuration shown
-above, which is a bit silly, but here we are.
-
-Rest assured, all paths and filenames used by Grit are most likely 100%
-configurable, more or less.
+From now on, I'll assume you're using the configuration shown above, which is a
+bit silly, but here we are. Rest assured, all paths and filenames used by Grit
+are probably 100% configurable, more or less.
 
 ### Cloning a repository
 
@@ -92,10 +90,10 @@ it thinks you might want to know where something is.
 
 ### Querying the index
 
-Whenever you clone a repository with Grit it's added to the index. The index
-is a database mapping repository slugs and names to directories. It's the second
-part of Grit that I mentioned back when we were talking about cloning. I haven't
-forgotten.
+Whenever you clone a repository with Grit, the repository is added to the index.
+The index is a database mapping repository slugs and names to directories. The
+index is also that second part of Grit that I mentioned back when we were
+talking about cloning. I haven't forgotten.
 
 The index can be queried to find a repository by slug:
 
@@ -113,11 +111,11 @@ that you should re-think your actions.
 
 ### What about Go?
 
-We cloned `jmalloc/grit` into `~/grit`, but Grit is written in Go, so it needs
-to live somewhere special, and that somewhere is `$GOPATH`.
+We've already cloned `jmalloc/grit` into `~/grit`, but Grit is written in Go,
+so it needs to live somewhere special, and that somewhere is `$GOPATH`.
 
-Sure, you could use `mv` to relocate it to the correct directory; but `mv` isn't
-written in Go, and therefore it isn't web-scale.
+Sure, you could just `mv` the directory; but `mv` isn't written in Go, and
+therefore it isn't web-scale!
 
 Try this instead:
 
@@ -127,12 +125,12 @@ Try this instead:
 you'll notice that the clone is in a subfolder of `$GOPATH` instead of `~/grit`.
 What a relief!
 
-If you're an avid Gopher, you are probably wondering why not just use `go get`.
-Well, that doesn't update the Grit index, of course!
+If you're an avid Gopher, you might be wondering "Why not use `go get`?". Well,
+that doesn't update the Grit index, of course!
 
-Now you've got two clones of `jmalloc/grit` on your system. This increases a
-number on my traffic graph, making me feel quite special. Beyond that, it also
-brings us to our next example ...
+So now you've got two clones of `jmalloc/grit` on your system. This increases
+the counter on my traffic graph, making me feel quite special. Beyond that, it
+also brings us to our next example ...
 
 ### Selecting between multiple clones
 
@@ -156,10 +154,6 @@ Interminable!
 
 ## Ok, so Grit prints paths to STDOUT, I get it.
 
-Grit is UNIXY! Those shell scripts I mentioned, way back at the beginning of our
-time together... they're still around, but now they use Grit to find
-repositories instead of a cobbled together in-memory cache.
-
 Grit is designed to be consumed by shell scripts, take this Bash function,
 for example:
 
@@ -175,14 +169,20 @@ terminal) and run:
 
     grit-cd grit
 
-You will be prompted for a choice, just as before, but after you make your
+You will be prompted for a choice just as before, but after you make your
 selection you will be *whisked* away to the directory that you selected.
 
 This is only possible by running the `cd` command in the interactive login
-shell, which is why Grit is all about paths on `STDOUT`.
+shell, which is why Grit is all about paths on `STDOUT`. Grit is UNIXY!
 
-I'm still working on complete Bash integration. You can expect auto-completion
-of command names, parameters and repository names (that are already indexed).
+## What next?
+
+You can expect auto-completion of command names, parameters and indexed
+repository slugs. These are all features present my the shell scripts I
+mentioned way back at the beginning of our time together.
+
+I'm in the process of porting the scripts in my [dotfiles repo](https://github.com/jmalloc/dotfiles)
+to use Grit instead of the cobbled together, in-memory cache they use currently.
 
 By the way, have you ever tried to write an in-memory cache in Bash? In a
-version of Bash that ships with OS X? You have? Oh.
+version of Bash available on OS X out of the box? You have? Oh.
