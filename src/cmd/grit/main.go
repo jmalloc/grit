@@ -41,6 +41,17 @@ func main() {
 			Action: withConfig(cloneCommand),
 		},
 		{
+			Name:      "cd",
+			Usage:     "Interactively prompt for selection of a clone directory.",
+			ArgsUsage: "<slug>",
+			Action:    withConfig(cdCommand),
+			BashComplete: func(c *cli.Context) {
+				if err := withConfig(indexListCommand)(c); err != nil {
+					panic(err)
+				}
+			},
+		},
+		{
 			Name:  "config",
 			Usage: "Manage the Grit configuration.",
 			Subcommands: []cli.Command{
@@ -61,16 +72,9 @@ func main() {
 					ArgsUsage: "<slug>",
 					Action:    withConfig(indexFindCommand),
 					BashComplete: func(c *cli.Context) {
-						_ = withConfig(indexListCommand)
-					},
-				},
-				{
-					Name:      "select",
-					Usage:     "Interactively prompt for selection of a clone directory.",
-					ArgsUsage: "<slug>",
-					Action:    withConfig(indexSelectCommand),
-					BashComplete: func(c *cli.Context) {
-						_ = withConfig(indexListCommand)
+						if err := withConfig(indexListCommand)(c); err != nil {
+							panic(err)
+						}
 					},
 				},
 				{

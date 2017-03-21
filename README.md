@@ -136,7 +136,7 @@ also brings us to our next example ...
 
 Try this:
 
-    grit index select jmalloc/grit
+    grit cd jmalloc/grit
 
 If you've followed all the steps until now, and I haven't messed up the examples
 too badly, you should be presented with a list of matching directories:
@@ -160,7 +160,7 @@ for example:
 ```bash
 grit-cd() {
     local dir
-    dir=$(grit index "select" $1) && cd $dir
+    dir=$(grit cd $1) && cd $dir
 }
 ```
 
