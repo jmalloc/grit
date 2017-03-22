@@ -10,17 +10,11 @@ import (
 	"github.com/urfave/cli"
 )
 
-func cdCommand(c config.Config, ctx *cli.Context) error {
+func cd(c config.Config, idx *index.Index, ctx *cli.Context) error {
 	slug := ctx.Args().First()
 	if slug == "" {
 		return usageError("not enough arguments")
 	}
-
-	idx, err := index.Open(c.Index.Store)
-	if err != nil {
-		return err
-	}
-	defer idx.Close()
 
 	dirs, err := idx.Find(slug)
 	if err != nil {

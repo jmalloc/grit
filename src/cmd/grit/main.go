@@ -6,6 +6,7 @@ import (
 	"path"
 
 	"github.com/jmalloc/grit/src/config"
+	"github.com/jmalloc/grit/src/index"
 	"github.com/jmalloc/grit/src/pathutil"
 	"github.com/urfave/cli"
 )
@@ -15,7 +16,7 @@ func main() {
 	homeDir, _ := pathutil.HomeDir()
 
 	app.Name = "grit"
-	app.Usage = "Index your git clones."
+	app.Usage = "Index your Git clones."
 	app.Version = "0.1.0"
 	app.EnableBashCompletion = true
 	app.Flags = []cli.Flag{
@@ -30,7 +31,7 @@ func main() {
 	app.Commands = []cli.Command{
 		{
 			Name:      "clone",
-			Usage:     "Clone a git repository.",
+			Usage:     "Clone a repository into a new directory.",
 			ArgsUsage: "<slug>",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
@@ -38,60 +39,65 @@ func main() {
 					Usage: "Place the clone under the $GOPATH directory.",
 				},
 			},
-			Action: withConfig(cloneCommand),
+			Action: withConfigAndIndex(clone),
 		},
 		{
-			Name:      "cd",
-			Usage:     "Interactively prompt for selection of a clone directory.",
-			ArgsUsage: "<slug>",
-			Action:    withConfig(cdCommand),
-			BashComplete: func(c *cli.Context) {
-				if err := withConfig(indexListCommand)(c); err != nil {
-					panic(err)
-				}
-			},
+			Name:         "cd",
+			Usage:        "Change the current directory to an indexed clone directory.",
+			ArgsUsage:    "<slug>",
+			Action:       withConfigAndIndex(cd),
+			BashComplete: autocompleteSlug,
 		},
 		{
-			Name:  "config",
-			Usage: "Manage the Grit configuration.",
+			Name:  "source",
+			Usage: "Manage Git sources.",
 			Subcommands: []cli.Command{
 				{
-					Name:   "show",
-					Usage:  "Display the Grit configuration.",
-					Action: withConfig(configShowCommand),
+					Name:         "probe",
+					Usage:        "Discover which sources have a repository.",
+					ArgsUsage:    "<slug>",
+					Action:       withConfig(sourceProbe),
+					BashComplete: autocompleteSlug,
+				},
+				{
+					Name:   "ls",
+					Usage:  "List the configured sources.",
+					Action: withConfig(sourceList),
 				},
 			},
+		},
+		{
+			Name:     "config",
+			Usage:    "Print the entire Grit configuration.",
+			Category: "deprecated",
+			Action:   withConfig(configShow),
 		},
 		{
 			Name:  "index",
-			Usage: "Manage the repository index.",
+			Usage: "Manage the Grit repository index.",
 			Subcommands: []cli.Command{
 				{
-					Name:      "find",
-					Usage:     "List all possible locations for clones of a repository.",
-					ArgsUsage: "<slug>",
-					Action:    withConfig(indexFindCommand),
-					BashComplete: func(c *cli.Context) {
-						if err := withConfig(indexListCommand)(c); err != nil {
-							panic(err)
-						}
-					},
+					Name:         "find",
+					Usage:        "List directories for a specific repository.",
+					ArgsUsage:    "<slug>",
+					Action:       withConfigAndIndex(indexFind),
+					BashComplete: autocompleteSlug,
 				},
 				{
-					Name:      "list",
-					Usage:     "List entries in the index, optionally limited to those matching a prefix.",
+					Name:      "keys",
+					Usage:     "List keys in the index, optionally limited to those matching a prefix.",
 					ArgsUsage: "[prefix]",
-					Action:    withConfig(indexListCommand),
+					Action:    withConfigAndIndex(indexKeys),
 				},
 				{
 					Name:   "rebuild",
 					Usage:  "Rebuild the entire index.",
-					Action: withConfig(indexRebuildCommand),
+					Action: withConfigAndIndex(indexRebuild),
 				},
 				{
 					Name:   "show",
-					Usage:  "Display the entire index database.",
-					Action: withConfig(indexShowCommand),
+					Usage:  "Display the complete repository index.",
+					Action: withConfigAndIndex(indexShow),
 				},
 			},
 		},
@@ -121,6 +127,24 @@ func withConfig(fn func(config.Config, *cli.Context) error) cli.ActionFunc {
 		}
 
 		return err
+	}
+}
+
+func withConfigAndIndex(fn func(config.Config, *index.Index, *cli.Context) error) cli.ActionFunc {
+	return withConfig(func(c config.Config, ctx *cli.Context) error {
+		idx, err := index.Open(c.Index.Store)
+		if err != nil {
+			return err
+		}
+		defer idx.Close()
+
+		return fn(c, idx, ctx)
+	})
+}
+
+func autocompleteSlug(c *cli.Context) {
+	if err := withConfigAndIndex(indexKeys)(c); err != nil {
+		panic(err)
 	}
 }
 

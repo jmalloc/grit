@@ -1,4 +1,4 @@
-package clone
+package repo
 
 import (
 	"os"
@@ -11,15 +11,15 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 )
 
-// ToCloneRoot creates a local Git clone of a repository by searching through
+// CloneToCloneRoot creates a local Git clone of a repository by searching through
 // the configured sources.
-func ToCloneRoot(c config.Config, slug string) (string, error) {
+func CloneToCloneRoot(c config.Config, slug string) (string, error) {
 	return clone(c, slug, c.Clone.Root, pathutil.GetClonePath)
 }
 
-// ToGoPath creates a local Git clone of a repository at the appropriate
+// CloneToGoPath creates a local Git clone of a repository at the appropriate
 // location under $GOPATH.
-func ToGoPath(c config.Config, slug string) (string, error) {
+func CloneToGoPath(c config.Config, slug string) (string, error) {
 	p, err := pathutil.GoSrc()
 	if err != nil {
 		return "", err
@@ -34,7 +34,7 @@ func clone(
 	getClonePath func(string) (string, error),
 ) (string, error) {
 	for _, n := range c.Clone.Order {
-		url := resolveURL(c.Clone.Sources[n], slug)
+		url := ResolveURL(c.Clone.Sources[n], slug)
 		rel, err := getClonePath(url)
 		if err != nil {
 			continue
@@ -50,7 +50,8 @@ func clone(
 
 }
 
-func resolveURL(url, slug string) string {
+// ResolveURL returns an actual URL from a URL template and slug.
+func ResolveURL(url, slug string) string {
 	return strings.Replace(url, "*", slug, 1)
 }
 
