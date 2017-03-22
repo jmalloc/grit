@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 (2017-03-23)
+
+- **[FIX]** Fix issue where $GOPATH would not be index when outside the index root
+
 ## 0.2.0 (2017-03-23)
 
 - **[BC]** Renamed `index select` command to `cd`
