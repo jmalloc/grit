@@ -38,6 +38,10 @@ func main() {
 					Name:  "source, s",
 					Usage: "Clone from a specific named source.",
 				},
+				cli.StringFlag{
+					Name:  "target, t",
+					Usage: "Clone into a specific directory.",
+				},
 				cli.BoolFlag{
 					Name:  "golang, g",
 					Usage: "Clone into the appropriate $GOPATH sub-directory.",

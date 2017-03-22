@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"sync"
 
 	git "gopkg.in/src-d/go-git.v4"
@@ -42,20 +43,22 @@ func getCloneURL(c config.Config, ctx *cli.Context) (string, error) {
 		return "", notEnoughArguments
 	}
 
+	source := ctx.String("source")
+
 	if _, err := transport.NewEndpoint(slugOrURL); err == nil {
-		if n := ctx.String("source"); n != "" {
+		if source != "" {
 			return "", usageError("can not combine --source with a URL")
 		}
 
 		return slugOrURL, nil
 	}
 
-	if n := ctx.String("source"); n != "" {
-		if u, ok := c.Clone.Sources[n]; ok {
+	if source != "" {
+		if u, ok := c.Clone.Sources[source]; ok {
 			return repo.ResolveURL(u, slugOrURL), nil
 		}
 
-		return "", unknownSource(n)
+		return "", unknownSource(source)
 	}
 
 	if url, ok := probeForURL(c, ctx, slugOrURL); ok {
@@ -94,9 +97,19 @@ func probeForURL(c config.Config, ctx *cli.Context, slug string) (string, bool) 
 }
 
 func getCloneDir(c config.Config, ctx *cli.Context, url string) (string, error) {
+	target := ctx.String("target")
+
 	if ctx.Bool("golang") {
-		return repo.GetGoCloneDir(url)
+		if target == "" {
+			return repo.GetGoCloneDir(url)
+		}
+
+		return "", usageError("can not combine --target with --golang")
 	}
 
-	return repo.GetCloneDir(c, url)
+	if target == "" {
+		return repo.GetCloneDir(c, url)
+	}
+
+	return filepath.Abs(target)
 }
