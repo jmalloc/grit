@@ -13,7 +13,7 @@ import (
 func sourceProbe(c config.Config, ctx *cli.Context) error {
 	slug := ctx.Args().First()
 	if slug == "" {
-		return usageError("not enough arguments")
+		return notEnoughArguments
 	}
 
 	var wg sync.WaitGroup

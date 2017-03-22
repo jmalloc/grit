@@ -119,7 +119,7 @@ therefore it isn't web-scale!
 
 Try this instead:
 
-    grit clone --go jmalloc/grit
+    grit clone --golang jmalloc/grit
 
 *Again*, Grit ruthlessly prints the clone path to `STDOUT`. This time however,
 you'll notice that the clone is in a subfolder of `$GOPATH` instead of `~/grit`.

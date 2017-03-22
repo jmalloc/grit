@@ -12,7 +12,7 @@ import (
 func indexFind(c config.Config, idx *index.Index, ctx *cli.Context) error {
 	slug := ctx.Args().First()
 	if slug == "" {
-		return usageError("not enough arguments")
+		return notEnoughArguments
 	}
 
 	dirs, err := idx.Find(slug)

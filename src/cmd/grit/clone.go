@@ -39,18 +39,30 @@ func clone(c config.Config, idx *index.Index, ctx *cli.Context) error {
 func getCloneURL(c config.Config, ctx *cli.Context) (string, error) {
 	slugOrURL := ctx.Args().First()
 	if slugOrURL == "" {
-		return "", usageError("not enough arguments")
+		return "", notEnoughArguments
 	}
 
 	if _, err := transport.NewEndpoint(slugOrURL); err == nil {
+		if n := ctx.String("source"); n != "" {
+			return "", usageError("can not combine --source with a URL")
+		}
+
 		return slugOrURL, nil
+	}
+
+	if n := ctx.String("source"); n != "" {
+		if u, ok := c.Clone.Sources[n]; ok {
+			return repo.ResolveURL(u, slugOrURL), nil
+		}
+
+		return "", unknownSource(n)
 	}
 
 	if url, ok := probeForURL(c, ctx, slugOrURL); ok {
 		return url, nil
 	}
 
-	return "", cli.NewExitError("", 1)
+	return "", silentFailure
 }
 
 func probeForURL(c config.Config, ctx *cli.Context, slug string) (string, bool) {
@@ -82,7 +94,7 @@ func probeForURL(c config.Config, ctx *cli.Context, slug string) (string, bool) 
 }
 
 func getCloneDir(c config.Config, ctx *cli.Context, url string) (string, error) {
-	if ctx.Bool("go") {
+	if ctx.Bool("golang") {
 		return repo.GetGoCloneDir(url)
 	}
 

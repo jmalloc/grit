@@ -34,9 +34,13 @@ func main() {
 			Usage:     "Clone a repository into a new directory.",
 			ArgsUsage: "<slug | url>",
 			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "source, s",
+					Usage: "Clone from a specific named source.",
+				},
 				cli.BoolFlag{
-					Name:  "go",
-					Usage: "Place the clone under the $GOPATH directory.",
+					Name:  "golang, g",
+					Usage: "Clone into the appropriate $GOPATH sub-directory.",
 				},
 			},
 			Action: withConfigAndIndex(clone),
@@ -146,10 +150,4 @@ func autocompleteSlug(c *cli.Context) {
 	if err := withConfigAndIndex(indexKeys)(c); err != nil {
 		panic(err)
 	}
-}
-
-type usageError string
-
-func (e usageError) Error() string {
-	return string(e)
 }
