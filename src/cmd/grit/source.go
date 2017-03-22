@@ -16,10 +16,8 @@ func sourceProbe(c config.Config, ctx *cli.Context) error {
 		return usageError("not enough arguments")
 	}
 
-	var (
-		wg sync.WaitGroup
-		m  sync.Mutex
-	)
+	var wg sync.WaitGroup
+	var m sync.Mutex
 
 	for n, u := range c.Clone.Sources {
 		wg.Add(1)

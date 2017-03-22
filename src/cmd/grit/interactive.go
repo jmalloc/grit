@@ -11,13 +11,15 @@ import (
 
 // choose asks the user to select an entry from opts interactively.
 func choose(w io.Writer, opt []string) (int, bool) {
-	if len(opt) == 0 {
+	size := len(opt)
+
+	if size == 0 {
 		return 0, false
-	} else if len(opt) == 1 {
+	} else if size == 1 {
 		return 0, true
 	}
 
-	width := len(strconv.Itoa(len(opt)))
+	width := len(strconv.Itoa(size))
 	f := fmt.Sprintf("  %%%dd) %%s\n", width)
 
 	for i, o := range opt {
@@ -39,9 +41,20 @@ func choose(w io.Writer, opt []string) (int, bool) {
 			i64, _ := strconv.ParseUint(input, 10, 64)
 			idx := int(i64)
 
-			if idx >= 1 && idx <= len(opt) {
+			if idx >= 1 && idx <= size {
 				return idx - 1, true
 			}
 		}
 	}
+}
+
+// chooseByKey asks the user to select an entry from opts interactively.
+func chooseByKey(w io.Writer, opt map[string]string) (string, bool) {
+	var o []string
+	for k := range opt {
+		o = append(o, k)
+	}
+
+	i, ok := choose(w, o)
+	return opt[o[i]], ok
 }

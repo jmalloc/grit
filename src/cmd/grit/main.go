@@ -32,7 +32,7 @@ func main() {
 		{
 			Name:      "clone",
 			Usage:     "Clone a repository into a new directory.",
-			ArgsUsage: "<slug>",
+			ArgsUsage: "<slug | url>",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "go",
