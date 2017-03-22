@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"path/filepath"
 
 	"github.com/jmalloc/grit/src/config"
 	"github.com/jmalloc/grit/src/index"
@@ -10,17 +9,11 @@ import (
 	"github.com/urfave/cli"
 )
 
-func indexFindCommand(c config.Config, ctx *cli.Context) error {
+func indexFind(c config.Config, idx *index.Index, ctx *cli.Context) error {
 	slug := ctx.Args().First()
 	if slug == "" {
 		return usageError("not enough arguments")
 	}
-
-	idx, err := index.Open(c.Index.Store)
-	if err != nil {
-		return err
-	}
-	defer idx.Close()
 
 	dirs, err := idx.Find(slug)
 	if err != nil {
@@ -34,13 +27,7 @@ func indexFindCommand(c config.Config, ctx *cli.Context) error {
 	return nil
 }
 
-func indexListCommand(c config.Config, ctx *cli.Context) error {
-	idx, err := index.Open(c.Index.Store)
-	if err != nil {
-		return err
-	}
-	defer idx.Close()
-
+func indexKeys(c config.Config, idx *index.Index, ctx *cli.Context) error {
 	keys, err := idx.List(ctx.Args().First())
 	if err != nil {
 		return err
@@ -53,28 +40,16 @@ func indexListCommand(c config.Config, ctx *cli.Context) error {
 	return nil
 }
 
-func indexShowCommand(c config.Config, ctx *cli.Context) error {
-	idx, err := index.Open(c.Index.Store)
-	if err != nil {
-		return err
-	}
-	defer idx.Close()
-
-	_, err = idx.WriteTo(ctx.App.Writer)
+func indexShow(c config.Config, idx *index.Index, ctx *cli.Context) error {
+	_, err := idx.WriteTo(ctx.App.Writer)
 	return err
 }
 
-func indexRebuildCommand(c config.Config, ctx *cli.Context) error {
-	idx, err := index.Open(c.Index.Store)
-	if err != nil {
-		return err
-	}
-	defer idx.Close()
-
+func indexRebuild(c config.Config, idx *index.Index, ctx *cli.Context) error {
 	dirs := []string{c.Index.Root}
 
 	if gosrc, err := pathutil.GoSrc(); err == nil {
-		if _, err := filepath.Rel(c.Index.Root, gosrc); err == nil {
+		if _, ok := pathutil.RelChild(c.Index.Root, gosrc); ok {
 			dirs = append(dirs, gosrc)
 		}
 	}

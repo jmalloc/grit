@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func configShowCommand(c config.Config, ctx *cli.Context) error {
+func configShow(c config.Config, ctx *cli.Context) error {
 	enc := toml.NewEncoder(ctx.App.Writer)
 
 	if err := enc.Encode(c); err != nil {
