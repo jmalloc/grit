@@ -73,9 +73,9 @@ func indexRebuildCommand(c config.Config, ctx *cli.Context) error {
 
 	dirs := []string{c.Index.Root}
 
-	if gopath, err := pathutil.GoPath(); err == nil {
-		if _, err := filepath.Rel(c.Index.Root, gopath); err == nil {
-			dirs = append(dirs, gopath)
+	if gosrc, err := pathutil.GoSrc(); err == nil {
+		if _, err := filepath.Rel(c.Index.Root, gosrc); err == nil {
+			dirs = append(dirs, gosrc)
 		}
 	}
 

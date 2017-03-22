@@ -20,11 +20,11 @@ func ToCloneRoot(c config.Config, slug string) (string, error) {
 // ToGoPath creates a local Git clone of a repository at the appropriate
 // location under $GOPATH.
 func ToGoPath(c config.Config, slug string) (string, error) {
-	gopath, err := pathutil.GoPath()
+	p, err := pathutil.GoSrc()
 	if err != nil {
 		return "", err
 	}
-	return clone(c, slug, path.Join(gopath, "src"), pathutil.GetGoPath)
+	return clone(c, slug, p, pathutil.GetGoPath)
 }
 
 func clone(

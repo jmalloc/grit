@@ -36,11 +36,11 @@ func cdCommand(c config.Config, ctx *cli.Context) error {
 		return nil
 	}
 
-	gopath, _ := pathutil.GoPath()
+	gosrc, _ := pathutil.GoSrc()
 
 	for index, dir := range dirs {
-		if gopath != "" && strings.HasPrefix(dir, gopath) {
-			rel, err := filepath.Rel(gopath, dir)
+		if gosrc != "" && strings.HasPrefix(dir, gosrc) {
+			rel, err := filepath.Rel(gosrc, dir)
 			if err == nil && rel[0] != '.' {
 				fmt.Fprintf(os.Stderr, "%3d) [go] %s\n", index+1, rel)
 				continue
