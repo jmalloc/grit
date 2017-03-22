@@ -23,7 +23,7 @@ func Known(c config.Config) Indexer {
 			return false
 		}
 
-		for _, u := range c.Clone.Providers {
+		for _, u := range c.Clone.Sources {
 			b, _ := transport.NewEndpoint(u)
 			if a.Scheme == b.Scheme && a.Host == b.Host {
 				return true

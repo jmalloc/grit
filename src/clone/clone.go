@@ -12,7 +12,7 @@ import (
 )
 
 // ToCloneRoot creates a local Git clone of a repository by searching through
-// the configured providers.
+// the configured sources.
 func ToCloneRoot(c config.Config, slug string) (string, error) {
 	return clone(c, slug, c.Clone.Root, pathutil.GetClonePath)
 }
@@ -34,7 +34,7 @@ func clone(
 	getClonePath func(string) (string, error),
 ) (string, error) {
 	for _, n := range c.Clone.Order {
-		url := resolveURL(c.Clone.Providers[n], slug)
+		url := resolveURL(c.Clone.Sources[n], slug)
 		rel, err := getClonePath(url)
 		if err != nil {
 			continue

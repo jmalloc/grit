@@ -48,7 +48,7 @@ By default, Grit looks for a configuration file at `~/.grit/config.toml`, which
 at its most basic is a list of places to clone from:
 
 ```toml
-[clone.providers]
+[clone.sources]
 my-company = "git@git.example.com:*.git"
 ```
 
@@ -70,7 +70,7 @@ That's minimalism.
 The clone command accepts a single argument, the repository "slug". The slug
 is the part of the repository URL that a standard-issue human would use to
 identify a repository. For GitHub, this is the familiar `username/repository`
-syntax. For providers configured in `config.toml`, it's the part represented
+syntax. For sources configured in `config.toml`, it's the part represented
 by the asterisk in the URL.
 
 Try it out:

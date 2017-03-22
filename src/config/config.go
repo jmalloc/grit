@@ -15,9 +15,9 @@ import (
 // Config holds Grit configuration.
 type Config struct {
 	Clone struct {
-		Root      string            `toml:"root"`
-		Order     []string          `toml:"order"`
-		Providers map[string]string `toml:"providers"`
+		Root    string            `toml:"root"`
+		Order   []string          `toml:"order"`
+		Sources map[string]string `toml:"sources"`
 	} `toml:"clone"`
 	Index struct {
 		Root  string `toml:"root"`
@@ -68,9 +68,9 @@ func (c *Config) normalizeClone(base string) error {
 		return err
 	}
 
-	// check the provider URLs are valid
+	// check the source URLs are valid
 	var names []string
-	for n, u := range c.Clone.Providers {
+	for n, u := range c.Clone.Sources {
 		if _, err := transport.NewEndpoint(u); err != nil {
 			return err
 		}
@@ -80,20 +80,20 @@ func (c *Config) normalizeClone(base string) error {
 		}
 	}
 
-	// if no clone order is specified, use the defined providers (in any order)
+	// if no clone order is specified, use the defined sources (in any order)
 	// and github at the end
 	if len(c.Clone.Order) == 0 {
 		c.Clone.Order = append(names, "github")
 	}
 
-	// ensure that all providers in the clone order actually exist,
+	// ensure that all sources in the clone order actually exist,
 	// and automatically create github if not already present
 	for _, n := range c.Clone.Order {
-		if _, ok := c.Clone.Providers[n]; !ok {
+		if _, ok := c.Clone.Sources[n]; !ok {
 			if n != "github" {
-				return fmt.Errorf("grit config: undeclared provider '%s' in clone.order", n)
+				return fmt.Errorf("grit config: undeclared source '%s' in clone.order", n)
 			}
-			c.Clone.Providers["github"] = "git@github.com:*.git"
+			c.Clone.Sources["github"] = "git@github.com:*.git"
 		}
 	}
 
