@@ -17,8 +17,8 @@ type Config struct {
 		Sources map[string]EndpointTemplate `toml:"sources"`
 	} `toml:"clone"`
 	Index struct {
-		Root  string `toml:"root"`
-		Store string `toml:"store"`
+		Paths []string `toml:"paths"`
+		Store string   `toml:"store"`
 	} `toml:"index"`
 }
 
@@ -81,8 +81,30 @@ func (c *Config) normalizeClone(base string) error {
 }
 
 func (c *Config) normalizeIndex(base string) error {
-	if err := resolveWithDefault(&c.Index.Root, base, c.Clone.Root); err != nil {
-		return err
+	if len(c.Index.Paths) == 0 {
+		c.Index.Paths = []string{c.Clone.Root}
+	}
+
+	goSrc, err := pathutil.GoSrc()
+	useGoSrc := err == nil
+
+	for i, p := range c.Index.Paths {
+		r, err := pathutil.ResolveFrom(base, p)
+		if err != nil {
+			return err
+		}
+		c.Index.Paths[i] = r
+
+		// don't add $GOPATH/src if it's a sub-folder of another indexed path.
+		if useGoSrc {
+			if _, ok := pathutil.RelChild(r, goSrc); ok {
+				useGoSrc = false
+			}
+		}
+	}
+
+	if useGoSrc {
+		c.Index.Paths = append(c.Index.Paths, goSrc)
 	}
 
 	return resolveWithDefault(&c.Index.Store, base, "index.db")

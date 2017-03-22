@@ -22,6 +22,6 @@ func GoPath() (string, error) {
 
 // GoSrc returns the current user's $GOPATH/src directory.
 func GoSrc() (string, error) {
-	p, ok := GoPath()
-	return path.Join(p, "src"), ok
+	p, err := GoPath()
+	return path.Join(p, "src"), err
 }
