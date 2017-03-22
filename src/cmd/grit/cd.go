@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jmalloc/grit/src/config"
+	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/index"
 	"github.com/jmalloc/grit/src/pathutil"
 	"github.com/urfave/cli"
 )
 
-func cd(c config.Config, idx *index.Index, ctx *cli.Context) error {
+func cd(c grit.Config, idx *index.Index, ctx *cli.Context) error {
 	slug := ctx.Args().First()
 	if slug == "" {
 		return notEnoughArguments

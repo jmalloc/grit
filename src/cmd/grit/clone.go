@@ -8,13 +8,12 @@ import (
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 
-	"github.com/jmalloc/grit/src/config"
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/index"
 	"github.com/urfave/cli"
 )
 
-func clone(c config.Config, idx *index.Index, ctx *cli.Context) error {
+func clone(c grit.Config, idx *index.Index, ctx *cli.Context) error {
 	ep, err := getCloneEndpoint(c, ctx)
 	if err != nil {
 		return err
@@ -37,7 +36,7 @@ func clone(c config.Config, idx *index.Index, ctx *cli.Context) error {
 	return err
 }
 
-func getCloneEndpoint(c config.Config, ctx *cli.Context) (grit.Endpoint, error) {
+func getCloneEndpoint(c grit.Config, ctx *cli.Context) (grit.Endpoint, error) {
 	slugOrURL := ctx.Args().First()
 	if slugOrURL == "" {
 		return grit.Endpoint{}, notEnoughArguments
@@ -71,7 +70,7 @@ func getCloneEndpoint(c config.Config, ctx *cli.Context) (grit.Endpoint, error) 
 	return grit.Endpoint{}, silentFailure
 }
 
-func probeForURL(c config.Config, ctx *cli.Context, slug string) (grit.Endpoint, bool) {
+func probeForURL(c grit.Config, ctx *cli.Context, slug string) (grit.Endpoint, bool) {
 	var sources []string
 	var endpoints []grit.Endpoint
 
@@ -87,7 +86,7 @@ func probeForURL(c config.Config, ctx *cli.Context, slug string) (grit.Endpoint,
 	return grit.Endpoint{}, false
 }
 
-func getCloneDir(c config.Config, ctx *cli.Context, ep grit.Endpoint) (string, error) {
+func getCloneDir(c grit.Config, ctx *cli.Context, ep grit.Endpoint) (string, error) {
 	target := ctx.String("target")
 
 	if ctx.Bool("golang") {

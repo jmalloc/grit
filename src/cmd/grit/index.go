@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 
-	"github.com/jmalloc/grit/src/config"
+	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/index"
 	"github.com/jmalloc/grit/src/pathutil"
 	"github.com/urfave/cli"
 )
 
-func indexFind(c config.Config, idx *index.Index, ctx *cli.Context) error {
+func indexFind(c grit.Config, idx *index.Index, ctx *cli.Context) error {
 	slug := ctx.Args().First()
 	if slug == "" {
 		return notEnoughArguments
@@ -27,7 +27,7 @@ func indexFind(c config.Config, idx *index.Index, ctx *cli.Context) error {
 	return nil
 }
 
-func indexKeys(c config.Config, idx *index.Index, ctx *cli.Context) error {
+func indexKeys(c grit.Config, idx *index.Index, ctx *cli.Context) error {
 	keys, err := idx.List(ctx.Args().First())
 	if err != nil {
 		return err
@@ -40,12 +40,12 @@ func indexKeys(c config.Config, idx *index.Index, ctx *cli.Context) error {
 	return nil
 }
 
-func indexShow(c config.Config, idx *index.Index, ctx *cli.Context) error {
+func indexShow(c grit.Config, idx *index.Index, ctx *cli.Context) error {
 	_, err := idx.WriteTo(ctx.App.Writer)
 	return err
 }
 
-func indexRebuild(c config.Config, idx *index.Index, ctx *cli.Context) error {
+func indexRebuild(c grit.Config, idx *index.Index, ctx *cli.Context) error {
 	dirs := []string{c.Index.Root}
 
 	if gosrc, err := pathutil.GoSrc(); err == nil {

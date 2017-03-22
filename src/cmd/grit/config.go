@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/BurntSushi/toml"
-	"github.com/jmalloc/grit/src/config"
+	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/pathutil"
 	"github.com/urfave/cli"
 )
 
-func configShow(c config.Config, ctx *cli.Context) error {
+func configShow(c grit.Config, ctx *cli.Context) error {
 	enc := toml.NewEncoder(ctx.App.Writer)
 
 	if err := enc.Encode(c); err != nil {

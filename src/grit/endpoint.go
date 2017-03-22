@@ -52,17 +52,17 @@ func (t EndpointTemplate) Resolve(slug string) (ep Endpoint, err error) {
 }
 
 func (t EndpointTemplate) replace(slug string) (u string, err error) {
+	type context struct {
+		Slug string
+	}
+
 	tmpl, err := template.New("url").Parse(string(t))
 	if err == nil {
 		buf := &bytes.Buffer{}
-		err = tmpl.Execute(buf, endpointTemplateContext{slug})
+		err = tmpl.Execute(buf, context{slug})
 		u = buf.String()
 	}
 	return
-}
-
-type endpointTemplateContext struct {
-	Slug string
 }
 
 // EndpointExists returns true if url is a Git repository.

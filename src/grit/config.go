@@ -1,4 +1,4 @@
-package config
+package grit
 
 import (
 	"fmt"
@@ -7,15 +7,14 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/pathutil"
 )
 
 // Config holds Grit configuration.
 type Config struct {
 	Clone struct {
-		Root    string                           `toml:"root"`
-		Sources map[string]grit.EndpointTemplate `toml:"sources"`
+		Root    string                      `toml:"root"`
+		Sources map[string]EndpointTemplate `toml:"sources"`
 	} `toml:"clone"`
 	Index struct {
 		Root  string `toml:"root"`
@@ -23,8 +22,8 @@ type Config struct {
 	} `toml:"index"`
 }
 
-// Load loads the Grit configuration from a file.
-func Load(file string) (c Config, err error) {
+// LoadConfig loads the Grit configuration from a file.
+func LoadConfig(file string) (c Config, err error) {
 	file, err = pathutil.Resolve(file)
 	if err != nil {
 		return
@@ -62,7 +61,7 @@ func (c *Config) normalize(base string) error {
 }
 
 func (c *Config) normalizeClone(base string) error {
-	if err := resolve(&c.Clone.Root, base, "~/grit"); err != nil {
+	if err := resolveWithDefault(&c.Clone.Root, base, "~/grit"); err != nil {
 		return err
 	}
 
@@ -82,14 +81,14 @@ func (c *Config) normalizeClone(base string) error {
 }
 
 func (c *Config) normalizeIndex(base string) error {
-	if err := resolve(&c.Index.Root, base, c.Clone.Root); err != nil {
+	if err := resolveWithDefault(&c.Index.Root, base, c.Clone.Root); err != nil {
 		return err
 	}
 
-	return resolve(&c.Index.Store, base, "index.db")
+	return resolveWithDefault(&c.Index.Store, base, "index.db")
 }
 
-func resolve(p *string, base, def string) (err error) {
+func resolveWithDefault(p *string, base, def string) (err error) {
 	if *p == "" {
 		*p = def
 	}

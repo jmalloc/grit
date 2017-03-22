@@ -5,12 +5,11 @@ import (
 	"os"
 	"sync"
 
-	"github.com/jmalloc/grit/src/config"
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/urfave/cli"
 )
 
-func sourceProbe(c config.Config, ctx *cli.Context) error {
+func sourceProbe(c grit.Config, ctx *cli.Context) error {
 	slug := ctx.Args().First()
 	if slug == "" {
 		return notEnoughArguments
@@ -23,7 +22,7 @@ func sourceProbe(c config.Config, ctx *cli.Context) error {
 	return nil
 }
 
-func sourceList(c config.Config, ctx *cli.Context) error {
+func sourceList(c grit.Config, ctx *cli.Context) error {
 	for n, t := range c.Clone.Sources {
 		fmt.Fprintln(ctx.App.Writer, n, t)
 	}
@@ -31,7 +30,7 @@ func sourceList(c config.Config, ctx *cli.Context) error {
 }
 
 func probeSources(
-	c config.Config,
+	c grit.Config,
 	slug string,
 	fn func(string, grit.Endpoint),
 ) {

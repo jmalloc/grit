@@ -4,7 +4,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/jmalloc/grit/src/config"
+	"github.com/jmalloc/grit/src/grit"
+
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 )
@@ -16,7 +17,7 @@ func All() Indexer {
 
 // Known returns an indexer that only indexes repositories with URLs known
 // to the Grit configuration.
-func Known(c config.Config) Indexer {
+func Known(c grit.Config) Indexer {
 	return Matching(func(url string) bool {
 		a, err := transport.NewEndpoint(url)
 		if err != nil {

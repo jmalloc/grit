@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/jmalloc/grit/src/config"
+	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/index"
 	"github.com/jmalloc/grit/src/pathutil"
 	"github.com/urfave/cli"
@@ -116,11 +116,11 @@ func main() {
 	}
 }
 
-func loadConfig(ctx *cli.Context) (config.Config, error) {
-	return config.Load(ctx.GlobalString("config"))
+func loadConfig(ctx *cli.Context) (grit.Config, error) {
+	return grit.LoadConfig(ctx.GlobalString("config"))
 }
 
-func withConfig(fn func(config.Config, *cli.Context) error) cli.ActionFunc {
+func withConfig(fn func(grit.Config, *cli.Context) error) cli.ActionFunc {
 	return func(ctx *cli.Context) error {
 		c, err := loadConfig(ctx)
 		if err != nil {
@@ -138,8 +138,8 @@ func withConfig(fn func(config.Config, *cli.Context) error) cli.ActionFunc {
 	}
 }
 
-func withConfigAndIndex(fn func(config.Config, *index.Index, *cli.Context) error) cli.ActionFunc {
-	return withConfig(func(c config.Config, ctx *cli.Context) error {
+func withConfigAndIndex(fn func(grit.Config, *index.Index, *cli.Context) error) cli.ActionFunc {
+	return withConfig(func(c grit.Config, ctx *cli.Context) error {
 		idx, err := index.Open(c.Index.Store)
 		if err != nil {
 			return err
