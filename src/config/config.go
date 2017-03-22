@@ -15,7 +15,6 @@ import (
 type Config struct {
 	Clone struct {
 		Root    string                           `toml:"root"`
-		Order   []string                         `toml:"order"`
 		Sources map[string]grit.EndpointTemplate `toml:"sources"`
 	} `toml:"clone"`
 	Index struct {
@@ -67,32 +66,15 @@ func (c *Config) normalizeClone(base string) error {
 		return err
 	}
 
-	// check the source URLs are valid
-	var names []string
-	for n, t := range c.Clone.Sources {
+	// add github to the source list if it's not already present ...
+	if _, ok := c.Clone.Sources["github"]; !ok {
+		c.Clone.Sources["github"] = "git@github.com:{{ .Slug }}.git"
+	}
+
+	// check the source URLs are valid ...
+	for _, t := range c.Clone.Sources {
 		if err := t.Validate(); err != nil {
 			return err
-		}
-
-		if n != "github" {
-			names = append(names, n)
-		}
-	}
-
-	// if no clone order is specified, use the defined sources (in any order)
-	// and github at the end
-	if len(c.Clone.Order) == 0 {
-		c.Clone.Order = append(names, "github")
-	}
-
-	// ensure that all sources in the clone order actually exist,
-	// and automatically create github if not already present
-	for _, n := range c.Clone.Order {
-		if _, ok := c.Clone.Sources[n]; !ok {
-			if n != "github" {
-				return fmt.Errorf("grit config: undeclared source '%s' in clone.order", n)
-			}
-			c.Clone.Sources["github"] = "git@github.com:{{ .Slug }}.git"
 		}
 	}
 

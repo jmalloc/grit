@@ -1,6 +1,5 @@
 [clone]
 root = "/tmp/grit-test/clone"
-order = ['my-company', 'github']
 
 [clone.sources]
 my-company = "git@github.example.com:{{ .Slug }}.git"

@@ -24,8 +24,8 @@ func sourceProbe(c config.Config, ctx *cli.Context) error {
 }
 
 func sourceList(c config.Config, ctx *cli.Context) error {
-	for _, n := range c.Clone.Order {
-		fmt.Fprintln(ctx.App.Writer, n, c.Clone.Sources[n])
+	for n, t := range c.Clone.Sources {
+		fmt.Fprintln(ctx.App.Writer, n, t)
 	}
 	return nil
 }

@@ -25,19 +25,10 @@
 # Will clone git@github.com:jmalloc/grit.git to ~/grit/github.com/jmalloc/grit
 root = "~/my-repos"
 
-# "order" controls the order that Grit checks the "clone.sources" list.
-#
-# The repository is cloned from the first source that has a repository with a
-# matching name.
-#
-# The default value is built from the list of "clone.sources" (see below) in
-# random order, plus 'github' last.
-order = ['my-company', 'github']
-
 # "clone.sources" is a list of additional Git sources.
 #
-# The key is an arbitrary label for the source, referenced by the "clone.order"
-# configuration directive, but otherwise unused by Grit.
+# The key is an arbitrary label for the source. It can be used when cloning to
+# force Grit to clone from a specific source.
 #
 # The value is a template for Git URL. The string {{ .Slug }} is substituted
 # with the "<slug>" command-line argument.
