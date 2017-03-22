@@ -49,7 +49,7 @@ func indexRebuild(c grit.Config, idx *index.Index, ctx *cli.Context) error {
 	dirs := []string{c.Index.Root}
 
 	if gosrc, err := pathutil.GoSrc(); err == nil {
-		if _, ok := pathutil.RelChild(c.Index.Root, gosrc); ok {
+		if _, ok := pathutil.RelChild(c.Index.Root, gosrc); !ok {
 			dirs = append(dirs, gosrc)
 		}
 	}
