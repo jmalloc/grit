@@ -14,7 +14,7 @@
 - **[NEW]** Added `--target` flag to `clone`, which specifies target directory for the clone
 - **[NEW]** Added `source probe` command, which lists the names of sources that have a given repo
 - **[NEW]** Added `source ls` command, which lists the configured sources and their URL templates
-- **[NEW]** Added `etc/grit.bash` file provides simple shell integration for directory changes and auto-completion
+- **[NEW]** Added `etc/grit.bash` file, which provides simple shell integration for directory changes and auto-completion
 - **[IMPROVED]** `clone` no longer fails if the repository has already been cloned
 
 ## 0.1.0 (2017-03-20)
