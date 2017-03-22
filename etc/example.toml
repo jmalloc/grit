@@ -47,17 +47,19 @@ my-company = "git@github.example.com:{{ .Slug }}.git"
 #
 [index]
 
-# "root" is the base directory that is indexed when performing a complete
-# rebuild of the index. The $GOPATH/src directory is also indexed.
+# "paths" is an array of directories that are scanned (recursively) when
+# performing a complete rebuild of the index. THe $GOPATH/src directory is also
+# indexed, if it exists.
 #
-# The default value is the same as the "clone.root" configuration directive,
-# which itself defaults to "~/grit".
+# The default value is an array containing the value of the "clone.root"
+# configuration directive, which itself defaults to "~/grit".
 #
 # Cloning a repository using Grit *always* adds that repository to the index,
-# even if it's not inside the index root. However, any repositories outside the
-# index root will be removed from the index if the index is rebuilt.
-root = "~"
+# even if it'not inside any of the configured index paths. However, any
+# repositories outside the index paths will be removed from the index if the
+# index is rebuilt.
+paths = ["~"]
 
-# "store" is the location to store the index database.
+# "store" is the location of the index database.
 # The default value is "~/.grit/index.db".
 store = "/tmp/grit-test/cache"

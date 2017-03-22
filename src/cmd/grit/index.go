@@ -5,7 +5,6 @@ import (
 
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/index"
-	"github.com/jmalloc/grit/src/pathutil"
 	"github.com/urfave/cli"
 )
 
@@ -46,13 +45,5 @@ func indexShow(c grit.Config, idx *index.Index, ctx *cli.Context) error {
 }
 
 func indexRebuild(c grit.Config, idx *index.Index, ctx *cli.Context) error {
-	dirs := []string{c.Index.Root}
-
-	if gosrc, err := pathutil.GoSrc(); err == nil {
-		if _, ok := pathutil.RelChild(c.Index.Root, gosrc); ok {
-			dirs = append(dirs, gosrc)
-		}
-	}
-
-	return idx.Rebuild(dirs, index.Known(c))
+	return idx.Rebuild(c.Index.Paths, index.Known(c))
 }

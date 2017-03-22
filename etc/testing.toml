@@ -5,5 +5,5 @@ root = "/tmp/grit-test/clone"
 my-company = "git@github.example.com:{{ .Slug }}.git"
 
 [index]
-root = "~"
+paths = ["~"]
 store = "/tmp/grit-test/cache"
