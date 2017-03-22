@@ -39,15 +39,17 @@ order = ['my-company', 'github']
 # The key is an arbitrary label for the source, referenced by the "clone.order"
 # configuration directive, but otherwise unused by Grit.
 #
-# The value is a Git URL, with an asterisk (*) in place of the repository "slug".
-# When cloning, the asterisk is substituted with the "<slug>" command-line
-# argument.
+# The value is a template for Git URL. The string {{ .Slug }} is substituted
+# with the "<slug>" command-line argument.
+#
+# See https://golang.org/pkg/text/template/ for documentation about the
+# templating system.
 #
 # The sources list always includes an implicit 'github' entry, which uses
-# the URL "git@github.com:*.git". This can be explicitly overriden if you wanted
-# to use the HTTPS URLs instead, for example.
+# the URL "git@github.com:{{ .Slug }}.git". This can be explicitly overriden if
+# you wanted to use the HTTPS URLs instead, for example.
 [clone.sources]
-my-company = "git@github.example.com:*.git"
+my-company = "git@github.example.com:{{ .Slug }}.git"
 
 #
 # The index section controls how Grit indexes your Git clones.

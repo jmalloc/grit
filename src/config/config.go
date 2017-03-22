@@ -6,18 +6,17 @@ import (
 	"path"
 	"strings"
 
-	"gopkg.in/src-d/go-git.v4/plumbing/transport"
-
 	"github.com/BurntSushi/toml"
+	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/pathutil"
 )
 
 // Config holds Grit configuration.
 type Config struct {
 	Clone struct {
-		Root    string            `toml:"root"`
-		Order   []string          `toml:"order"`
-		Sources map[string]string `toml:"sources"`
+		Root    string                           `toml:"root"`
+		Order   []string                         `toml:"order"`
+		Sources map[string]grit.EndpointTemplate `toml:"sources"`
 	} `toml:"clone"`
 	Index struct {
 		Root  string `toml:"root"`
@@ -70,8 +69,8 @@ func (c *Config) normalizeClone(base string) error {
 
 	// check the source URLs are valid
 	var names []string
-	for n, u := range c.Clone.Sources {
-		if _, err := transport.NewEndpoint(u); err != nil {
+	for n, t := range c.Clone.Sources {
+		if err := t.Validate(); err != nil {
 			return err
 		}
 
@@ -93,7 +92,7 @@ func (c *Config) normalizeClone(base string) error {
 			if n != "github" {
 				return fmt.Errorf("grit config: undeclared source '%s' in clone.order", n)
 			}
-			c.Clone.Sources["github"] = "git@github.com:*.git"
+			c.Clone.Sources["github"] = "git@github.com:{{ .Slug }}.git"
 		}
 	}
 

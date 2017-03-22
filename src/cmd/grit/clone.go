@@ -4,29 +4,29 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sync"
 
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 
 	"github.com/jmalloc/grit/src/config"
+	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/index"
-	"github.com/jmalloc/grit/src/repo"
 	"github.com/urfave/cli"
 )
 
 func clone(c config.Config, idx *index.Index, ctx *cli.Context) error {
-	url, err := getCloneURL(c, ctx)
+	ep, err := getCloneEndpoint(c, ctx)
 	if err != nil {
 		return err
 	}
 
-	dir, err := getCloneDir(c, ctx, url)
+	dir, err := getCloneDir(c, ctx, ep)
 	if err != nil {
 		return err
 	}
 
-	_, err = git.PlainClone(dir, false /* isBare */, &git.CloneOptions{URL: url})
+	opts := &git.CloneOptions{URL: ep.Actual}
+	_, err = git.PlainClone(dir, false /* isBare */, opts)
 
 	if err == nil || err == git.ErrRepositoryAlreadyExists {
 		fmt.Fprintln(ctx.App.Writer, dir)
@@ -37,78 +37,69 @@ func clone(c config.Config, idx *index.Index, ctx *cli.Context) error {
 	return err
 }
 
-func getCloneURL(c config.Config, ctx *cli.Context) (string, error) {
+func getCloneEndpoint(c config.Config, ctx *cli.Context) (grit.Endpoint, error) {
 	slugOrURL := ctx.Args().First()
 	if slugOrURL == "" {
-		return "", notEnoughArguments
+		return grit.Endpoint{}, notEnoughArguments
 	}
 
 	source := ctx.String("source")
 
-	if _, err := transport.NewEndpoint(slugOrURL); err == nil {
+	normalized, err := transport.NewEndpoint(slugOrURL)
+	if err == nil {
 		if source != "" {
-			return "", usageError("can not combine --source with a URL")
+			return grit.Endpoint{}, usageError("can not combine --source with a URL")
 		}
 
-		return slugOrURL, nil
+		return grit.Endpoint{
+			Actual:     slugOrURL,
+			Normalized: normalized,
+		}, nil
 	}
 
 	if source != "" {
-		if u, ok := c.Clone.Sources[source]; ok {
-			return repo.ResolveURL(u, slugOrURL), nil
+		if t, ok := c.Clone.Sources[source]; ok {
+			return t.Resolve(slugOrURL)
 		}
-
-		return "", unknownSource(source)
+		return grit.Endpoint{}, unknownSource(source)
 	}
 
-	if url, ok := probeForURL(c, ctx, slugOrURL); ok {
-		return url, nil
+	if ep, ok := probeForURL(c, ctx, slugOrURL); ok {
+		return ep, nil
 	}
 
-	return "", silentFailure
+	return grit.Endpoint{}, silentFailure
 }
 
-func probeForURL(c config.Config, ctx *cli.Context, slug string) (string, bool) {
-	var wg sync.WaitGroup
-	var m sync.Mutex
-	sources := map[string]string{}
+func probeForURL(c config.Config, ctx *cli.Context, slug string) (grit.Endpoint, bool) {
+	var sources []string
+	var endpoints []grit.Endpoint
 
-	for n, u := range c.Clone.Sources {
-		wg.Add(1)
-		go func(n, u string) {
-			defer wg.Done()
-			url := repo.ResolveURL(u, slug)
-			ok, err := repo.Exists(url)
+	probeSources(c, slug, func(n string, ep grit.Endpoint) {
+		sources = append(sources, n)
+		endpoints = append(endpoints, ep)
+	})
 
-			m.Lock()
-			defer m.Unlock()
-
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-			} else if ok {
-				sources[n] = url
-			}
-		}(n, u)
+	if i, ok := choose(ctx.App.Writer, sources); ok {
+		return endpoints[i], true
 	}
 
-	wg.Wait()
-
-	return chooseByKey(ctx.App.Writer, sources)
+	return grit.Endpoint{}, false
 }
 
-func getCloneDir(c config.Config, ctx *cli.Context, url string) (string, error) {
+func getCloneDir(c config.Config, ctx *cli.Context, ep grit.Endpoint) (string, error) {
 	target := ctx.String("target")
 
 	if ctx.Bool("golang") {
 		if target == "" {
-			return repo.GetGoCloneDir(url)
+			return grit.EndpointToGoDir(ep)
 		}
 
 		return "", usageError("can not combine --target with --golang")
 	}
 
 	if target == "" {
-		return repo.GetCloneDir(c, url)
+		return grit.EndpointToDir(c.Clone.Root, ep)
 	}
 
 	return filepath.Abs(target)

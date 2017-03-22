@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/jmalloc/grit/src/config"
-	"github.com/jmalloc/grit/src/repo"
+	"github.com/jmalloc/grit/src/grit"
 	"github.com/urfave/cli"
 )
 
@@ -16,28 +16,9 @@ func sourceProbe(c config.Config, ctx *cli.Context) error {
 		return notEnoughArguments
 	}
 
-	var wg sync.WaitGroup
-	var m sync.Mutex
-
-	for n, u := range c.Clone.Sources {
-		wg.Add(1)
-		go func(n, u string) {
-			defer wg.Done()
-			url := repo.ResolveURL(u, slug)
-			ok, err := repo.Exists(url)
-
-			m.Lock()
-			defer m.Unlock()
-
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-			} else if ok {
-				fmt.Fprintln(ctx.App.Writer, n)
-			}
-		}(n, u)
-	}
-
-	wg.Wait()
+	probeSources(c, slug, func(n string, ep grit.Endpoint) {
+		fmt.Fprintln(ctx.App.Writer, n)
+	})
 
 	return nil
 }
@@ -47,4 +28,40 @@ func sourceList(c config.Config, ctx *cli.Context) error {
 		fmt.Fprintln(ctx.App.Writer, n, c.Clone.Sources[n])
 	}
 	return nil
+}
+
+func probeSources(
+	c config.Config,
+	slug string,
+	fn func(string, grit.Endpoint),
+) {
+	var wg sync.WaitGroup
+	var m sync.Mutex
+
+	for n, t := range c.Clone.Sources {
+		wg.Add(1)
+		go func(n string, t grit.EndpointTemplate) {
+			defer wg.Done()
+
+			ep, err := t.Resolve(slug)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				return
+			}
+
+			exists, err := grit.EndpointExists(ep)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				return
+			}
+
+			if exists {
+				m.Lock()
+				defer m.Unlock()
+				fn(n, ep)
+			}
+		}(n, t)
+	}
+
+	wg.Wait()
 }

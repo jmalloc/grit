@@ -47,14 +47,3 @@ func choose(w io.Writer, opt []string) (int, bool) {
 		}
 	}
 }
-
-// chooseByKey asks the user to select an entry from opts interactively.
-func chooseByKey(w io.Writer, opt map[string]string) (string, bool) {
-	var o []string
-	for k := range opt {
-		o = append(o, k)
-	}
-
-	i, ok := choose(w, o)
-	return opt[o[i]], ok
-}
