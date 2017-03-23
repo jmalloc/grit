@@ -5,11 +5,22 @@ import (
 	"os"
 	"path"
 
+	"github.com/Masterminds/semver"
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/index"
 	"github.com/jmalloc/grit/src/pathutil"
 	"github.com/urfave/cli"
 )
+
+var (
+	currentVersion *semver.Version
+	isPreRelease   bool
+)
+
+func init() {
+	currentVersion = semver.MustParse("0.3.0")
+	isPreRelease = currentVersion.Major() == 0 || currentVersion.Prerelease() != ""
+}
 
 func main() {
 	app := cli.NewApp()
@@ -17,7 +28,6 @@ func main() {
 
 	app.Name = "grit"
 	app.Usage = "Index your Git clones."
-	app.Version = "0.3.0"
 	app.EnableBashCompletion = true
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -26,6 +36,24 @@ func main() {
 			EnvVar: "GRIT_CONFIG",
 			Value:  path.Join(homeDir, ".grit", "config.toml"),
 		},
+	}
+
+	app.Version = currentVersion.String()
+	var updatePreReleaseFlag cli.Flag
+
+	if isPreRelease {
+		app.Version += " (pre-release)"
+		// hide the pre-release flag when the current version is a pre-release,
+		// but retain it so passing it is not an error.
+		updatePreReleaseFlag = &cli.BoolTFlag{
+			Name:   "pre-release",
+			Hidden: true,
+		}
+	} else {
+		updatePreReleaseFlag = &cli.BoolFlag{
+			Name:  "pre-release",
+			Usage: "Include pre-releases when searching for latest version.",
+		}
 	}
 
 	app.Commands = []cli.Command{
@@ -115,13 +143,10 @@ func main() {
 					Value: 60,
 				},
 				&cli.BoolFlag{
-					Name:  "pre-release",
-					Usage: "Include pre-releases when searching for latest version.",
-				},
-				&cli.BoolFlag{
 					Name:  "force",
 					Usage: "Replace the current binary even if it's newer than the latest published release.",
 				},
+				updatePreReleaseFlag,
 			},
 		},
 		{
