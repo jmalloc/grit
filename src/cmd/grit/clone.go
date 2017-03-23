@@ -74,7 +74,7 @@ func setupTracking(r *git.Repository, dir string) error {
 func getCloneEndpoint(c grit.Config, ctx *cli.Context) (grit.Endpoint, error) {
 	slugOrURL := ctx.Args().First()
 	if slugOrURL == "" {
-		return grit.Endpoint{}, notEnoughArguments
+		return grit.Endpoint{}, errNotEnoughArguments
 	}
 
 	source := ctx.String("source")
@@ -102,7 +102,7 @@ func getCloneEndpoint(c grit.Config, ctx *cli.Context) (grit.Endpoint, error) {
 		return ep, nil
 	}
 
-	return grit.Endpoint{}, silentFailure
+	return grit.Endpoint{}, errSilentFailure
 }
 
 func probeForURL(c grit.Config, ctx *cli.Context, slug string) (grit.Endpoint, bool) {

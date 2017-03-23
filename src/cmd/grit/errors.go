@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	notEnoughArguments = usageError("not enough arguments")
-	silentFailure      = cli.NewExitError("", 1)
+	errNotEnoughArguments = usageError("not enough arguments")
+	errSilentFailure      = cli.NewExitError("", 1)
 )
 
 type usageError string

@@ -11,7 +11,7 @@ import (
 func indexFind(c grit.Config, idx *index.Index, ctx *cli.Context) error {
 	slug := ctx.Args().First()
 	if slug == "" {
-		return notEnoughArguments
+		return errNotEnoughArguments
 	}
 
 	dirs, err := idx.Find(slug)

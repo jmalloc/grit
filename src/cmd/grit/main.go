@@ -17,7 +17,7 @@ func main() {
 
 	app.Name = "grit"
 	app.Usage = "Index your Git clones."
-	app.Version = "0.2.2"
+	app.Version = "0.3.0"
 	app.EnableBashCompletion = true
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -75,12 +75,6 @@ func main() {
 			},
 		},
 		{
-			Name:     "config",
-			Usage:    "Print the entire Grit configuration.",
-			Category: "deprecated",
-			Action:   withConfig(configShow),
-		},
-		{
 			Name:  "index",
 			Usage: "Manage the Grit repository index.",
 			Subcommands: []cli.Command{
@@ -108,6 +102,33 @@ func main() {
 					Action: withConfigAndIndex(indexShow),
 				},
 			},
+		},
+		{
+			Name:    "self-update",
+			Aliases: []string{"selfupdate"},
+			Usage:   "Update to the latest version of Grit.",
+			Action:  selfUpdate,
+			Flags: []cli.Flag{
+				&cli.IntFlag{
+					Name:  "timeout, t",
+					Usage: "The download timeout, in seconds.",
+					Value: 60,
+				},
+				&cli.BoolFlag{
+					Name:  "pre-release",
+					Usage: "Include pre-releases when searching for latest version.",
+				},
+				&cli.BoolFlag{
+					Name:  "force",
+					Usage: "Replace the current binary even if it's newer than the latest published release.",
+				},
+			},
+		},
+		{
+			Name:     "config",
+			Usage:    "Print the entire Grit configuration.",
+			Category: "deprecated",
+			Action:   withConfig(configShow),
 		},
 	}
 
@@ -154,4 +175,8 @@ func autocompleteSlug(c *cli.Context) {
 	if err := withConfigAndIndex(indexKeys)(c); err != nil {
 		panic(err)
 	}
+}
+
+func print(c *cli.Context, s string, v ...interface{}) {
+	fmt.Fprintf(c.App.Writer, s, v...)
 }

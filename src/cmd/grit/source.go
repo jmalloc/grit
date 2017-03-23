@@ -12,7 +12,7 @@ import (
 func sourceProbe(c grit.Config, ctx *cli.Context) error {
 	slug := ctx.Args().First()
 	if slug == "" {
-		return notEnoughArguments
+		return errNotEnoughArguments
 	}
 
 	probeSources(c, slug, func(n string, ep grit.Endpoint) {
