@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/jmalloc/grit/src/grit"
-	"github.com/jmalloc/grit/src/index"
-	"github.com/jmalloc/grit/src/pathutil"
+	"github.com/jmalloc/grit/src/grit/index"
+	"github.com/jmalloc/grit/src/grit/pathutil"
 	"github.com/urfave/cli"
 )
 

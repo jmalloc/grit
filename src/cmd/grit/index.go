@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/jmalloc/grit/src/grit"
-	"github.com/jmalloc/grit/src/index"
+	"github.com/jmalloc/grit/src/grit/index"
 	"github.com/urfave/cli"
 )
 

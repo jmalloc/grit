@@ -6,7 +6,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/jmalloc/grit/src/pathutil"
+	"github.com/jmalloc/grit/src/grit/pathutil"
 
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/client"
