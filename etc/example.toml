@@ -48,14 +48,14 @@ my-company = "git@github.example.com:{{ .Slug }}.git"
 [index]
 
 # "paths" is an array of directories that are scanned (recursively) when
-# performing a complete rebuild of the index. THe $GOPATH/src directory is also
+# performing a complete rebuild of the index. The $GOPATH/src directory is also
 # indexed, if it exists.
 #
 # The default value is an array containing the value of the "clone.root"
 # configuration directive, which itself defaults to "~/grit".
 #
 # Cloning a repository using Grit *always* adds that repository to the index,
-# even if it'not inside any of the configured index paths. However, any
+# even if it's not inside any of the configured index paths. However, any
 # repositories outside the index paths will be removed from the index if the
 # index is rebuilt.
 paths = ["~"]
