@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 
 	git "gopkg.in/src-d/go-git.v4"
@@ -25,14 +27,47 @@ func clone(c grit.Config, idx *index.Index, ctx *cli.Context) error {
 	}
 
 	opts := &git.CloneOptions{URL: ep.Actual}
-	_, err = git.PlainClone(dir, false /* isBare */, opts)
-
-	if err == nil || err == git.ErrRepositoryAlreadyExists {
-		fmt.Fprintln(ctx.App.Writer, dir)
-		return idx.Add(dir, index.All())
+	r, err := git.PlainClone(dir, false /* isBare */, opts)
+	if err != nil && err != git.ErrRepositoryAlreadyExists {
+		_ = os.RemoveAll(dir)
+		return err
 	}
 
-	_ = os.RemoveAll(dir)
+	fmt.Fprintln(ctx.App.Writer, dir)
+
+	if r != nil {
+		err := setupTracking(r, dir)
+		if err != nil {
+			return err
+		}
+	}
+
+	return idx.Add(dir, index.All())
+}
+
+func setupTracking(r *git.Repository, dir string) error {
+	head, err := r.Head()
+	if err != nil {
+		return err
+	}
+
+	if !head.IsBranch() {
+		return nil
+	}
+
+	buf := &bytes.Buffer{}
+	fmt.Fprintf(buf, "\n[branch \"%s\"]\n", head.Name().Short())
+	fmt.Fprintf(buf, "\tremote = origin\n")
+	fmt.Fprintf(buf, "\tmerge = %s\n", head.Name())
+
+	p := path.Join(dir, ".git", "config")
+	f, err := os.OpenFile(p, os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	_, err = buf.WriteTo(f)
 	return err
 }
 
