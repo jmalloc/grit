@@ -1,10 +1,9 @@
-// +build !windows
+// +build windows
 
 package update
 
 import (
-	"archive/tar"
-	"compress/gzip"
+	"archive/zip"
 	"errors"
 	"io"
 	"os"
@@ -12,38 +11,24 @@ import (
 )
 
 const (
-	archiveName       = "grit-" + runtime.GOOS + "-" + runtime.GOARCH + ".tar.gz"
-	archiveBinaryName = "grit"
+	archiveName       = "grit-windows-" + runtime.GOARCH + ".zip"
+	archiveBinaryName = "grit.exe"
 )
 
 // Unpack an archive and return the location of the inner binary.
 func Unpack(src, dst string) error {
-	f, err := os.Open(src)
+	r, err := zip.OpenReader(src)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer r.Close()
 
-	z, err := gzip.NewReader(f)
-	if err != nil {
-		return err
-	}
-	defer z.Close()
-
-	r := tar.NewReader(z)
-	if err != nil {
-		return err
-	}
-
-	for {
-		header, err := r.Next()
-		if err != nil {
-			return err
-		} else if header.Name != archiveBinaryName {
+	for _, f := range r.File {
+		if f.Name != archiveBinaryName {
 			continue
 		}
 
-		info := header.FileInfo()
+		info := f.FileInfo()
 
 		if info.IsDir() {
 			return errors.New("unexpected directory in archive")
@@ -54,6 +39,12 @@ func Unpack(src, dst string) error {
 			return err
 		}
 		defer w.Close()
+
+		r, err := f.Open()
+		if err != nil {
+			return err
+		}
+		defer r.Close()
 
 		_, err = io.Copy(w, r)
 		return err

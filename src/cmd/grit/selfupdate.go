@@ -22,7 +22,7 @@ func selfUpdate(c *cli.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	print(c, "searching for latest release\n")
+	print(c, "searching for the latest release\n")
 
 	gh := github.NewClient(nil)
 	preRelease := c.Bool("pre-release")
@@ -42,7 +42,7 @@ func selfUpdate(c *cli.Context) error {
 
 	if !c.Bool("force") && !latest.GreaterThan(current) {
 		return fmt.Errorf(
-			"current version (v%s) is newer than latest release (v%s), not upgrading without --force",
+			"current version (%s) is newer than latest release (%s), not upgrading without --force",
 			current,
 			latest,
 		)
@@ -53,7 +53,7 @@ func selfUpdate(c *cli.Context) error {
 		return err
 	}
 
-	print(c, "downloading v%s", latest)
+	print(c, "downloading version %s", latest)
 
 	archive, err := update.Download(
 		ctx,
@@ -65,7 +65,7 @@ func selfUpdate(c *cli.Context) error {
 
 			print(
 				c,
-				"\rdownloading v%s - %s / %s (%d%%)",
+				"\rdownloading version %s - %s / %s (%d%%)",
 				latest,
 				humanize.Bytes(recv),
 				humanize.Bytes(total),
@@ -77,8 +77,6 @@ func selfUpdate(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(archive)
 
 	latestBin := actualBin + "." + latest.String()
 	backupBin := actualBin + "." + current.String() + ".backup"

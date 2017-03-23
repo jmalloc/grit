@@ -2,7 +2,9 @@ package update
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"path"
 	"runtime"
@@ -12,9 +14,39 @@ import (
 	"github.com/google/go-github/github"
 )
 
-// ErrNoArchive is an error indicating that a release exist but there's no
-// archive available for the current platform.
-var ErrNoArchive = fmt.Errorf("no release archive found for %s/%s", runtime.GOOS, runtime.GOARCH)
+var (
+	// ErrReleaseNotFound that no releases could be found.
+	ErrReleaseNotFound = errors.New("no releases")
+
+	// ErrNoArchive is an error indicating that a release exist but there's no
+	// archive available for the current platform.
+	ErrNoArchive = fmt.Errorf("no release archive found for %s/%s", runtime.GOOS, runtime.GOARCH)
+)
+
+const (
+	updateRepoOwner = "jmalloc"
+	updateRepoName  = "grit"
+)
+
+// FindLatest finds the latest Grit release.
+func FindLatest(ctx context.Context, gh *github.Client, preRelease bool) (*github.RepositoryRelease, error) {
+	if !preRelease {
+		rel, _, err := gh.Repositories.GetLatestRelease(ctx, updateRepoOwner, updateRepoName)
+		if e, ok := err.(*github.ErrorResponse); ok && e.Response.StatusCode == http.StatusNotFound {
+			err = ErrReleaseNotFound
+		}
+		return rel, err
+	}
+
+	opts := &github.ListOptions{PerPage: 1}
+	rels, _, err := gh.Repositories.ListReleases(ctx, updateRepoOwner, updateRepoName, opts)
+	if err != nil {
+		return nil, err
+	} else if len(rels) == 0 {
+		return nil, ErrReleaseNotFound
+	}
+	return rels[0], nil
+}
 
 // Download a release archive for the current platform.
 func Download(
@@ -50,7 +82,7 @@ func Download(
 	}
 
 	// create a ticker for invoking the progress function ...
-	ticker := time.NewTicker(250 * time.Millisecond)
+	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
 
 	seen := uint64(0)
