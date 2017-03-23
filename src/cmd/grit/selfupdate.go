@@ -35,16 +35,16 @@ func selfUpdate(c *cli.Context) error {
 		return err
 	}
 
-	version, err := semver.NewVersion(rel.GetTagName())
+	latest, err := semver.NewVersion(rel.GetTagName())
 	if err != nil {
 		return err
 	}
 
-	if !c.Bool("force") && !version.GreaterThan(currentVersion) {
+	if !c.Bool("force") && !latest.GreaterThan(VERSION) {
 		return fmt.Errorf(
 			"current version (%s) is newer than latest release (%s), not upgrading without --force",
-			currentVersion,
-			version,
+			VERSION,
+			latest,
 		)
 	}
 
@@ -53,7 +53,7 @@ func selfUpdate(c *cli.Context) error {
 		return err
 	}
 
-	prefix := fmt.Sprintf("downloading version %s", version)
+	prefix := fmt.Sprintf("downloading version %s", latest)
 	message := fmt.Sprintf("%s (preparing)", prefix)
 	messageLen := len(message)
 	fmt.Fprint(c.App.Writer, message)
@@ -88,8 +88,8 @@ func selfUpdate(c *cli.Context) error {
 		return err
 	}
 
-	latestBin := actualBin + "." + version.String()
-	backupBin := actualBin + "." + currentVersion.String() + ".backup"
+	latestBin := actualBin + "." + latest.String()
+	backupBin := actualBin + "." + VERSION.String() + ".backup"
 
 	err = update.Unpack(archive, latestBin)
 	if err != nil {
@@ -106,6 +106,6 @@ func selfUpdate(c *cli.Context) error {
 		return os.Rename(backupBin, actualBin)
 	}
 
-	write(c, "updated from v%s to v%s", currentVersion, version)
+	write(c, "updated from v%s to v%s", VERSION, latest)
 	return os.Remove(backupBin)
 }

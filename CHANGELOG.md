@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 (2017-03-24)
+
+- **[BC]** Removed `index.root` configuration directive
+- **[NEW]** Allow multiple index paths via `index.paths` configuration directive
+- **[NEW]** Added `self-update` command
+- **[FIX]** Conditionally declare `grit` function in `grit.bash`
+- **[FIX]** New clones now setup remote tracking of the default branch
+
 ## 0.2.2 (2017-03-23)
 
 - **[FIX]** Fix panic when config file does not exist

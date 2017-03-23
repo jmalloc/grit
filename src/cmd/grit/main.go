@@ -12,15 +12,8 @@ import (
 	"github.com/urfave/cli"
 )
 
-var (
-	currentVersion *semver.Version
-	isPreRelease   bool
-)
-
-func init() {
-	currentVersion = semver.MustParse("0.3.0")
-	isPreRelease = currentVersion.Major() == 0 || currentVersion.Prerelease() != ""
-}
+// VERSION is the current Grit version.
+var VERSION = semver.MustParse("0.3.0")
 
 func main() {
 	app := cli.NewApp()
@@ -38,10 +31,10 @@ func main() {
 		},
 	}
 
-	app.Version = currentVersion.String()
+	app.Version = VERSION.String()
 	var updatePreReleaseFlag cli.Flag
 
-	if isPreRelease {
+	if VERSION.Major() == 0 || VERSION.Prerelease() != "" {
 		app.Version += " (pre-release)"
 		// hide the pre-release flag when the current version is a pre-release,
 		// but retain it so passing it is not an error.
