@@ -40,12 +40,19 @@ func selfUpdate(c *cli.Context) error {
 		return err
 	}
 
-	if !c.Bool("force") && !latest.GreaterThan(VERSION) {
-		return fmt.Errorf(
-			"current version (%s) is newer than latest release (%s), not upgrading without --force",
-			VERSION,
-			latest,
-		)
+	cmp := latest.Compare(VERSION)
+
+	if !c.Bool("force") {
+		if cmp == 0 {
+			write(c, "current version (%s) is up to date", VERSION)
+			return nil
+		} else if cmp < 0 {
+			return fmt.Errorf(
+				"latest published release (%s) is older than the current version (%s)",
+				latest,
+				VERSION,
+			)
+		}
 	}
 
 	actualBin, err := filepath.Abs(os.Args[0])
@@ -54,7 +61,7 @@ func selfUpdate(c *cli.Context) error {
 	}
 
 	prefix := fmt.Sprintf("downloading version %s", latest)
-	message := fmt.Sprintf("%s (preparing)", prefix)
+	message := prefix
 	messageLen := len(message)
 	fmt.Fprint(c.App.Writer, message)
 
@@ -106,6 +113,15 @@ func selfUpdate(c *cli.Context) error {
 		return os.Rename(backupBin, actualBin)
 	}
 
-	write(c, "updated from v%s to v%s", VERSION, latest)
-	return os.Remove(backupBin)
+	if cmp > 0 {
+		write(c, "upgraded from version %s to %s", VERSION, latest)
+	} else if cmp < 0 {
+		write(c, "downgraded from version %s to %s", VERSION, latest)
+	} else if VERSION.String() == latest.String() {
+		write(c, "reinstalled version %s", VERSION)
+	} else {
+		write(c, "reinstalled version %s as %s", VERSION, latest)
+	}
+
+	return nil
 }
