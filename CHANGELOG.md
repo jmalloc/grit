@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 (2017-03-23)
+
+- **[FIX]** Fix panic when config file does not exist
+
 ## 0.2.1 (2017-03-23)
 
 - **[FIX]** Fix issue where $GOPATH would not be index when outside the index root

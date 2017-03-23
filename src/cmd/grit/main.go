@@ -17,7 +17,7 @@ func main() {
 
 	app.Name = "grit"
 	app.Usage = "Index your Git clones."
-	app.Version = "0.2.1"
+	app.Version = "0.2.2"
 	app.EnableBashCompletion = true
 	app.Flags = []cli.Flag{
 		cli.StringFlag{

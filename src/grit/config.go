@@ -67,6 +67,9 @@ func (c *Config) normalizeClone(base string) error {
 
 	// add github to the source list if it's not already present ...
 	if _, ok := c.Clone.Sources["github"]; !ok {
+		if c.Clone.Sources == nil {
+			c.Clone.Sources = map[string]EndpointTemplate{}
+		}
 		c.Clone.Sources["github"] = "git@github.com:{{ .Slug }}.git"
 	}
 
