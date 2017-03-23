@@ -49,4 +49,6 @@ func Unpack(src, dst string) error {
 		_, err = io.Copy(w, r)
 		return err
 	}
+
+	return errors.New("could not find binary in archive")
 }

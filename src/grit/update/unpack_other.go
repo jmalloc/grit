@@ -37,8 +37,9 @@ func Unpack(src, dst string) error {
 
 	for {
 		header, err := r.Next()
-
-		if err != nil {
+		if err == io.EOF {
+			return errors.New("could not find binary in archive")
+		} else if err != nil {
 			return err
 		} else if header.Name != archiveBinaryName {
 			continue
