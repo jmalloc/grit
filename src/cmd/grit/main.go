@@ -126,10 +126,9 @@ func main() {
 			},
 		},
 		{
-			Name:    "self-update",
-			Aliases: []string{"selfupdate"},
-			Usage:   "Update to the latest version of Grit.",
-			Action:  selfUpdate,
+			Name:   "self-update",
+			Usage:  "Update to the latest version of Grit.",
+			Action: selfUpdate,
 			Flags: []cli.Flag{
 				&cli.IntFlag{
 					Name:  "timeout, t",
