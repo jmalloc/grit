@@ -9,6 +9,7 @@ import (
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/grit/index"
 	"github.com/jmalloc/grit/src/grit/pathutil"
+	"github.com/jmalloc/grit/src/grit/update"
 	"github.com/urfave/cli"
 )
 
@@ -34,7 +35,7 @@ func main() {
 	app.Version = VERSION.String()
 	var updatePreReleaseFlag cli.Flag
 
-	if VERSION.Major() == 0 || VERSION.Prerelease() != "" {
+	if update.IsPreRelease(VERSION) {
 		app.Version += " (pre-release)"
 		// hide the pre-release flag when the current version is a pre-release,
 		// but retain it so passing it is not an error.

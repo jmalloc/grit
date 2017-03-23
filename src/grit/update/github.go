@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"os"
 	"path"
 	"runtime"
 	"time"
 
+	"github.com/Masterminds/semver"
 	"github.com/cavaliercoder/grab"
 	"github.com/google/go-github/github"
 )
@@ -30,22 +30,31 @@ const (
 
 // FindLatest finds the latest Grit release.
 func FindLatest(ctx context.Context, gh *github.Client, preRelease bool) (*github.RepositoryRelease, error) {
-	if !preRelease {
-		rel, _, err := gh.Repositories.GetLatestRelease(ctx, updateRepoOwner, updateRepoName)
-		if e, ok := err.(*github.ErrorResponse); ok && e.Response.StatusCode == http.StatusNotFound {
-			err = ErrReleaseNotFound
-		}
-		return rel, err
-	}
-
-	opts := &github.ListOptions{PerPage: 1}
-	rels, _, err := gh.Repositories.ListReleases(ctx, updateRepoOwner, updateRepoName, opts)
+	rels, _, err := gh.Repositories.ListReleases(ctx, updateRepoOwner, updateRepoName, nil)
 	if err != nil {
 		return nil, err
-	} else if len(rels) == 0 {
-		return nil, ErrReleaseNotFound
 	}
-	return rels[0], nil
+
+	for _, rel := range rels {
+		if !preRelease {
+			if rel.GetPrerelease() {
+				continue
+			}
+
+			version, err := semver.NewVersion(rel.GetTagName())
+			if err != nil {
+				return nil, err
+			}
+
+			if IsPreRelease(version) {
+				continue
+			}
+		}
+
+		return rel, nil
+	}
+
+	return nil, ErrReleaseNotFound
 }
 
 // Download a release archive for the current platform.
