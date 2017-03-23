@@ -15,13 +15,13 @@ import (
 	"github.com/urfave/cli"
 )
 
-func clone(c grit.Config, idx *index.Index, ctx *cli.Context) error {
-	ep, err := getCloneEndpoint(c, ctx)
+func clone(cfg grit.Config, idx *index.Index, c *cli.Context) error {
+	ep, err := getCloneEndpoint(cfg, c)
 	if err != nil {
 		return err
 	}
 
-	dir, err := getCloneDir(c, ctx, ep)
+	dir, err := getCloneDir(cfg, c, ep)
 	if err != nil {
 		return err
 	}
@@ -33,7 +33,7 @@ func clone(c grit.Config, idx *index.Index, ctx *cli.Context) error {
 		return err
 	}
 
-	fmt.Fprintln(ctx.App.Writer, dir)
+	write(c, dir)
 
 	if r != nil {
 		err := setupTracking(r, dir)
@@ -71,13 +71,13 @@ func setupTracking(r *git.Repository, dir string) error {
 	return err
 }
 
-func getCloneEndpoint(c grit.Config, ctx *cli.Context) (grit.Endpoint, error) {
-	slugOrURL := ctx.Args().First()
+func getCloneEndpoint(cfg grit.Config, c *cli.Context) (grit.Endpoint, error) {
+	slugOrURL := c.Args().First()
 	if slugOrURL == "" {
 		return grit.Endpoint{}, errNotEnoughArguments
 	}
 
-	source := ctx.String("source")
+	source := c.String("source")
 
 	normalized, err := transport.NewEndpoint(slugOrURL)
 	if err == nil {
@@ -92,39 +92,39 @@ func getCloneEndpoint(c grit.Config, ctx *cli.Context) (grit.Endpoint, error) {
 	}
 
 	if source != "" {
-		if t, ok := c.Clone.Sources[source]; ok {
+		if t, ok := cfg.Clone.Sources[source]; ok {
 			return t.Resolve(slugOrURL)
 		}
 		return grit.Endpoint{}, unknownSource(source)
 	}
 
-	if ep, ok := probeForURL(c, ctx, slugOrURL); ok {
+	if ep, ok := probeForURL(cfg, c, slugOrURL); ok {
 		return ep, nil
 	}
 
 	return grit.Endpoint{}, errSilentFailure
 }
 
-func probeForURL(c grit.Config, ctx *cli.Context, slug string) (grit.Endpoint, bool) {
+func probeForURL(cfg grit.Config, c *cli.Context, slug string) (grit.Endpoint, bool) {
 	var sources []string
 	var endpoints []grit.Endpoint
 
-	probeSources(c, slug, func(n string, ep grit.Endpoint) {
+	probeSources(cfg, slug, func(n string, ep grit.Endpoint) {
 		sources = append(sources, n)
 		endpoints = append(endpoints, ep)
 	})
 
-	if i, ok := choose(ctx.App.Writer, sources); ok {
+	if i, ok := choose(c.App.Writer, sources); ok {
 		return endpoints[i], true
 	}
 
 	return grit.Endpoint{}, false
 }
 
-func getCloneDir(c grit.Config, ctx *cli.Context, ep grit.Endpoint) (string, error) {
-	target := ctx.String("target")
+func getCloneDir(cfg grit.Config, c *cli.Context, ep grit.Endpoint) (string, error) {
+	target := c.String("target")
 
-	if ctx.Bool("golang") {
+	if c.Bool("golang") {
 		if target == "" {
 			return grit.EndpointToGoDir(ep)
 		}
@@ -133,7 +133,7 @@ func getCloneDir(c grit.Config, ctx *cli.Context, ep grit.Endpoint) (string, err
 	}
 
 	if target == "" {
-		return grit.EndpointToDir(c.Clone.Root, ep)
+		return grit.EndpointToDir(cfg.Clone.Root, ep)
 	}
 
 	return filepath.Abs(target)

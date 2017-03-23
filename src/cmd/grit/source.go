@@ -9,35 +9,35 @@ import (
 	"github.com/urfave/cli"
 )
 
-func sourceProbe(c grit.Config, ctx *cli.Context) error {
-	slug := ctx.Args().First()
+func sourceProbe(cfg grit.Config, c *cli.Context) error {
+	slug := c.Args().First()
 	if slug == "" {
 		return errNotEnoughArguments
 	}
 
-	probeSources(c, slug, func(n string, ep grit.Endpoint) {
-		fmt.Fprintln(ctx.App.Writer, n)
+	probeSources(cfg, slug, func(n string, ep grit.Endpoint) {
+		write(c, n)
 	})
 
 	return nil
 }
 
-func sourceList(c grit.Config, ctx *cli.Context) error {
-	for n, t := range c.Clone.Sources {
-		fmt.Fprintln(ctx.App.Writer, n, t)
+func sourceList(cfg grit.Config, c *cli.Context) error {
+	for n, t := range cfg.Clone.Sources {
+		write(c, n, t)
 	}
 	return nil
 }
 
 func probeSources(
-	c grit.Config,
+	cfg grit.Config,
 	slug string,
 	fn func(string, grit.Endpoint),
 ) {
 	var wg sync.WaitGroup
 	var m sync.Mutex
 
-	for n, t := range c.Clone.Sources {
+	for n, t := range cfg.Clone.Sources {
 		wg.Add(1)
 		go func(n string, t grit.EndpointTemplate) {
 			defer wg.Done()

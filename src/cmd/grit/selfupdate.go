@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/Masterminds/semver"
@@ -22,7 +23,7 @@ func selfUpdate(c *cli.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	print(c, "searching for the latest release\n")
+	write(c, "searching for the latest release")
 
 	gh := github.NewClient(nil)
 	preRelease := c.Bool("pre-release")
@@ -53,7 +54,9 @@ func selfUpdate(c *cli.Context) error {
 		return err
 	}
 
-	print(c, "downloading version %s", latest)
+	message := fmt.Sprintf("downloading version %s (preparing)", latest)
+	messageLen := len(message)
+	fmt.Fprint(c.App.Writer, message)
 
 	archive, err := update.Download(
 		ctx,
@@ -62,18 +65,25 @@ func selfUpdate(c *cli.Context) error {
 		func(recv, total uint64) {
 			r := float64(recv)
 			t := float64(total)
-
-			print(
-				c,
-				"\rdownloading version %s - %s / %s (%d%%)",
+			message = fmt.Sprintf(
+				"downloading version %s (%d%%, %s / %s)",
 				latest,
+				int(r/t*100.0),
 				humanize.Bytes(recv),
 				humanize.Bytes(total),
-				int(r/t*100.0),
 			)
+
+			fmt.Fprint(c.App.Writer, "\r"+message)
+
+			l := len(message)
+			if messageLen > l {
+				clr := strings.Repeat(" ", messageLen-l)
+				fmt.Fprint(c.App.Writer, clr)
+			}
+			messageLen = l
 		},
 	)
-	print(c, "\n")
+	write(c, "")
 	if err != nil {
 		return err
 	}
@@ -96,6 +106,6 @@ func selfUpdate(c *cli.Context) error {
 		return os.Rename(backupBin, actualBin)
 	}
 
-	print(c, "updated from v%s to v%s\n", current, latest)
+	write(c, "updated from v%s to v%s", current, latest)
 	return os.Remove(backupBin)
 }

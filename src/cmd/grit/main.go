@@ -137,22 +137,18 @@ func main() {
 	}
 }
 
-func loadConfig(ctx *cli.Context) (grit.Config, error) {
-	return grit.LoadConfig(ctx.GlobalString("config"))
-}
-
 func withConfig(fn func(grit.Config, *cli.Context) error) cli.ActionFunc {
-	return func(ctx *cli.Context) error {
-		c, err := loadConfig(ctx)
+	return func(c *cli.Context) error {
+		cfg, err := grit.LoadConfig(c.GlobalString("config"))
 		if err != nil {
 			return err
 		}
 
-		err = fn(c, ctx)
+		err = fn(cfg, c)
 
 		if _, ok := err.(usageError); ok {
-			_ = cli.ShowCommandHelp(ctx, ctx.Command.Name)
-			fmt.Fprintln(ctx.App.Writer, "")
+			_ = cli.ShowCommandHelp(c, c.Command.Name)
+			write(c, "")
 		}
 
 		return err
@@ -160,14 +156,14 @@ func withConfig(fn func(grit.Config, *cli.Context) error) cli.ActionFunc {
 }
 
 func withConfigAndIndex(fn func(grit.Config, *index.Index, *cli.Context) error) cli.ActionFunc {
-	return withConfig(func(c grit.Config, ctx *cli.Context) error {
-		idx, err := index.Open(c.Index.Store)
+	return withConfig(func(cfg grit.Config, c *cli.Context) error {
+		idx, err := index.Open(cfg.Index.Store)
 		if err != nil {
 			return err
 		}
 		defer idx.Close()
 
-		return fn(c, idx, ctx)
+		return fn(cfg, idx, c)
 	})
 }
 
@@ -177,6 +173,6 @@ func autocompleteSlug(c *cli.Context) {
 	}
 }
 
-func print(c *cli.Context, s string, v ...interface{}) {
-	fmt.Fprintf(c.App.Writer, s, v...)
+func write(c *cli.Context, s string, v ...interface{}) {
+	fmt.Fprintf(c.App.Writer, s+"\n", v...)
 }

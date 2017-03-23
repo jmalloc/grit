@@ -1,31 +1,20 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/BurntSushi/toml"
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/pathutil"
 	"github.com/urfave/cli"
 )
 
-func configShow(c grit.Config, ctx *cli.Context) error {
-	enc := toml.NewEncoder(ctx.App.Writer)
-
-	if err := enc.Encode(c); err != nil {
-		return err
-	}
-
-	file, err := pathutil.Resolve(ctx.GlobalString("config"))
+func configShow(cfg grit.Config, c *cli.Context) error {
+	file, err := pathutil.Resolve(c.GlobalString("config"))
 	if err != nil {
 		return err
 	}
 
-	_, err = fmt.Fprintf(
-		ctx.App.Writer,
-		"\nLoaded from %s\n",
-		file,
-	)
+	write(c, "Config file: %s", file)
+	write(c, "")
 
-	return err
+	return toml.NewEncoder(c.App.Writer).Encode(cfg)
 }
