@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 (2017-03-24)
+
+- **[IMPROVED]** Better messages about the versions installed by `self-update`
+
 ## 0.3.0 (2017-03-24)
 
 - **[BC]** Removed `index.root` configuration directive
