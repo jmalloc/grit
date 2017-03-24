@@ -1,5 +1,22 @@
 # Changelog
 
+## Next Release
+
+This release introduces a change to the format of the Grit index. The data in
+the existing index file will be ignored. The default location for the index
+store has also been changed from `~/.grit/index.db` to `~/grit/index.v2`. If you
+are not using the default location for the index store, simply delete the old
+data by running `grit index clear` and rebuild the index with `grit index scan`.
+
+- **[BC]** Removed `index rebuild` command.
+- **[BC]** Renamed `index keys` back to `index ls`
+- **[BC]** Removed `config` and `index show` commands
+- **[NEW]** Added `index scan` command, which scans the index paths and adds the located repositories to the index
+- **[NEW]** Added `index prune` command, which removes non-existent clone directories from the index
+- **[NEW]** Added `index clear` command, which erases the entire index
+- **[IMPROVED]** Added the ability to index from arbitrary directories with `index scan`
+- **[IMPROVED]** Git submodules are excluded from the index
+
 ## 0.3.2 (2017-03-24)
 
 - **[BC]** Removed `selfupdate` alias for `self-update` command
