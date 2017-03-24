@@ -70,7 +70,7 @@ func (c *Config) normalizeClone(base string) error {
 		if c.Clone.Sources == nil {
 			c.Clone.Sources = map[string]EndpointTemplate{}
 		}
-		c.Clone.Sources["github"] = "git@github.com:{{ .Slug }}.git"
+		c.Clone.Sources["github"] = "git@github.com:{{slug}}.git"
 	}
 
 	// check the source URLs are valid ...

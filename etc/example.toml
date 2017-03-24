@@ -30,17 +30,18 @@ root = "~/my-repos"
 # The key is an arbitrary label for the source. It can be used when cloning to
 # force Grit to clone from a specific source.
 #
-# The value is a template for Git URL. The string {{ .Slug }} is substituted
-# with the "<slug>" command-line argument.
+# The value is a template for Git URL. The string {{slug}} is substituted with
+# the "<slug>" command-line argument.
 #
-# See https://golang.org/pkg/text/template/ for documentation about the
-# templating system.
+# Environment variables can also be injected into the URL template using
+# the syntax {{env `VARNAME`}}. See https://golang.org/pkg/text/template/
+# for documentation about the templating system.
 #
 # The sources list always includes an implicit 'github' entry, which uses
-# the URL "git@github.com:{{ .Slug }}.git". This can be explicitly overriden if
+# the URL "git@github.com:{{slug}}.git". This can be explicitly overriden if
 # you wanted to use the HTTPS URLs instead, for example.
 [clone.sources]
-my-company = "git@github.example.com:{{ .Slug }}.git"
+my-company = "git@github.example.com:{{slug}}.git"
 
 #
 # The index section controls how Grit indexes your Git clones.

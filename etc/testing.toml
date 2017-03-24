@@ -2,7 +2,7 @@
 root = "/tmp/grit-test/clone"
 
 [clone.sources]
-my-company = "git@github.example.com:{{ .Slug }}.git"
+my-company = "git@github.example.com:{{slug}}.git"
 
 [index]
 paths = ["~"]

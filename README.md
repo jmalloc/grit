@@ -49,7 +49,7 @@ at its most basic is a list of named clone sources, such as:
 
 ```toml
 [clone.sources]
-my-company = "git@git.example.com:{{ .Slug }}.git"
+my-company = "git@git.example.com:{{slug}}.git"
 ```
 
 If you only use GitHub you don't need to define any additional sources, and so
@@ -71,7 +71,7 @@ The clone command accepts a single argument, the repository "slug". The slug
 is the part of the repository URL that a standard-issue human would use to
 identify a repository. For GitHub, this is the familiar `username/repository`
 syntax. For sources configured in `config.toml`, it's the part represented
-by the string `{{ .Slug }}` in the URL.
+by the string `{{slug}}` in the URL.
 
 Try it out:
 

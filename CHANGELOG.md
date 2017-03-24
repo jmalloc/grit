@@ -8,6 +8,7 @@ store has also been changed from `~/.grit/index.db` to `~/grit/index.v2`. If you
 are not using the default location for the index store, simply delete the old
 data by running `grit index clear` and rebuild the index with `grit index scan`.
 
+- **[BC]** URL template syntax has changed from `{{.Slug}}` to `{{slug}}`
 - **[BC]** Removed `index rebuild` command.
 - **[BC]** Renamed `index keys` back to `index ls`
 - **[BC]** Removed `config` and `index show` commands
@@ -16,6 +17,7 @@ data by running `grit index clear` and rebuild the index with `grit index scan`.
 - **[NEW]** Added `index scan` command, which scans the index paths and adds the located repositories to the index
 - **[NEW]** Added `index prune` command, which removes non-existent clone directories from the index
 - **[NEW]** Added `index clear` command, which erases the entire index
+- **[NEW]** Added environment variable substitution in URL templates
 - **[IMPROVED]** Add slug auto-completion to `clone` command
 - **[IMPROVED]** Added the ability to index from arbitrary directories with `index scan`
 - **[IMPROVED]** Git submodules are excluded from the index
