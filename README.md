@@ -8,24 +8,24 @@ name or a portion thereof.
 
 ## Why?
 
-I spend most of my day working on projects that live in Git repositories. Many
-of them are hosted on GitHub.com, but many more are in my employer's private
-GitHub Enterprise and BitBucket installations.
+I spend most of my day working with Git. Many of the repositories are hosted on
+GitHub.com, but many more are in my employer's private GitHub Enterprise and
+BitBucket installations.
 
 Keeping track of hundreds of clones can be a little tedious, so some time back
 I adopted a basic directory naming convention and wrote some shell scripts to
 handle cloning in a consistent way.
 
 This worked well for a while, until the list of places I needed to clone from
-increased, and I started working more heavily in [Go](http://golang.org),
+increased further, and I started working more heavily in [Go](http://golang.org),
 which places it's [own requirements](https://github.com/golang/go/wiki/GOPATH)
 on the location of your Git clones.
 
 Grit is the logical evolution of those original scripts into a standalone
-project that handles multiple Git sources and Go's peculiarities. It's hacked
-together, there are no tests, and there are other more general solutions for
-navigating your filesystem; but this works for me. I've published it to GitHub
-in case it works for you too.
+project that clones from multiple Git sources and handles Go's peculiarities.
+It's hacked together, there are no tests, and there are other more general
+solutions for navigating your filesystem; but this works for me. I've published
+it to GitHub in case it works for you too.
 
 ## How?
 
@@ -45,7 +45,7 @@ Grit is useful because it knows where you want to clone repositories from. But
 it's not a magician, it only knows after you tell it, which is less impressive.
 
 By default, Grit looks for a configuration file at `~/.grit/config.toml`, which
-at its most basic is a list of places to clone from:
+at its most basic is a list of named clone sources, such as:
 
 ```toml
 [clone.sources]
@@ -85,34 +85,36 @@ something like:
 I'm assuming a lot about your system configuration and your given name, just
 roll with it.
 
-Grit does a lot of this, printing paths. It does this on `STDOUT` whenever
-it thinks you might want to know where something is.
+By the way, you can pass a complete Git URL instead of just the slug and Grit
+will clone it into the correct location, even if the URL does not match any of
+your configured sources.
 
 ### Querying the index
 
 Whenever you clone a repository with Grit, the repository is added to the index.
-The index is a database mapping repository slugs and names to directories. The
-index is also that second part of Grit that I mentioned back when we were
-talking about cloning. I haven't forgotten.
+The index is a database mapping repository slugs to directories. The index is
+also that second part of Grit that I mentioned back when we were talking about
+cloning. I haven't forgotten.
 
 The index can be queried to find a repository by slug:
 
     grit index find jmalloc/grit
 
-Or by name alone:
+Or by the part after the slash, let's call this the repository name:
 
     grit index find grit
 
-Just like the `clone` command, `index find` prints the paths on `STDOUT`. If
-there is more than one matching path, it just prints them all. It's relentless.
+Just like the `clone` command, `index find` prints the clone path. If there is
+more than one matching path, it just prints them all. It's relentless.
 
 If nothing is found, Grit exits with a non-zero exit code. The universal signal
 that you should re-think your actions.
 
 ### What about Go?
 
-We've already cloned `jmalloc/grit` into `~/grit`, but Grit is written in Go,
-so it needs to live somewhere special, and that somewhere is `$GOPATH`.
+We've already cloned `jmalloc/grit` into `~/grit/github.com/jmalloc/grit`, but
+Grit is written in Go, so it needs to live somewhere special, and that somewhere
+is `$GOPATH`.
 
 Sure, you could just `mv` the directory; but `mv` isn't written in Go, and
 therefore it isn't web-scale!
@@ -121,9 +123,9 @@ Try this instead:
 
     grit clone --golang jmalloc/grit
 
-*Again*, Grit ruthlessly prints the clone path to `STDOUT`. This time however,
-you'll notice that the clone is in a subfolder of `$GOPATH` instead of `~/grit`.
-What a relief!
+*Again*, Grit ruthlessly prints the clone path to the terminal. This time
+however, you'll notice that the clone is in a subfolder of `$GOPATH` instead of
+`~/grit`. What a relief!
 
 If you're an avid Gopher, you might be wondering "Why not use `go get`?". Well,
 that doesn't update the Grit index, of course!
@@ -136,7 +138,7 @@ also brings us to our next example ...
 
 Try this:
 
-    grit cd jmalloc/grit
+    grit cd grit
 
 If you've followed all the steps until now, and I haven't messed up the examples
 too badly, you should be presented with a list of matching directories:
@@ -145,44 +147,41 @@ too badly, you should be presented with a list of matching directories:
       2) [grit] github.com/jmalloc/grit
     >
 
-This time, Grit hasn't printed them to `STDOUT`. Oh, no! This time they've been
-sent to `STDERR` and Grit patiently awaits your decision. Enter your selection
+This time, Grit isn't content to blindly print paths to the terminal. Oh no!
+This time Grit wants to know what's on your mind. It prints a list of all
+matching directories and eagerly awaits your decision. Enter your selection
 (numerically) and press enter.
 
-Grit diligently prints the absolute path to your selection to `STDOUT`.
+Grit diligently prints the absolute path to your selection, just like before.
 Interminable!
 
-## Ok, so Grit prints paths to STDOUT, I get it.
+## Ok, so Grit prints paths to the terminal, I get it.
 
-Grit is designed to be consumed by shell scripts, take this Bash function,
-for example:
+> Anybody can print to a terminal, even a programmer! Hell, Grit's `cd` command
+> doesn't even change the current directory!
 
-```bash
-grit-cd() {
-    local dir
-    dir=$(grit cd $1) && cd $dir
-}
-```
+That's what you sound like right now. Shh bby is ok.
 
-If you load this function in your `.bash_profile` (or just paste it into your
-terminal) and run:
+What we need is some glue that makes Grit's `cd` command behave like the *real*
+`cd` command, and that glue is `grit.bash`.
 
-    grit-cd grit
+Source `grit.bash` from your `.bash_profile` file and many of the following
+things will happen:
 
-You will be prompted for a choice just as before, but after you make your
-selection you will be *whisked* away to the directory that you selected.
+1. You'll get auto-completion of all command names and indexed repository slugs
+1. `grit cd` will start working the way you expect
+1. `grit clone` will also change the current directory after cloning
 
-This is only possible by running the `cd` command in the interactive login
-shell, which is why Grit is all about paths on `STDOUT`. Grit is UNIXY!
+To achieve the latter two, Grit needs to execute shell commands in the context
+it's parent shell (the one you ran Grit in). It does this by writing the
+commands to a separate file which is then sourced by the parent shell. The
+details are in [grit.bash](etc/grit.bash).
 
 ## What next?
 
-You can expect auto-completion of command names, parameters and indexed
-repository slugs. These are all features present my the shell scripts I
-mentioned way back at the beginning of our time together.
+My colleagues are helping my iron our some of the kinks, so undoubtedly there
+are still some changes to come but Grit is feature complete, at least insofar
+as it already does everything that my original shell scripts could do.
 
-I'm in the process of porting the scripts in my [dotfiles repo](https://github.com/jmalloc/dotfiles)
-to use Grit instead of the cobbled together, in-memory cache they use currently.
-
-By the way, have you ever tried to write an in-memory cache in Bash? In a
-version of Bash available on OS X out of the box? You have? Oh.
+If you find Grit useful, or have a feature request or bug-report, please don't
+hesitate to create a new [issue](https://github.com/jmalloc/grit/issues).
