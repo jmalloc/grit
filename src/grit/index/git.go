@@ -4,13 +4,11 @@ import (
 	"path"
 	"strings"
 
-	"github.com/jmalloc/grit/src/grit"
-
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 )
 
-func slugsFromClone(cfg grit.Config, dir string) (set, error) {
+func slugsFromClone(dir string, filter EndpointFilter) (set, error) {
 	r, err := git.PlainOpen(dir)
 	if err != nil {
 		switch err {
@@ -28,30 +26,19 @@ func slugsFromClone(cfg grit.Config, dir string) (set, error) {
 
 	slugs := newSet()
 	for _, rem := range remotes {
-		slugs.Merge(slugsFromURL(cfg, rem.Config().URL))
-	}
+		ep, err := transport.NewEndpoint(rem.Config().URL)
+		if err != nil {
+			continue // skip misconfigured remotes
+		}
 
-	return slugs, nil
-}
-
-func slugsFromURL(cfg grit.Config, url string) set {
-	ep, err := transport.NewEndpoint(url)
-	if err == nil {
-		for _, t := range cfg.Clone.Sources {
-			if t.IsMatch(ep) {
-				p := strings.TrimSuffix(
-					ep.Path[1:],       // trim slash
-					path.Ext(ep.Path), // trim .git extension
-				)
-
-				return newSet(p, path.Base(p))
-			}
+		if filter == nil || filter(ep) {
+			p := strings.TrimSuffix(
+				ep.Path[1:],       // trim slash
+				path.Ext(ep.Path), // trim .git extension
+			)
+			slugs.Add(p, path.Base(p))
 		}
 	}
 
-	return nil
-}
-
-func isGitDir(dir string) bool {
-	return isDir(path.Join(dir, ".git"))
+	return slugs, nil
 }

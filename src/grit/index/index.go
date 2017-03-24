@@ -10,33 +10,35 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"gopkg.in/src-d/go-git.v4/plumbing/transport"
+
 	"github.com/boltdb/bolt"
-	"github.com/jmalloc/grit/src/grit"
 )
 
-// Indexer is a function that returns the set of slugs applicable to a directory.
-type Indexer func(dir string) (keys []string, err error)
+// EndpointFilter is a function that returns true if the given endpoint should
+// be included for indexing when scanning.
+type EndpointFilter func(ep transport.Endpoint) bool
 
 // Index is an index of repository locations.
 type Index struct {
-	cfg grit.Config
-	db  *bolt.DB
-	wg  sync.WaitGroup
-	err atomic.Value
+	db     *bolt.DB
+	filter EndpointFilter
+	wg     sync.WaitGroup
+	err    atomic.Value
 }
 
 // Open opens the index database at path f.
-func Open(cfg grit.Config) (*Index, error) {
-	if err := os.MkdirAll(path.Dir(cfg.Index.Store), 0755); err != nil {
+func Open(f string) (*Index, error) {
+	if err := os.MkdirAll(path.Dir(f), 0755); err != nil {
 		return nil, err
 	}
 
-	db, err := bolt.Open(cfg.Index.Store, 0644, nil)
+	db, err := bolt.Open(f, 0644, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Index{cfg: cfg, db: db}, nil
+	return &Index{db: db}, nil
 }
 
 // Close closes the index.
@@ -46,7 +48,7 @@ func (i *Index) Close() {
 
 // Add a clone path to the index.
 func (i *Index) Add(dir string) error {
-	slugs, err := slugsFromClone(i.cfg, dir)
+	slugs, err := slugsFromClone(dir, nil)
 	if err != nil {
 		return err
 	}
@@ -127,13 +129,16 @@ func (i *Index) Prune() error {
 }
 
 // Scan recursively indexes dirs.
-func (i *Index) Scan(dirs ...string) error {
+func (i *Index) Scan(filter EndpointFilter, dirs ...string) error {
+	i.filter = filter
+
 	for _, d := range dirs {
 		i.wg.Add(1)
 		go i.scan(d)
 	}
 
 	i.wg.Wait()
+	i.filter = nil
 	err, _ := i.err.Load().(error)
 	return err
 }
@@ -170,7 +175,7 @@ func (i *Index) walk(dir string, info os.FileInfo, err error) error {
 func (i *Index) batch(dir string) {
 	defer i.wg.Done()
 
-	slugs, err := slugsFromClone(i.cfg, dir)
+	slugs, err := slugsFromClone(dir, i.filter)
 
 	if err == nil && len(slugs) != 0 {
 		err = i.db.Batch(func(tx *bolt.Tx) error {
@@ -224,4 +229,8 @@ func writeBucket(w io.Writer, b *bolt.Bucket, name []byte, indent string) (int, 
 func isDir(p string) bool {
 	info, err := os.Stat(p)
 	return err == nil && info.IsDir()
+}
+
+func isGitDir(dir string) bool {
+	return isDir(path.Join(dir, ".git"))
 }

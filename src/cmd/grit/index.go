@@ -3,6 +3,8 @@ package main
 import (
 	"os"
 
+	"gopkg.in/src-d/go-git.v4/plumbing/transport"
+
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/grit/index"
 	"github.com/urfave/cli"
@@ -36,10 +38,23 @@ func indexFind(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 }
 
 func indexScan(cfg grit.Config, idx *index.Index, c *cli.Context) error {
-	return idx.Scan(append(
+	paths := append(
 		cfg.Index.Paths,
 		c.Args()...,
-	)...)
+	)
+
+	return idx.Scan(
+		func(ep transport.Endpoint) bool {
+			for _, t := range cfg.Clone.Sources {
+				if t.IsMatch(ep) {
+					return true
+				}
+			}
+
+			return false
+		},
+		paths...,
+	)
 }
 
 func indexPrune(cfg grit.Config, idx *index.Index, c *cli.Context) error {

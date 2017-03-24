@@ -40,7 +40,7 @@ func New(funcs ...Function) cli.BashCompleteFunc {
 			panic(err)
 		}
 
-		idx, err := index.Open(cfg)
+		idx, err := index.Open(cfg.Index.Store)
 		if err != nil {
 			panic(err)
 		}

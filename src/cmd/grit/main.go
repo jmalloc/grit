@@ -218,7 +218,7 @@ func withConfig(fn func(grit.Config, *cli.Context) error) cli.ActionFunc {
 
 func withConfigAndIndex(fn func(grit.Config, *index.Index, *cli.Context) error) cli.ActionFunc {
 	return withConfig(func(cfg grit.Config, c *cli.Context) error {
-		idx, err := index.Open(cfg)
+		idx, err := index.Open(cfg.Index.Store)
 		if err != nil {
 			return err
 		}
