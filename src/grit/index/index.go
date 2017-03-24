@@ -21,10 +21,14 @@ type EndpointFilter func(ep transport.Endpoint) bool
 
 // Index is an index of repository locations.
 type Index struct {
-	db     *bolt.DB
-	filter EndpointFilter
-	wg     sync.WaitGroup
-	err    atomic.Value
+	db *bolt.DB
+
+	sm  sync.Mutex // protects all state below
+	wm  sync.Mutex // protects w from concurrent writes
+	w   io.Writer
+	f   EndpointFilter
+	wg  sync.WaitGroup
+	err atomic.Value
 }
 
 // Open opens the index database at path f.
@@ -111,7 +115,7 @@ func (i *Index) List(p string) []string {
 }
 
 // Prune removes directories that no longer exist.
-func (i *Index) Prune() error {
+func (i *Index) Prune(w io.Writer) error {
 	return i.db.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket(dirBucket)
 		if bucket == nil {
@@ -123,14 +127,27 @@ func (i *Index) Prune() error {
 			if isDir(s) {
 				return nil
 			}
+
+			if w != nil {
+				fmt.Fprintln(w, s)
+			}
+
 			return remove(tx, s)
 		})
 	})
 }
 
 // Scan recursively indexes dirs.
-func (i *Index) Scan(filter EndpointFilter, dirs ...string) error {
-	i.filter = filter
+func (i *Index) Scan(
+	w io.Writer,
+	f EndpointFilter,
+	dirs ...string,
+) error {
+	i.sm.Lock()
+	defer i.sm.Unlock()
+
+	i.w = w
+	i.f = f
 
 	for _, d := range dirs {
 		i.wg.Add(1)
@@ -138,7 +155,6 @@ func (i *Index) Scan(filter EndpointFilter, dirs ...string) error {
 	}
 
 	i.wg.Wait()
-	i.filter = nil
 	err, _ := i.err.Load().(error)
 	return err
 }
@@ -175,9 +191,13 @@ func (i *Index) walk(dir string, info os.FileInfo, err error) error {
 func (i *Index) batch(dir string) {
 	defer i.wg.Done()
 
-	slugs, err := slugsFromClone(dir, i.filter)
+	slugs, err := slugsFromClone(dir, i.f)
 
 	if err == nil && len(slugs) != 0 {
+		i.wm.Lock()
+		fmt.Fprintln(i.w, dir)
+		i.wm.Unlock()
+
 		err = i.db.Batch(func(tx *bolt.Tx) error {
 			return update(tx, dir, slugs)
 		})
