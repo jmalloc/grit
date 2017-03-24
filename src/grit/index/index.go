@@ -7,36 +7,36 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 	"sync"
 	"sync/atomic"
 
 	"github.com/boltdb/bolt"
+	"github.com/jmalloc/grit/src/grit"
 )
 
-// Indexer is a function that returns the set of keys applicable to a directory.
+// Indexer is a function that returns the set of slugs applicable to a directory.
 type Indexer func(dir string) (keys []string, err error)
 
 // Index is an index of repository locations.
 type Index struct {
-	db *bolt.DB
-
+	cfg grit.Config
+	db  *bolt.DB
 	wg  sync.WaitGroup
 	err atomic.Value
 }
 
 // Open opens the index database at path f.
-func Open(f string) (*Index, error) {
-	if err := os.MkdirAll(path.Dir(f), 0755); err != nil {
+func Open(cfg grit.Config) (*Index, error) {
+	if err := os.MkdirAll(path.Dir(cfg.Index.Store), 0755); err != nil {
 		return nil, err
 	}
 
-	db, err := bolt.Open(f, 0644, nil)
+	db, err := bolt.Open(cfg.Index.Store, 0644, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Index{db: db}, nil
+	return &Index{cfg: cfg, db: db}, nil
 }
 
 // Close closes the index.
@@ -44,145 +44,143 @@ func (i *Index) Close() {
 	_ = i.db.Close()
 }
 
-// Find returns a list of paths matching the given key.
-func (i *Index) Find(key string) (dirs []string, err error) {
-	err = i.db.View(func(tx *bolt.Tx) error {
-		bucket := readActiveBucket(tx)
-		if bucket == nil {
-			return nil
-		}
-
-		sub := bucket.Bucket([]byte(key))
-		if sub == nil {
-			return nil
-		}
-
-		return sub.ForEach(func(dir []byte, _ []byte) error {
-			dirs = append(dirs, string(dir))
-			return nil
-		})
-	})
-
-	return
-}
-
-// List returns a slice of all keys that begin with prefix, which may be empty.
-func (i *Index) List(prefix string) (keys []string, err error) {
-	err = i.db.View(func(tx *bolt.Tx) error {
-		bucket := readActiveBucket(tx)
-		if bucket == nil {
-			return nil
-		}
-
-		return bucket.ForEach(func(key []byte, _ []byte) error {
-			str := string(key)
-			if strings.HasPrefix(str, prefix) {
-				keys = append(keys, str)
-			}
-			return nil
-		})
-	})
-
-	return
-}
-
-// Add indexes a single directory without recursing.
-func (i *Index) Add(dir string, fn Indexer) error {
-	keys, err := fn(dir)
+// Add a clone path to the index.
+func (i *Index) Add(dir string) error {
+	slugs, err := slugsFromClone(i.cfg, dir)
 	if err != nil {
 		return err
 	}
 
 	return i.db.Update(func(tx *bolt.Tx) error {
-		bucket, err := writeActiveBucket(tx)
-		if err != nil {
-			return err
-		}
-		return writeKeys(bucket, keys, dir)
+		return update(tx, dir, slugs)
 	})
 }
 
-// Rebuild indexes a set of directol ries recursively, replacing the existing index.
-func (i *Index) Rebuild(dirs []string, fn Indexer) error {
-	var nextBucket []byte
+// Remove removes a clone path from the index.
+func (i *Index) Remove(dir string) error {
+	return i.db.Update(func(tx *bolt.Tx) error {
+		return remove(tx, dir)
+	})
+}
 
-	// allocate a new bucket that we build the next index into ...
-	if err := i.db.Update(func(tx *bolt.Tx) error {
-		var err error
-		nextBucket, _, err = writeNextBucket(tx)
-		return err
-	}); err != nil {
-		return err
+// Find returns a list of paths matching the given slug.
+func (i *Index) Find(slug string) []string {
+	var rec slugRecord
+	err := i.db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(slugBucket)
+		if bucket != nil {
+			k := []byte(slug)
+			rec = unpackSlugRecord(bucket.Get(k))
+		}
+		return nil
+	})
+
+	if err != nil {
+		panic(err)
 	}
 
-	defer i.gc()
+	return rec.Dirs.Keys()
+}
 
-	// walk the directories ...
-	for _, dir := range dirs {
+// List returns the slugs that begin with p, which may be empty.
+func (i *Index) List(p string) []string {
+	var slugs []string
+
+	err := i.db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(slugBucket)
+		if bucket == nil {
+			return nil
+		}
+
+		pre := []byte(p)
+		return bucket.ForEach(func(slug []byte, _ []byte) error {
+			if bytes.HasPrefix(slug, pre) {
+				slugs = append(slugs, string(slug))
+			}
+			return nil
+		})
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	return slugs
+}
+
+// Prune removes directories that no longer exist.
+func (i *Index) Prune() error {
+	return i.db.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(dirBucket)
+		if bucket == nil {
+			return nil
+		}
+
+		return bucket.ForEach(func(dir []byte, buf []byte) error {
+			s := string(dir)
+			if isDir(s) {
+				return nil
+			}
+			return remove(tx, s)
+		})
+	})
+}
+
+// Scan recursively indexes dirs.
+func (i *Index) Scan(dirs ...string) error {
+	for _, d := range dirs {
 		i.wg.Add(1)
-		go i.walk(nextBucket, dir, fn)
+		go i.scan(d)
 	}
 
 	i.wg.Wait()
-	if err, _ := i.err.Load().(error); err != nil {
+	err, _ := i.err.Load().(error)
+	return err
+}
+
+func (i *Index) scan(dir string) {
+	defer i.wg.Done()
+
+	if err := filepath.Walk(dir, i.walk); err != nil {
+		i.err.Store(err)
+	}
+}
+
+func (i *Index) walk(dir string, info os.FileInfo, err error) error {
+	if err != nil {
 		return err
+	} else if !info.IsDir() {
+		return nil
 	}
 
-	// set the new bucket as the active one ...
-	return i.db.Update(func(tx *bolt.Tx) error {
-		return setActiveBucket(tx, nextBucket)
-	})
+	// don't index hidden directories ...
+	if path.Base(dir)[0] == '.' {
+		return filepath.SkipDir
+	}
+
+	if isGitDir(dir) {
+		i.wg.Add(1)
+		go i.batch(dir)
+		return filepath.SkipDir
+	}
+
+	return nil
 }
 
-func (i *Index) walk(bucket []byte, dir string, fn Indexer) {
+func (i *Index) batch(dir string) {
 	defer i.wg.Done()
 
-	_ = filepath.Walk(
-		dir,
-		func(p string, fi os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			} else if !fi.IsDir() {
-				return nil
-			} else if path.Base(p)[0] == '.' {
-				return filepath.SkipDir
-			}
+	slugs, err := slugsFromClone(i.cfg, dir)
 
-			i.wg.Add(1)
-			go i.index(bucket, p, fn)
-			return nil
-		},
-	)
-}
-
-func (i *Index) index(bucket []byte, dir string, fn Indexer) {
-	defer i.wg.Done()
-
-	keys, err := fn(dir)
-
-	if err == nil {
+	if err == nil && len(slugs) != 0 {
 		err = i.db.Batch(func(tx *bolt.Tx) error {
-			return writeKeys(tx.Bucket(bucket), keys, dir)
+			return update(tx, dir, slugs)
 		})
 	}
 
 	if err != nil {
 		i.err.Store(err)
 	}
-}
-
-func (i *Index) gc() {
-	_ = i.db.Update(func(tx *bolt.Tx) error {
-		active := getActiveBucket(tx)
-
-		return tx.ForEach(func(name []byte, _ *bolt.Bucket) error {
-			if bytes.Equal(name, active) || bytes.Equal(name, metaBucketName) {
-				return nil
-			}
-
-			return tx.DeleteBucket(name)
-		})
-	})
 }
 
 // WriteTo dumps a string representation of the database to w.
@@ -221,4 +219,9 @@ func writeBucket(w io.Writer, b *bolt.Bucket, name []byte, indent string) (int, 
 	}
 
 	return size, err
+}
+
+func isDir(p string) bool {
+	info, err := os.Stat(p)
+	return err == nil && info.IsDir()
 }

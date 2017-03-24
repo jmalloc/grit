@@ -29,13 +29,24 @@ type Endpoint struct {
 
 // Validate returns an error if the template is invalid.
 func (t EndpointTemplate) Validate() error {
-	_, err := t.VirtualEndpoint()
+	_, err := t.virtualEndpoint()
 	return err
 }
 
-// VirtualEndpoint returns a Git endpoint from the template as though we had
+// IsMatch returns true if may have been derived from the endpoint template.
+func (t EndpointTemplate) IsMatch(e transport.Endpoint) bool {
+	ep, err := t.virtualEndpoint()
+	if err != nil {
+		return false
+	}
+
+	// TODO: match slug heuristically
+	return e.Scheme == ep.Scheme && e.Host == ep.Host
+}
+
+// virtualEndpoint returns a Git endpoint from the template as though we had
 // a slug to resolve.
-func (t EndpointTemplate) VirtualEndpoint() (transport.Endpoint, error) {
+func (t EndpointTemplate) virtualEndpoint() (transport.Endpoint, error) {
 	ep, err := t.Resolve("__virtual__")
 	return ep.Normalized, err
 }

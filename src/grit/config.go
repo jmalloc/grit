@@ -110,7 +110,7 @@ func (c *Config) normalizeIndex(base string) error {
 		c.Index.Paths = append(c.Index.Paths, goSrc)
 	}
 
-	return resolveWithDefault(&c.Index.Store, base, "index.db")
+	return resolveWithDefault(&c.Index.Store, base, "index.v2")
 }
 
 func resolveWithDefault(p *string, base, def string) (err error) {

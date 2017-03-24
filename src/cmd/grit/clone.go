@@ -42,7 +42,7 @@ func clone(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		}
 	}
 
-	return idx.Add(dir, index.All())
+	return idx.Add(dir)
 }
 
 func setupTracking(r *git.Repository, dir string) error {

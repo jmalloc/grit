@@ -10,78 +10,48 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 )
 
-// All returns an indexer that indexes any repository.
-func All() Indexer {
-	return Matching(func(string) bool { return true })
-}
-
-// Known returns an indexer that only indexes repositories with URLs known
-// to the Grit configuration.
-func Known(c grit.Config) Indexer {
-	return Matching(func(url string) bool {
-		a, err := transport.NewEndpoint(url)
-		if err != nil {
-			return false
-		}
-
-		for _, t := range c.Clone.Sources {
-			b, _ := t.VirtualEndpoint()
-			if a.Scheme == b.Scheme && a.Host == b.Host {
-				return true
-			}
-		}
-
-		return false
-	})
-}
-
-// Matching returns an indexer that matches slugs in URLs that match the given
-// predicate function.
-func Matching(fn func(url string) bool) Indexer {
-	return func(dir string) ([]string, error) {
-		r, err := git.PlainOpen(dir)
-		if err != nil {
-			switch err {
-			case git.ErrWorktreeNotProvided, git.ErrRepositoryNotExists:
-				return nil, nil
-			default:
-				return nil, err
-			}
-		}
-
-		remotes, err := r.Remotes()
-		if err != nil {
+func slugsFromClone(cfg grit.Config, dir string) (set, error) {
+	r, err := git.PlainOpen(dir)
+	if err != nil {
+		switch err {
+		case git.ErrWorktreeNotProvided, git.ErrRepositoryNotExists:
+			return nil, nil
+		default:
 			return nil, err
 		}
-
-		var keys []string
-		for _, rem := range remotes {
-			url := rem.Config().URL
-			if fn(url) {
-				if k, err := keysFromURL(url); err == nil {
-					keys = append(keys, k...)
-				}
-			}
-		}
-
-		return keys, nil
 	}
-}
 
-// keysFromURL returns a set of keys that map to the repository at the given URL.
-func keysFromURL(url string) ([]string, error) {
-	endpoint, err := transport.NewEndpoint(url)
+	remotes, err := r.Remotes()
 	if err != nil {
 		return nil, err
 	}
 
-	p := strings.TrimPrefix(endpoint.Path, "/")
+	slugs := newSet()
+	for _, rem := range remotes {
+		slugs.Merge(slugsFromURL(cfg, rem.Config().URL))
+	}
 
-	ext := path.Ext(p)
-	p = strings.TrimSuffix(p, ext)
+	return slugs, nil
+}
 
-	return []string{
-		p,
-		path.Base(p),
-	}, nil
+func slugsFromURL(cfg grit.Config, url string) set {
+	ep, err := transport.NewEndpoint(url)
+	if err == nil {
+		for _, t := range cfg.Clone.Sources {
+			if t.IsMatch(ep) {
+				p := strings.TrimSuffix(
+					ep.Path[1:],       // trim slash
+					path.Ext(ep.Path), // trim .git extension
+				)
+
+				return newSet(p, path.Base(p))
+			}
+		}
+	}
+
+	return nil
+}
+
+func isGitDir(dir string) bool {
+	return isDir(path.Join(dir, ".git"))
 }

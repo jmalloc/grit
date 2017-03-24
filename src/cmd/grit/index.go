@@ -1,10 +1,20 @@
 package main
 
 import (
+	"os"
+
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/grit/index"
 	"github.com/urfave/cli"
 )
+
+func indexList(cfg grit.Config, idx *index.Index, c *cli.Context) error {
+	for _, s := range idx.List(c.Args().First()) {
+		write(c, s)
+	}
+
+	return nil
+}
 
 func indexFind(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	slug := c.Args().First()
@@ -12,9 +22,10 @@ func indexFind(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return errNotEnoughArguments
 	}
 
-	dirs, err := idx.Find(slug)
-	if err != nil {
-		return err
+	dirs := idx.Find(slug)
+
+	if len(dirs) == 0 {
+		return errSilentFailure
 	}
 
 	for _, dir := range dirs {
@@ -24,24 +35,22 @@ func indexFind(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	return nil
 }
 
-func indexKeys(cfg grit.Config, idx *index.Index, c *cli.Context) error {
-	keys, err := idx.List(c.Args().First())
-	if err != nil {
-		return err
-	}
-
-	for _, k := range keys {
-		write(c, k)
-	}
-
-	return nil
+func indexScan(cfg grit.Config, idx *index.Index, c *cli.Context) error {
+	return idx.Scan(append(
+		cfg.Index.Paths,
+		c.Args()...,
+	)...)
 }
 
-func indexShow(cfg grit.Config, idx *index.Index, c *cli.Context) error {
+func indexPrune(cfg grit.Config, idx *index.Index, c *cli.Context) error {
+	return idx.Prune()
+}
+
+func indexClear(cfg grit.Config, idx *index.Index, c *cli.Context) error {
+	return os.Remove(cfg.Index.Store)
+}
+
+func indexDump(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	_, err := idx.WriteTo(c.App.Writer)
 	return err
-}
-
-func indexRebuild(cfg grit.Config, idx *index.Index, c *cli.Context) error {
-	return idx.Rebuild(cfg.Index.Paths, index.Known(cfg))
 }

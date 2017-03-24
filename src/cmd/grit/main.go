@@ -101,27 +101,38 @@ func main() {
 			Usage: "Manage the Grit repository index.",
 			Subcommands: []cli.Command{
 				{
+					Name:      "ls",
+					Usage:     "List slugs that begin with a prefix.",
+					ArgsUsage: "[prefix]",
+					Action:    withConfigAndIndex(indexList),
+				},
+				{
 					Name:         "find",
-					Usage:        "List directories for a specific repository.",
+					Usage:        "List clone directories for a specific slug.",
 					ArgsUsage:    "<slug>",
 					Action:       withConfigAndIndex(indexFind),
 					BashComplete: autocompleteSlug,
 				},
 				{
-					Name:      "keys",
-					Usage:     "List keys in the index, optionally limited to those matching a prefix.",
-					ArgsUsage: "[prefix]",
-					Action:    withConfigAndIndex(indexKeys),
+					Name:      "scan",
+					Usage:     "Scan the index paths for clone directories.",
+					ArgsUsage: "[dir ...]",
+					Action:    withConfigAndIndex(indexScan),
 				},
 				{
-					Name:   "rebuild",
-					Usage:  "Rebuild the entire index.",
-					Action: withConfigAndIndex(indexRebuild),
+					Name:   "prune",
+					Usage:  "Remove directories that no longer exist.",
+					Action: withConfigAndIndex(indexPrune),
 				},
 				{
-					Name:   "show",
-					Usage:  "Display the complete repository index.",
-					Action: withConfigAndIndex(indexShow),
+					Name:   "clear",
+					Usage:  "Delete the entire index.",
+					Action: withConfigAndIndex(indexClear),
+				},
+				{
+					Name:   "dump",
+					Hidden: true,
+					Action: withConfigAndIndex(indexDump),
 				},
 			},
 		},
@@ -143,10 +154,10 @@ func main() {
 			},
 		},
 		{
-			Name:     "config",
-			Usage:    "Print the entire Grit configuration.",
-			Category: "deprecated",
-			Action:   withConfig(configShow),
+			Name:   "config",
+			Usage:  "Print the entire Grit configuration.",
+			Hidden: true,
+			Action: withConfig(configShow),
 		},
 	}
 
@@ -175,7 +186,7 @@ func withConfig(fn func(grit.Config, *cli.Context) error) cli.ActionFunc {
 
 func withConfigAndIndex(fn func(grit.Config, *index.Index, *cli.Context) error) cli.ActionFunc {
 	return withConfig(func(cfg grit.Config, c *cli.Context) error {
-		idx, err := index.Open(cfg.Index.Store)
+		idx, err := index.Open(cfg)
 		if err != nil {
 			return err
 		}
@@ -186,7 +197,7 @@ func withConfigAndIndex(fn func(grit.Config, *index.Index, *cli.Context) error) 
 }
 
 func autocompleteSlug(c *cli.Context) {
-	if err := withConfigAndIndex(indexKeys)(c); err != nil {
+	if err := withConfigAndIndex(indexList)(c); err != nil {
 		panic(err)
 	}
 }

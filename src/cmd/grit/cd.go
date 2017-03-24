@@ -16,11 +16,7 @@ func cd(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return errNotEnoughArguments
 	}
 
-	dirs, err := idx.Find(slug)
-	if err != nil {
-		return err
-	}
-
+	dirs := idx.Find(slug)
 	gosrc, _ := pathutil.GoSrc()
 	var opts []string
 
