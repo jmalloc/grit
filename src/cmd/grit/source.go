@@ -16,7 +16,7 @@ func sourceProbe(cfg grit.Config, c *cli.Context) error {
 	}
 
 	probeSources(cfg, slug, func(n string, ep grit.Endpoint) {
-		write(c, n)
+		write(c, "%s", n)
 	})
 
 	return nil
@@ -24,7 +24,7 @@ func sourceProbe(cfg grit.Config, c *cli.Context) error {
 
 func sourceList(cfg grit.Config, c *cli.Context) error {
 	for n, t := range cfg.Clone.Sources {
-		write(c, n, t)
+		write(c, "%s %s", n, t)
 	}
 	return nil
 }
