@@ -17,7 +17,7 @@ import (
 )
 
 // VERSION is the current Grit version.
-var VERSION = semver.MustParse("0.3.2")
+var VERSION = semver.MustParse("0.4.0")
 
 func main() {
 	app := cli.NewApp()

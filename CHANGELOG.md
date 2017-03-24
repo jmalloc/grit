@@ -1,9 +1,9 @@
 # Changelog
 
-## Next Release
+## 0.4.0 (2017-03-25)
 
-This release introduces a change to the format of the Grit index. The data in
-the existing index file will be ignored. The default location for the index
+This release introduces a change to the format of the Grit index. Existing data
+in the existing index file will be ignored. The default location for the index
 store has also been changed from `~/.grit/index.db` to `~/grit/index.v2`. If you
 are not using the default location for the index store, simply delete the old
 data by running `grit index clear` and rebuild the index with `grit index scan`.
