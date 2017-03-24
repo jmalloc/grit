@@ -123,5 +123,5 @@ func selfUpdate(c *cli.Context) error {
 		write(c, "reinstalled version %s as %s", VERSION, latest)
 	}
 
-	return nil
+	return os.Remove(backupBin)
 }
