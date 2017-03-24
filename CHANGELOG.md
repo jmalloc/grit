@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2 (2017-03-24)
+
+- **[BC]** Removed `selfupdate` alias for `self-update` command
+- **[FIX]** Backup files are now removed after successful updates
+
 ## 0.3.1 (2017-03-24)
 
 - **[IMPROVED]** Better messages about the versions installed by `self-update`
