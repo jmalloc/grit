@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/Masterminds/semver"
 	"github.com/jmalloc/grit/src/grit"
@@ -26,10 +28,37 @@ func main() {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "config, c",
-			Usage:  "The path to the Grit configuration file.",
+			Usage:  "Load configuration from `FILE`.",
 			EnvVar: "GRIT_CONFIG",
 			Value:  path.Join(homeDir, ".grit", "config.toml"),
 		},
+		cli.StringFlag{
+			Name:   "shell-commands",
+			Hidden: true,
+		},
+	}
+
+	app.Before = func(c *cli.Context) error {
+		file := c.String("shell-commands")
+		if file == "" {
+			return nil
+		}
+
+		f, err := os.Create(file)
+		if err != nil {
+			return err
+		}
+
+		app.Metadata["shell-commands"] = f
+		return nil
+	}
+
+	app.After = func(c *cli.Context) error {
+		if f, ok := c.App.Metadata["shell-commands"].(*os.File); ok {
+			return f.Close()
+		}
+
+		return nil
 	}
 
 	app.Version = VERSION.String()
@@ -58,11 +87,11 @@ func main() {
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "source, s",
-					Usage: "Clone from a specific named source.",
+					Usage: "Clone from `<name>` instead of probing all sources.",
 				},
 				cli.StringFlag{
 					Name:  "target, t",
-					Usage: "Clone into a specific directory.",
+					Usage: "Clone into `<dir>` instead of the default location.",
 				},
 				cli.BoolFlag{
 					Name:  "golang, g",
@@ -103,7 +132,7 @@ func main() {
 				{
 					Name:      "ls",
 					Usage:     "List slugs that begin with a prefix.",
-					ArgsUsage: "[prefix]",
+					ArgsUsage: "[<prefix>]",
 					Action:    withConfigAndIndex(indexList),
 				},
 				{
@@ -116,7 +145,7 @@ func main() {
 				{
 					Name:      "scan",
 					Usage:     "Scan the index paths for clone directories.",
-					ArgsUsage: "[dir ...]",
+					ArgsUsage: "[<dirs> ...]",
 					Action:    withConfigAndIndex(indexScan),
 				},
 				{
@@ -143,7 +172,7 @@ func main() {
 			Flags: []cli.Flag{
 				&cli.IntFlag{
 					Name:  "timeout, t",
-					Usage: "The download timeout, in seconds.",
+					Usage: "Timeout after `<time>` seconds.",
 					Value: 60,
 				},
 				&cli.BoolFlag{
@@ -176,8 +205,9 @@ func withConfig(fn func(grit.Config, *cli.Context) error) cli.ActionFunc {
 		err = fn(cfg, c)
 
 		if _, ok := err.(usageError); ok {
+			write(c, "Incorrect Usage: %s\n", err)
 			_ = cli.ShowCommandHelp(c, c.Command.Name)
-			write(c, "")
+			return errSilentFailure
 		}
 
 		return err
@@ -204,4 +234,21 @@ func autocompleteSlug(c *cli.Context) {
 
 func write(c *cli.Context, s string, v ...interface{}) {
 	fmt.Fprintf(c.App.Writer, s+"\n", v...)
+}
+
+func exec(c *cli.Context, v ...string) {
+	f, ok := c.App.Metadata["shell-commands"].(*os.File)
+	if !ok {
+		return
+	}
+
+	for _, a := range v {
+		a = "'" + strings.Replace(a, "'", `'\''`, -1) + "' "
+		if _, err := io.WriteString(f, a); err != nil {
+			panic(err)
+		}
+	}
+	if _, err := io.WriteString(f, "\n"); err != nil {
+		panic(err)
+	}
 }

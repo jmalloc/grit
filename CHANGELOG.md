@@ -16,6 +16,8 @@ data by running `grit index clear` and rebuild the index with `grit index scan`.
 - **[NEW]** Added `index clear` command, which erases the entire index
 - **[IMPROVED]** Added the ability to index from arbitrary directories with `index scan`
 - **[IMPROVED]** Git submodules are excluded from the index
+- **[IMPROVED]** Grit now outputs shell commands to a separate file, see `grit.bash` for details
+- **[FIX]** Usage information is no longer suppressed when running from `grit.bash`
 
 ## 0.3.2 (2017-03-24)
 

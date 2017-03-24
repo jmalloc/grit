@@ -3,14 +3,15 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/urfave/cli"
 )
 
 // choose asks the user to select an entry from opts interactively.
-func choose(w io.Writer, opt []string) (int, bool) {
+func choose(c *cli.Context, opt []string) (int, bool) {
 	size := len(opt)
 
 	if size == 0 {
@@ -20,16 +21,16 @@ func choose(w io.Writer, opt []string) (int, bool) {
 	}
 
 	width := len(strconv.Itoa(size))
-	f := fmt.Sprintf("  %%%dd) %%s\n", width)
+	f := fmt.Sprintf("  %%%dd) %%s", width)
 
 	for i, o := range opt {
-		fmt.Fprintf(w, f, i+1, o)
+		write(c, f, i+1, o)
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
-		fmt.Fprint(w, "> ")
+		fmt.Fprint(c.App.Writer, "> ")
 
 		scanner.Scan()
 		input := scanner.Text()

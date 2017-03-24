@@ -1,28 +1,19 @@
 # Store the location of the real grit binary.
-GRIT_BIN=$(which grit)
+GRIT_BIN="${GRIT_BIN:-$(which grit)}"
 
 if [ -f "$GRIT_BIN" ]; then
 
-    # Make a bash function named grit so that we can execute our directory changes
-    # in the current shell.
+    # Redefine grit as a shell function (as opposited to a regular binary), so
+    # we can affect the current shell, such as changing the working directory.
     grit() {
-        case $1 in
-            # Intercept commands that print directories to STDOUT.
-            clone|cd)
-                local dir=$($GRIT_BIN "$@")
-                if [ -d "$dir" ]; then
-                    cd "$dir"
-                    return 0
-                fi
+        # Create a tempory for file shell commands. Grit writes any commands
+        # (such as directory changes) to this file.
+        local file="$(mktemp)"
+        trap "rm -f '$file'" EXIT
 
-                return 1
-            ;;
-            # Pass through other commands unchanged.
-            *)
-                $GRIT_BIN "$@"
-                return $?
-            ;;
-        esac
+        # Run grit and execute the shell commands.
+        $GRIT_BIN --shell-commands="$file" "$@" && source "$file"
+        return $?
     }
 
     # Setup autocompletion using the real binary.

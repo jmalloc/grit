@@ -34,6 +34,7 @@ func clone(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	}
 
 	write(c, dir)
+	exec(c, "cd", dir)
 
 	if r != nil {
 		err := setupTracking(r, dir)
@@ -114,7 +115,7 @@ func probeForURL(cfg grit.Config, c *cli.Context, slug string) (grit.Endpoint, b
 		endpoints = append(endpoints, ep)
 	})
 
-	if i, ok := choose(c.App.Writer, sources); ok {
+	if i, ok := choose(c, sources); ok {
 		return endpoints[i], true
 	}
 

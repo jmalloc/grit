@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/grit/index"
@@ -30,8 +29,9 @@ func cd(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		}
 	}
 
-	if i, ok := choose(os.Stderr, opts); ok {
+	if i, ok := choose(c, opts); ok {
 		write(c, dirs[i])
+		exec(c, "cd", dirs[i])
 		return nil
 	}
 
