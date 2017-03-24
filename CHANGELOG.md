@@ -20,6 +20,7 @@ data by running `grit index clear` and rebuild the index with `grit index scan`.
 - **[IMPROVED]** Added the ability to index from arbitrary directories with `index scan`
 - **[IMPROVED]** Git submodules are excluded from the index
 - **[IMPROVED]** Grit now outputs shell commands to a separate file, see `grit.bash` for details
+- **[IMPROVED]** `source ls` command now accepts an optional slug argument for previewing clone URLs
 
 ## 0.3.2 (2017-03-24)
 
@@ -52,7 +53,7 @@ data by running `grit index clear` and rebuild the index with `grit index scan`.
 - **[BC]** Renamed `clone` command's `--go` flag to `--golang` and added shortcut `-g`
 - **[BC]** Removed `clone.order` configuration directive
 - **[BC]** Renamed `clone.providers` configuration directive to `clone.sources`
-- **[BC]** URL templates now uses Go text templates (use `{{ .Slug }}` instead of `*`)
+- **[BC]** URL templates now uses Go text templates (use `{{.Slug}}` instead of `*`)
 - **[BC]** Renamed `config show` command to `config` and marked it deprecated
 - **[BC]** Rename `index list` command to `index keys`
 - **[NEW]** The `clone` command now checks all sources and prompts the user to choose if there are multiple matching repositories

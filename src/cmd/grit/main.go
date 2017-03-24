@@ -121,8 +121,11 @@ func main() {
 					BashComplete: autocomplete.New(autocomplete.Slug),
 				},
 				{
-					Name:   "ls",
-					Usage:  "List the configured sources.",
+					Name:      "ls",
+					Usage:     "List the configured sources.",
+					ArgsUsage: "[<slug>]",
+					Description: "If <slug> is provided the source URLs are rendered as though <slug> were being cloned.\n" +
+						"   Otherwise, the URL templates are rendered as they appear in the configuration file.",
 					Action: withConfig(sourceList),
 				},
 			},
