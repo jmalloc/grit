@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver"
+	"github.com/jmalloc/grit/src/cmd/grit/autocomplete"
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/grit/index"
 	"github.com/jmalloc/grit/src/grit/pathutil"
@@ -98,14 +99,15 @@ func main() {
 					Usage: "Clone into the appropriate $GOPATH sub-directory.",
 				},
 			},
-			Action: withConfigAndIndex(clone),
+			Action:       withConfigAndIndex(clone),
+			BashComplete: autocomplete.New(autocomplete.Slug),
 		},
 		{
 			Name:         "cd",
 			Usage:        "Change the current directory to an indexed clone directory.",
 			ArgsUsage:    "<slug>",
 			Action:       withConfigAndIndex(cd),
-			BashComplete: autocompleteSlug,
+			BashComplete: autocomplete.New(autocomplete.Slug),
 		},
 		{
 			Name:  "source",
@@ -116,7 +118,7 @@ func main() {
 					Usage:        "Discover which sources have a repository.",
 					ArgsUsage:    "<slug>",
 					Action:       withConfig(sourceProbe),
-					BashComplete: autocompleteSlug,
+					BashComplete: autocomplete.New(autocomplete.Slug),
 				},
 				{
 					Name:   "ls",
@@ -140,7 +142,7 @@ func main() {
 					Usage:        "List clone directories for a specific slug.",
 					ArgsUsage:    "<slug>",
 					Action:       withConfigAndIndex(indexFind),
-					BashComplete: autocompleteSlug,
+					BashComplete: autocomplete.New(autocomplete.Slug),
 				},
 				{
 					Name:      "scan",
@@ -224,12 +226,6 @@ func withConfigAndIndex(fn func(grit.Config, *index.Index, *cli.Context) error) 
 
 		return fn(cfg, idx, c)
 	})
-}
-
-func autocompleteSlug(c *cli.Context) {
-	if err := withConfigAndIndex(indexList)(c); err != nil {
-		panic(err)
-	}
 }
 
 func write(c *cli.Context, s string, v ...interface{}) {

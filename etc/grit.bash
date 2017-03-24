@@ -21,7 +21,7 @@ if [ -f "$GRIT_BIN" ]; then
         local cur opts base
         COMPREPLY=()
         cur="${COMP_WORDS[COMP_CWORD]}"
-        opts=$($GRIT_BIN ${COMP_WORDS[@]:1:$COMP_CWORD} --generate-bash-completion)
+        opts=$(GRIT_COMP_WORDS="${COMP_WORDS[@]}" $GRIT_BIN ${COMP_WORDS[@]:1:$COMP_CWORD} --generate-bash-completion)
         COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
         return 0
     }
