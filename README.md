@@ -157,8 +157,8 @@ Interminable!
 
 ## Ok, so Grit prints paths to the terminal, I get it.
 
-> Anybody can print to a terminal, even a programmer! Hell, Grit's `cd` command
-> doesn't even change the current directory!
+> Anybody can print to a terminal, even a programmer!
+> Hell, Grit's `cd` command doesn't even change the current directory!
 
 That's what you sound like right now. Shh bby is ok.
 
@@ -173,15 +173,15 @@ things will happen:
 1. `grit clone` will also change the current directory after cloning
 
 To achieve the latter two, Grit needs to execute shell commands in the context
-it's parent shell (the one you ran Grit in). It does this by writing the
+of it's parent shell (the one you ran Grit from). It does this by writing the
 commands to a separate file which is then sourced by the parent shell. The
 details are in [grit.bash](etc/grit.bash).
 
 ## What next?
 
-My colleagues are helping my iron our some of the kinks, so undoubtedly there
-are still some changes to come but Grit is feature complete, at least insofar
-as it already does everything that my original shell scripts could do.
+My colleagues are helping me iron out some of the kinks. Undoubtedly there are
+still some changes to come, but Grit is feature complete insofar as it already
+does everything that my original shell scripts could do.
 
 If you find Grit useful, or have a feature request or bug-report, please don't
 hesitate to create a new [issue](https://github.com/jmalloc/grit/issues).
