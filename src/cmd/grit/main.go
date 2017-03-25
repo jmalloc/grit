@@ -110,6 +110,13 @@ func main() {
 			BashComplete: autocomplete.New(autocomplete.Slug),
 		},
 		{
+			Name:         "rm",
+			Usage:        "Remove a clone from the filesystem and the index.",
+			ArgsUsage:    "[<slug>]",
+			Action:       withConfigAndIndex(rm),
+			BashComplete: autocomplete.New(autocomplete.Slug),
+		},
+		{
 			Name:  "source",
 			Usage: "Manage Git sources.",
 			Subcommands: []cli.Command{

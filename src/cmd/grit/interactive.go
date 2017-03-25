@@ -12,6 +12,23 @@ import (
 	"github.com/urfave/cli"
 )
 
+func confirm(c *cli.Context) bool {
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Fprint(c.App.Writer, "y/N> ")
+
+		scanner.Scan()
+		input := scanner.Text()
+
+		switch strings.ToLower(input) {
+		case "y", "yes":
+			return true
+		case "n", "no", "":
+			return false
+		}
+	}
+}
+
 // choose asks the user to select an entry from opts interactively.
 func choose(c *cli.Context, opt []string) (int, bool) {
 	size := len(opt)

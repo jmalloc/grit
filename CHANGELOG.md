@@ -2,6 +2,7 @@
 
 ## Next Release
 
+- **[NEW]** Added `rm` command, which removes a repository from the filesystem and the index
 - **[IMPROVED]** `cd` now prints an error when there are no matching directories
 - **[IMPROVED]** `clone` now prints an error when there are no matching sources
 
