@@ -18,5 +18,13 @@ func (e usageError) Error() string {
 }
 
 func unknownSource(n string) error {
-	return fmt.Errorf("unknown source: %s", n)
+	return fmt.Errorf("could not find '%s' in the source list", n)
+}
+
+func notIndexed(s string) error {
+	return fmt.Errorf("could not find '%s' in the index", s)
+}
+
+func noSource(s string) error {
+	return fmt.Errorf("could not find '%s' at any of the configured sources", s)
 }

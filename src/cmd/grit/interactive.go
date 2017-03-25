@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/jmalloc/grit/src/grit"
+	"github.com/jmalloc/grit/src/grit/pathutil"
 	"github.com/urfave/cli"
 )
 
@@ -47,4 +49,25 @@ func choose(c *cli.Context, opt []string) (int, bool) {
 			}
 		}
 	}
+}
+
+func chooseCloneDir(cfg grit.Config, c *cli.Context, dirs []string) (string, bool) {
+	gosrc, _ := pathutil.GoSrc()
+	var opts []string
+
+	for _, dir := range dirs {
+		if rel, ok := pathutil.RelChild(gosrc, dir); ok && gosrc != "" {
+			opts = append(opts, fmt.Sprintf("[go] %s", rel))
+		} else if rel, ok := pathutil.RelChild(cfg.Clone.Root, dir); ok {
+			opts = append(opts, fmt.Sprintf("[grit] %s", rel))
+		} else {
+			opts = append(opts, dir)
+		}
+	}
+
+	if i, ok := choose(c, dirs); ok {
+		return dirs[i], true
+	}
+
+	return "", false
 }

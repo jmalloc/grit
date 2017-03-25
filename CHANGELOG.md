@@ -1,5 +1,10 @@
 # Changelog
 
+## Next Release
+
+- **[IMPROVED]** `cd` now prints an error when there are no matching directories
+- **[IMPROVED]** `clone` now prints an error when there are no matching sources
+
 ## 0.4.0 (2017-03-25)
 
 This release introduces a change to the format of the Grit index. Existing data

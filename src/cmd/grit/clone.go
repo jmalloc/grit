@@ -99,14 +99,10 @@ func getCloneEndpoint(cfg grit.Config, c *cli.Context) (grit.Endpoint, error) {
 		return grit.Endpoint{}, unknownSource(source)
 	}
 
-	if ep, ok := probeForURL(cfg, c, slugOrURL); ok {
-		return ep, nil
-	}
-
-	return grit.Endpoint{}, errSilentFailure
+	return probeForURL(cfg, c, slugOrURL)
 }
 
-func probeForURL(cfg grit.Config, c *cli.Context, slug string) (grit.Endpoint, bool) {
+func probeForURL(cfg grit.Config, c *cli.Context, slug string) (grit.Endpoint, error) {
 	var sources []string
 	var endpoints []grit.Endpoint
 
@@ -115,11 +111,15 @@ func probeForURL(cfg grit.Config, c *cli.Context, slug string) (grit.Endpoint, b
 		endpoints = append(endpoints, ep)
 	})
 
-	if i, ok := choose(c, sources); ok {
-		return endpoints[i], true
+	if len(sources) == 0 {
+		return grit.Endpoint{}, noSource(slug)
 	}
 
-	return grit.Endpoint{}, false
+	if i, ok := choose(c, sources); ok {
+		return endpoints[i], nil
+	}
+
+	return grit.Endpoint{}, errSilentFailure
 }
 
 func getCloneDir(cfg grit.Config, c *cli.Context, ep grit.Endpoint) (string, error) {
