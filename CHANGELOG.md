@@ -1,6 +1,6 @@
 # Changelog
 
-## Next Release
+## 0.4.1 (2017-03-27)
 
 - **[NEW]** Added `rm` command, which removes a repository from the filesystem and the index
 - **[IMPROVED]** `cd` now prints an error when there are no matching directories
