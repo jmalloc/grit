@@ -1,6 +1,6 @@
 # Changelog
 
-## Next Release
+## 0.5.0 (2017-03-28)
 
 - **[BC]** The `rm` command no longer accepts a slug argument, instead it takes an optional path
 - **[NEW]** Added background checks for updates once every 24 hours
