@@ -52,7 +52,7 @@ func choose(c *cli.Context, opt []string) (int, bool) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
-		fmt.Fprint(c.App.Writer, "> ")
+		fmt.Fprint(c.App.Writer, ": ")
 
 		scanner.Scan()
 		input := scanner.Text()
