@@ -112,7 +112,7 @@ func main() {
 		{
 			Name:         "rm",
 			Usage:        "Remove a clone from the filesystem and the index.",
-			ArgsUsage:    "[<slug>]",
+			ArgsUsage:    "[<path>]",
 			Action:       withConfigAndIndex(rm),
 			BashComplete: autocomplete.New(autocomplete.Slug),
 			Flags: []cli.Flag{
