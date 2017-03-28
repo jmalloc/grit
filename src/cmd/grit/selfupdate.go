@@ -18,6 +18,9 @@ import (
 )
 
 func selfUpdate(c *cli.Context) error {
+	// cancel the automatic background check early if it's running
+	updateCheckCancel()
+
 	// setup a deadline first ...
 	timeout := time.Duration(c.Int("timeout")) * time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -124,4 +127,57 @@ func selfUpdate(c *cli.Context) error {
 	}
 
 	return os.Remove(backupBin)
+}
+
+var (
+	updateCheckContext context.Context
+	updateCheckCancel  func()
+	updateCheckResult  = make(chan *semver.Version, 1)
+	updateCheckPeriod  = 24 * time.Hour
+)
+
+func checkForUpdates() {
+	ctx, cancel := context.WithTimeout(
+		context.Background(),
+		10*time.Second,
+	)
+	updateCheckContext = ctx
+	updateCheckCancel = cancel
+
+	go func() {
+		defer close(updateCheckResult)
+
+		info, err := os.Stat(os.Args[0])
+		if err != nil {
+			return
+		}
+
+		if time.Since(info.ModTime()) < updateCheckPeriod {
+			return
+		}
+
+		gh := github.NewClient(nil)
+		if latest, ok, _ := update.IsOutdated(updateCheckContext, gh, VERSION); ok {
+			updateCheckResult <- latest
+		}
+	}()
+}
+
+func waitForUpdateCheck() {
+	defer updateCheckCancel()
+
+	select {
+	case <-updateCheckContext.Done():
+	case version, ok := <-updateCheckResult:
+		if ok {
+			fmt.Fprintf(
+				os.Stderr,
+				"\nNOTICE: An update is available, run %s self-update to install version %s.\n",
+				os.Args[0],
+				version,
+			)
+		}
+		now := time.Now()
+		_ = os.Chtimes(os.Args[0], now, now)
+	}
 }

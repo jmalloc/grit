@@ -57,6 +57,22 @@ func FindLatest(ctx context.Context, gh *github.Client, preRelease bool) (*githu
 	return nil, ErrReleaseNotFound
 }
 
+// IsOutdated returns true if v is not the latest available version.
+func IsOutdated(
+	ctx context.Context,
+	gh *github.Client,
+	v *semver.Version,
+) (latest *semver.Version, outdated bool, err error) {
+	rel, err := FindLatest(ctx, gh, IsPreRelease(v))
+
+	if err == nil {
+		latest, err = semver.NewVersion(rel.GetTagName())
+		outdated = latest.GreaterThan(v)
+	}
+
+	return
+}
+
 // Download a release archive for the current platform.
 func Download(
 	ctx context.Context,

@@ -18,6 +18,9 @@ import (
 var VERSION = semver.MustParse("0.4.1")
 
 func main() {
+	checkForUpdates()
+	defer waitForUpdateCheck()
+
 	app := cli.NewApp()
 	homeDir, _ := pathutil.HomeDir()
 
