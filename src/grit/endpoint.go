@@ -7,8 +7,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/jmalloc/grit/src/grit/pathutil"
-
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/client"
 )
@@ -108,22 +106,8 @@ func EndpointExists(ep Endpoint) (ok bool, err error) {
 }
 
 // EndpointToDir returns the absolute path for a clone of a repository.
-func EndpointToDir(base string, ep Endpoint) (string, error) {
-	n := ep.Normalized
-	p := strings.TrimSuffix(n.Path, path.Ext(n.Path))
+func EndpointToDir(base string, ep transport.Endpoint) string {
+	p := strings.TrimSuffix(ep.Path, path.Ext(ep.Path))
 
-	return path.Join(base, n.Host+p), nil
-}
-
-// EndpointToGoDir returns the absolute path for a clone of a Go repository.
-func EndpointToGoDir(ep Endpoint) (string, error) {
-	base, err := pathutil.GoSrc()
-	if err != nil {
-		return "", err
-	}
-
-	n := ep.Normalized
-	p := strings.TrimSuffix(n.Path, path.Ext(n.Path))
-
-	return path.Join(base, n.Host+p), nil
+	return path.Join(base, ep.Host+p)
 }

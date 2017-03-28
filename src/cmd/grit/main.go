@@ -270,3 +270,13 @@ func exec(c *cli.Context, v ...string) {
 		panic(err)
 	}
 }
+
+// cloneBaseDir returns $GOPATH/src if --golang was passed, otherwise it
+// returns the configured clone root.
+func cloneBaseDir(cfg grit.Config, c *cli.Context) (string, error) {
+	if c.Bool("golang") {
+		return pathutil.GoSrc()
+	}
+
+	return cfg.Clone.Root, nil
+}

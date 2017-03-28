@@ -123,18 +123,19 @@ func probeForURL(cfg grit.Config, c *cli.Context, slug string) (grit.Endpoint, e
 }
 
 func getCloneDir(cfg grit.Config, c *cli.Context, ep grit.Endpoint) (string, error) {
-	target := c.String("target")
-
-	if c.Bool("golang") {
-		if target == "" {
-			return grit.EndpointToGoDir(ep)
-		}
-
-		return "", usageError("can not combine --target with --golang")
+	base, err := cloneBaseDir(cfg, c)
+	if err != nil {
+		return "", err
 	}
 
+	target := c.String("target")
+
 	if target == "" {
-		return grit.EndpointToDir(cfg.Clone.Root, ep)
+		return grit.EndpointToDir(base, ep.Normalized), nil
+	}
+
+	if c.Bool("golang") {
+		return "", usageError("can not combine --target with --golang")
 	}
 
 	return filepath.Abs(target)
