@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"path"
 
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/grit/index"
@@ -20,6 +21,10 @@ func rm(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 
 	if err := os.RemoveAll(dir); err != nil {
 		return err
+	}
+
+	if c.NArg() == 0 {
+		exec(c, "cd", path.Dir(dir))
 	}
 
 	return idx.Remove(dir)
