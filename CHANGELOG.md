@@ -4,6 +4,7 @@
 
 - **[BC]** The `rm` command no longer accepts a slug argument, instead it takes an optional path
 - **[NEW]** Added `--force` argument to `rm` to skip confirmation
+- **[NEW]** Added `mv` command, which moves an existing clone into the standard clone location
 
 ## 0.4.1 (2017-03-27)
 
