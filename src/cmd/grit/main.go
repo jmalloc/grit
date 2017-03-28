@@ -104,7 +104,7 @@ func main() {
 		},
 		{
 			Name:         "cd",
-			Usage:        "Change the current directory to an indexed clone directory.",
+			Usage:        "Change the current directory to the location of <slug>.",
 			ArgsUsage:    "<slug>",
 			Action:       withConfigAndIndex(cd),
 			BashComplete: autocomplete.New(autocomplete.Slug),
@@ -213,6 +213,8 @@ func main() {
 	}
 }
 
+// withConfig creates a CLI action function that calls fn with the Grit
+// config and parameter.
 func withConfig(fn func(grit.Config, *cli.Context) error) cli.ActionFunc {
 	return func(c *cli.Context) error {
 		cfg, err := grit.LoadConfig(c.GlobalString("config"))
@@ -232,6 +234,8 @@ func withConfig(fn func(grit.Config, *cli.Context) error) cli.ActionFunc {
 	}
 }
 
+// withConfigAndIndex creates a CLI action function that calls fn with the Grit
+// config and index parameters.
 func withConfigAndIndex(fn func(grit.Config, *index.Index, *cli.Context) error) cli.ActionFunc {
 	return withConfig(func(cfg grit.Config, c *cli.Context) error {
 		idx, err := index.Open(cfg.Index.Store)
@@ -244,10 +248,12 @@ func withConfigAndIndex(fn func(grit.Config, *index.Index, *cli.Context) error) 
 	})
 }
 
+// write prints to the terminal using the app's output writer
 func write(c *cli.Context, s string, v ...interface{}) {
 	fmt.Fprintf(c.App.Writer, s+"\n", v...)
 }
 
+// exec appends a shell command to the file specified by --shell-commands
 func exec(c *cli.Context, v ...string) {
 	f, ok := c.App.Metadata["shell-commands"].(*os.File)
 	if !ok {
