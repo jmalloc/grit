@@ -163,10 +163,12 @@ Interminable!
 That's what you sound like right now. Shh bby is ok.
 
 What we need is some glue that makes Grit's `cd` command behave like the *real*
-`cd` command, and that glue is `grit.bash`.
+`cd` command, and that glue is:
 
-Source `grit.bash` from your `.bash_profile` file and many of the following
-things will happen:
+    eval "$(grit shell-integration)"
+
+Add this line to your `.bash_profile` file and many of the following things will
+happen:
 
 1. You'll get auto-completion of all command names and indexed repository slugs
 1. `grit cd` will start working the way you expect
@@ -175,7 +177,8 @@ things will happen:
 To achieve the latter two, Grit needs to execute shell commands in the context
 of it's parent shell (the one you ran Grit from). It does this by writing the
 commands to a separate file which is then sourced by the parent shell. The
-details are in [grit.bash](etc/grit.bash).
+details can be seen by running `grit shell-integration` directly from your
+terminal.
 
 ## What next?
 

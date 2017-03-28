@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"path"
-	"strings"
 
 	"github.com/Masterminds/semver"
 	"github.com/jmalloc/grit/src/cmd/grit/autocomplete"
@@ -26,6 +24,9 @@ func main() {
 	app.Name = "grit"
 	app.Usage = "Index your Git clones."
 	app.EnableBashCompletion = true
+	app.Before = execOpen
+	app.After = execClose
+	app.Version = VERSION.String()
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "config, c",
@@ -34,35 +35,11 @@ func main() {
 			Value:  path.Join(homeDir, ".grit", "config.toml"),
 		},
 		cli.StringFlag{
-			Name:   "shell-commands",
+			Name:   "with-shell-integration",
 			Hidden: true,
 		},
 	}
 
-	app.Before = func(c *cli.Context) error {
-		file := c.String("shell-commands")
-		if file == "" {
-			return nil
-		}
-
-		f, err := os.Create(file)
-		if err != nil {
-			return err
-		}
-
-		app.Metadata["shell-commands"] = f
-		return nil
-	}
-
-	app.After = func(c *cli.Context) error {
-		if f, ok := c.App.Metadata["shell-commands"].(*os.File); ok {
-			return f.Close()
-		}
-
-		return nil
-	}
-
-	app.Version = VERSION.String()
 	var updatePreReleaseFlag cli.Flag
 
 	if update.IsPreRelease(VERSION) {
@@ -214,9 +191,13 @@ func main() {
 		},
 		{
 			Name:   "config",
-			Usage:  "Print the entire Grit configuration.",
 			Hidden: true,
 			Action: withConfig(configShow),
+		},
+		{
+			Name:   "shell-integration",
+			Hidden: true,
+			Action: shellIntegration,
 		},
 	}
 
@@ -263,24 +244,6 @@ func withConfigAndIndex(fn func(grit.Config, *index.Index, *cli.Context) error) 
 // write prints to the terminal using the app's output writer
 func write(c *cli.Context, s string, v ...interface{}) {
 	fmt.Fprintf(c.App.Writer, s+"\n", v...)
-}
-
-// exec appends a shell command to the file specified by --shell-commands
-func exec(c *cli.Context, v ...string) {
-	f, ok := c.App.Metadata["shell-commands"].(*os.File)
-	if !ok {
-		return
-	}
-
-	for _, a := range v {
-		a = "'" + strings.Replace(a, "'", `'\''`, -1) + "' "
-		if _, err := io.WriteString(f, a); err != nil {
-			panic(err)
-		}
-	}
-	if _, err := io.WriteString(f, "\n"); err != nil {
-		panic(err)
-	}
 }
 
 // cloneBaseDir returns $GOPATH/src if --golang was passed, otherwise it

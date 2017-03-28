@@ -5,6 +5,7 @@
 - **[BC]** The `rm` command no longer accepts a slug argument, instead it takes an optional path
 - **[NEW]** Added `--force` argument to `rm` to skip confirmation
 - **[NEW]** Added `mv` command, which moves an existing clone into the standard clone location
+- **[NEW]** Bundled `grit.bash` with the executable, use `eval "$(grit shell-integration)"` in `.bash_profile`
 
 ## 0.4.1 (2017-03-27)
 
