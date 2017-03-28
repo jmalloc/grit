@@ -115,6 +115,12 @@ func main() {
 			ArgsUsage:    "[<slug>]",
 			Action:       withConfigAndIndex(rm),
 			BashComplete: autocomplete.New(autocomplete.Slug),
+			Flags: []cli.Flag{
+				&cli.BoolFlag{
+					Name:  "force, f",
+					Usage: "Do not prompt for confirmation.",
+				},
+			},
 		},
 		{
 			Name:  "source",
@@ -188,7 +194,7 @@ func main() {
 					Value: 60,
 				},
 				&cli.BoolFlag{
-					Name:  "force",
+					Name:  "force, f",
 					Usage: "Replace the current binary even if it's newer than the latest published release.",
 				},
 				updatePreReleaseFlag,

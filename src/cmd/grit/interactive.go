@@ -12,15 +12,18 @@ import (
 	"github.com/urfave/cli"
 )
 
-func confirm(c *cli.Context) bool {
+func confirm(c *cli.Context, msg string) bool {
 	scanner := bufio.NewScanner(os.Stdin)
+
 	for {
-		fmt.Fprint(c.App.Writer, "y/N> ")
+		fmt.Fprintf(c.App.Writer, "%s [y/n]: ", msg)
 
 		scanner.Scan()
 		input := scanner.Text()
+		input = strings.TrimSpace(input)
+		input = strings.ToLower(input)
 
-		switch strings.ToLower(input) {
+		switch input {
 		case "y", "yes":
 			return true
 		case "n", "no", "":

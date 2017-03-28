@@ -1,5 +1,10 @@
 # Changelog
 
+## Next Release
+
+- **[BC]** The `rm` command no longer accepts a slug argument, instead it takes an optional path
+- **[NEW]** Added `--force` argument to `rm` to skip confirmation
+
 ## 0.4.1 (2017-03-27)
 
 - **[NEW]** Added `rm` command, which removes a repository from the filesystem and the index
