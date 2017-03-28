@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1 (2017-03-28)
+
+- **[FIX]** Fix `self-update` when Grit is invoked via `$PATH`
+
 ## 0.5.0 (2017-03-28)
 
 - **[BC]** The `rm` command no longer accepts a slug argument, instead it takes an optional path

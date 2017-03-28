@@ -3,7 +3,6 @@ package main
 import (
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 	"text/template"
 
@@ -16,7 +15,7 @@ func shellIntegration(c *cli.Context) error {
 		return err
 	}
 
-	bin, err := filepath.Abs(os.Args[0])
+	bin, err := os.Executable()
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -58,7 +57,7 @@ func selfUpdate(c *cli.Context) error {
 		}
 	}
 
-	actualBin, err := filepath.Abs(os.Args[0])
+	actualBin, err := os.Executable()
 	if err != nil {
 		return err
 	}
@@ -147,7 +146,12 @@ func checkForUpdates() {
 	go func() {
 		defer close(updateCheckResult)
 
-		info, err := os.Stat(os.Args[0])
+		bin, err := os.Executable()
+		if err != nil {
+			return
+		}
+
+		info, err := os.Stat(bin)
 		if err != nil {
 			return
 		}
@@ -177,7 +181,10 @@ func waitForUpdateCheck() {
 				version,
 			)
 		}
-		now := time.Now()
-		_ = os.Chtimes(os.Args[0], now, now)
+
+		if bin, err := os.Executable(); err == nil {
+			now := time.Now()
+			_ = os.Chtimes(bin, now, now)
+		}
 	}
 }
