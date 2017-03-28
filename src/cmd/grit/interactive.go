@@ -82,7 +82,7 @@ func chooseCloneDir(cfg grit.Config, c *cli.Context, dirs []string) (string, boo
 		}
 	}
 
-	if i, ok := choose(c, dirs); ok {
+	if i, ok := choose(c, opts); ok {
 		return dirs[i], true
 	}
 
