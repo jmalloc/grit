@@ -2,11 +2,13 @@ package grit
 
 import (
 	"bytes"
+	"errors"
 	"html/template"
 	"os"
 	"path"
 	"strings"
 
+	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/client"
 )
@@ -110,4 +112,31 @@ func EndpointToDir(base string, ep transport.Endpoint) string {
 	p := strings.TrimSuffix(ep.Path, path.Ext(ep.Path))
 
 	return path.Join(base, ep.Host+p)
+}
+
+// EndpointsFromDir returns all of the valid endpoints for the repo at the given
+// directory.
+func EndpointsFromDir(dir string) ([]transport.Endpoint, error) {
+	r, err := git.PlainOpen(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	remotes, err := r.Remotes()
+	if err != nil {
+		return nil, err
+	}
+
+	var endpoints []transport.Endpoint
+	for _, rem := range remotes {
+		if ep, err := transport.NewEndpoint(rem.Config().URL); err == nil {
+			endpoints = append(endpoints, ep)
+		}
+	}
+
+	if len(endpoints) == 0 {
+		return nil, errors.New("no remotes have valid endpoint URLs")
+	}
+
+	return endpoints, nil
 }

@@ -110,6 +110,18 @@ func main() {
 			BashComplete: autocomplete.New(autocomplete.Slug),
 		},
 		{
+			Name:      "mv",
+			Usage:     "Move a clone into the correct directory.",
+			ArgsUsage: "[<path>]",
+			Action:    withConfigAndIndex(mv),
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "golang, g",
+					Usage: "Move into the appropriate $GOPATH sub-directory.",
+				},
+			},
+		},
+		{
 			Name:         "rm",
 			Usage:        "Remove a clone from the filesystem and the index.",
 			ArgsUsage:    "[<path>]",
@@ -279,4 +291,15 @@ func cloneBaseDir(cfg grit.Config, c *cli.Context) (string, error) {
 	}
 
 	return cfg.Clone.Root, nil
+}
+
+// dirFromFirstArg returns the first arg if it set, or the current working
+// directory.
+func dirFromFirstArg(c *cli.Context) (string, error) {
+	src := c.Args().First()
+	if src == "" {
+		return os.Getwd()
+	}
+
+	return src, nil
 }

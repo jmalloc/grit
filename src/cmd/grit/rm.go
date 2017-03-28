@@ -9,13 +9,9 @@ import (
 )
 
 func rm(cfg grit.Config, idx *index.Index, c *cli.Context) error {
-	dir := c.Args().First()
-	if dir == "" {
-		var err error
-		dir, err = os.Getwd()
-		if err != nil {
-			return err
-		}
+	dir, err := dirFromFirstArg(c)
+	if err != nil {
+		return err
 	}
 
 	if !c.Bool("force") && !confirm(c, "Are you sure you want to delete this clone?") {
