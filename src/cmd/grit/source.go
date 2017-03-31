@@ -50,24 +50,31 @@ func probeSources(
 	var wg sync.WaitGroup
 	var m sync.Mutex
 
+	fmt.Fprintf(os.Stderr, "probing %d source(s) for %s\n", len(cfg.Clone.Sources), slug)
+
 	for n, t := range cfg.Clone.Sources {
 		wg.Add(1)
+
 		go func(n string, t grit.EndpointTemplate) {
 			defer wg.Done()
 
 			ep, err := t.Resolve(slug)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
+				fmt.Fprintf(os.Stderr, "%s: %s\n", n, err)
 				return
 			}
 
+			fmt.Fprintf(os.Stderr, "%s: trying %s\n", n, ep.Actual)
+
 			exists, err := grit.EndpointExists(ep)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
+				fmt.Fprintf(os.Stderr, "%s: %s\n", n, err)
 				return
 			}
 
 			if exists {
+				fmt.Fprintf(os.Stderr, "%s: found %s\n", n, ep.Actual)
+
 				m.Lock()
 				defer m.Unlock()
 				fn(n, ep)
