@@ -20,8 +20,7 @@ func shellIntegration(c *cli.Context) error {
 		return err
 	}
 
-	tmpl.Execute(c.App.Writer, bin)
-	return nil
+	return tmpl.Execute(c.App.Writer, bin)
 }
 
 func execOpen(c *cli.Context) error {

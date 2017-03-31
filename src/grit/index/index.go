@@ -160,52 +160,65 @@ func (i *Index) Scan(
 }
 
 func (i *Index) scan(dir string) {
-	defer i.wg.Done()
+	var err error
+	defer func() {
+		i.wg.Done()
+		if err != nil {
+			i.err.Store(err)
+		}
+	}()
 
-	if err := filepath.Walk(dir, i.walk); err != nil {
-		i.err.Store(err)
+	dir, err = filepath.Abs(dir)
+	if err != nil {
+		return
 	}
+
+	err = filepath.Walk(dir, i.walk)
 }
 
 func (i *Index) walk(dir string, info os.FileInfo, err error) error {
-	if err != nil {
+	if os.IsNotExist(err) {
+		return nil
+	} else if err != nil {
 		return err
 	} else if !info.IsDir() {
 		return nil
 	}
 
-	// don't index hidden directories ...
 	if path.Base(dir)[0] == '.' {
-		return filepath.SkipDir
+		return filepath.SkipDir // don't index hidden directories
 	}
 
 	if isGitDir(dir) {
 		i.wg.Add(1)
 		go i.batch(dir)
-		return filepath.SkipDir
+		return filepath.SkipDir // skip sub-directories of git clones
 	}
 
 	return nil
 }
 
 func (i *Index) batch(dir string) {
-	defer i.wg.Done()
+	var err error
+	defer func() {
+		i.wg.Done()
+		if err != nil {
+			i.err.Store(err)
+		}
+	}()
 
 	slugs, err := slugsFromClone(dir, i.f)
-
-	if err == nil && len(slugs) != 0 {
-		i.wm.Lock()
-		fmt.Fprintln(i.w, dir)
-		i.wm.Unlock()
-
-		err = i.db.Batch(func(tx *bolt.Tx) error {
-			return update(tx, dir, slugs)
-		})
+	if err != nil || len(slugs) == 0 {
+		return
 	}
 
-	if err != nil {
-		i.err.Store(err)
-	}
+	i.wm.Lock()
+	fmt.Fprintln(i.w, dir)
+	i.wm.Unlock()
+
+	err = i.db.Batch(func(tx *bolt.Tx) error {
+		return update(tx, dir, slugs)
+	})
 }
 
 // WriteTo dumps a string representation of the database to w.

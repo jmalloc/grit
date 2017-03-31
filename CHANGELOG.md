@@ -1,5 +1,11 @@
 # Changelog
 
+## Next Release
+
+- **[FIX]** The `index scan` command now accepts relative paths
+- **[IMPROVED]** Allow scanning of non-existent paths
+- **[IMPROVED]** Print more information when probing sources for repositories
+
 ## 0.5.1 (2017-03-28)
 
 - **[FIX]** Fix `self-update` when Grit is invoked via `$PATH`
