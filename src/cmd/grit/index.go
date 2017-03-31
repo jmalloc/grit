@@ -38,10 +38,11 @@ func indexFind(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 }
 
 func indexScan(cfg grit.Config, idx *index.Index, c *cli.Context) error {
-	paths := append(
-		cfg.Index.Paths,
-		c.Args()...,
-	)
+	paths := c.Args()
+
+	if c.NArg() == 0 {
+		paths = cfg.Index.Paths
+	}
 
 	return idx.Scan(
 		c.App.Writer,

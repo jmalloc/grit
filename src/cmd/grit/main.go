@@ -153,10 +153,11 @@ func main() {
 					BashComplete: autocomplete.New(autocomplete.Slug),
 				},
 				{
-					Name:      "scan",
-					Usage:     "Scan the index paths for clone directories.",
-					ArgsUsage: "[<dirs> ...]",
-					Action:    withConfigAndIndex(indexScan),
+					Name:        "scan",
+					Usage:       "Scan the index paths for clone directories.",
+					ArgsUsage:   "[<dirs> ...]",
+					Description: "If no arguments are provided, the configured index paths are scanned.",
+					Action:      withConfigAndIndex(indexScan),
 				},
 				{
 					Name:   "prune",
