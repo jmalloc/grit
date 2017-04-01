@@ -22,6 +22,7 @@ rmdir ~/.grit
 - **[BC]** The default index location is now '~/grit/index.v2'
 - **[FIX]** Allow cloning of empty repositories
 - **[FIX]** The `index scan` command now accepts relative paths
+- **[IMPROVED]** The `rm` command now warns when deleting a clone with uncommitted changes
 - **[IMPROVED]** Allow scanning of non-existent paths
 - **[IMPROVED]** Print more information when probing sources for repositories
 

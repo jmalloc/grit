@@ -69,6 +69,24 @@ func (i *Index) Remove(dir string) error {
 	})
 }
 
+// Has returns true if dir is in the index.
+func (i *Index) Has(dir string) (ok bool) {
+	err := i.db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(dirBucket)
+		if bucket != nil {
+			k := []byte(dir)
+			ok = bucket.Get(k) != nil
+		}
+		return nil
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	return
+}
+
 // Find returns a list of paths matching the given slug.
 func (i *Index) Find(slug string) []string {
 	var rec slugRecord
