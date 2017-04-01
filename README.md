@@ -44,7 +44,7 @@ a bunch of stuff anyway ...
 Grit is useful because it knows where you want to clone repositories from. But
 it's not a magician, it only knows after you tell it, which is less impressive.
 
-By default, Grit looks for a configuration file at `~/.grit/config.toml`, which
+By default, Grit looks for a configuration file at `~/.config/grit.toml`, which
 at its most basic is a list of named clone sources, such as:
 
 ```toml
@@ -54,7 +54,7 @@ my-company = "git@git.example.com:{{slug}}.git"
 
 If you only use GitHub you don't need to define any additional sources, and so
 the configuration file can be omitted entirely. For a complete list of the
-available configuration directives, see the [example](etc/example.toml)
+available configuration directives, see the [example](etc/complete-example.toml)
 configuration file.
 
 From now on, I'll assume you're using the configuration shown above, which is a
@@ -70,7 +70,7 @@ That's minimalism.
 The clone command accepts a single argument, the repository "slug". The slug
 is the part of the repository URL that a standard-issue human would use to
 identify a repository. For GitHub, this is the familiar `username/repository`
-syntax. For sources configured in `config.toml`, it's the part represented
+syntax. For sources configured in `grit.toml`, it's the part represented
 by the string `{{slug}}` in the URL.
 
 Try it out:

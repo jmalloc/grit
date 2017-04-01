@@ -1,0 +1,9 @@
+#
+# This is a "minimal" Grit configuration file.
+
+# For a description of all of the supported configuration directives, see the
+# complete-example.toml file.
+#
+
+[clone.sources]
+my-company = "git@github.example.com:{{slug}}.git"

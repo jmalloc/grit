@@ -1,5 +1,6 @@
 #
 # This is a "complete" Grit configuration file.
+# By default, Grit looks for this file at ~/.config/grit.toml
 #
 # It is written in TOML - https://github.com/toml-lang/toml
 # All directives have sensible defaults... well, I think they're sensible.
@@ -62,5 +63,6 @@ my-company = "git@github.example.com:{{slug}}.git"
 paths = ["~"]
 
 # "store" is the location of the index database.
-# The default value is "~/.grit/index.db".
-store = "/tmp/grit-test/cache"
+# If no path is specified, the index database is stored in the clone.root
+# directory in a file named "index.v2".
+store = "/path/to/the/index"

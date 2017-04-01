@@ -35,7 +35,7 @@ func main() {
 			Name:   "config, c",
 			Usage:  "Load configuration from `FILE`.",
 			EnvVar: "GRIT_CONFIG",
-			Value:  path.Join(homeDir, ".grit", "config.toml"),
+			Value:  path.Join(homeDir, ".config", "grit.toml"),
 		},
 		cli.StringFlag{
 			Name:   "with-shell-integration",
