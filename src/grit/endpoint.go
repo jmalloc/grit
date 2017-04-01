@@ -98,9 +98,13 @@ func EndpointExists(ep Endpoint) (ok bool, err error) {
 
 	_, err = sess.AdvertisedReferences()
 
-	if err == transport.ErrRepositoryNotFound {
+	switch err {
+	case transport.ErrRepositoryNotFound:
 		err = nil
-	} else if err == nil {
+	case transport.ErrEmptyRemoteRepository:
+		err = nil
+		ok = true
+	case nil:
 		ok = true
 	}
 

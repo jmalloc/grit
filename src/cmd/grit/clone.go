@@ -28,20 +28,31 @@ func clone(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 
 	opts := &git.CloneOptions{URL: ep.Actual}
 	r, err := git.PlainClone(dir, false /* isBare */, opts)
-	if err != nil && err != git.ErrRepositoryAlreadyExists {
+
+	switch err {
+	case git.ErrRepositoryAlreadyExists:
+		fmt.Fprintln(os.Stderr, "found existing clone")
+
+	case transport.ErrEmptyRemoteRepository:
+		err = setupEmptyClone(dir)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintln(os.Stderr, "cloned an empty repository")
+
+	case nil:
+		err = setupTracking(r, dir)
+		if err != nil {
+			return err
+		}
+
+	default:
 		_ = os.RemoveAll(dir)
 		return err
 	}
 
 	write(c, dir)
 	exec(c, "cd", dir)
-
-	if r != nil {
-		err := setupTracking(r, dir)
-		if err != nil {
-			return err
-		}
-	}
 
 	return idx.Add(dir)
 }
@@ -70,6 +81,21 @@ func setupTracking(r *git.Repository, dir string) error {
 
 	_, err = buf.WriteTo(f)
 	return err
+}
+
+func setupEmptyClone(dir string) error {
+	if _, err := git.PlainOpen(dir); err != nil {
+		return err
+	}
+
+	for _, p := range []string{"refs", "objects"} {
+		p = path.Join(dir, ".git", p)
+		if err := os.Mkdir(p, 0755); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func getCloneEndpoint(cfg grit.Config, c *cli.Context) (grit.Endpoint, error) {

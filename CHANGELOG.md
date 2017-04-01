@@ -2,6 +2,7 @@
 
 ## Next Release
 
+- **[FIX]** Allow cloning of empty repositories
 - **[FIX]** The `index scan` command now accepts relative paths
 - **[IMPROVED]** Allow scanning of non-existent paths
 - **[IMPROVED]** Print more information when probing sources for repositories
