@@ -4,7 +4,7 @@
 
 This release introduces another (and hopefully the final) change to the default
 location of the configuration and index files. The configuration file is now
-at `~/.config/grit.toml`, follwoing a convention adopted by several other Git
+at `~/.config/grit.toml`, following a convention adopted by several other Git
 utilities. The index is now stored in the clone root, at `~/grit/index.v2`.
 This means that the `~/.grit` directory is longer used.
 
@@ -18,8 +18,8 @@ mv ~/.grit/index.v2 ~/grit/index.v2
 rmdir ~/.grit
 ```
 
-- **[BC]** The default config location is now '~/.config/grit.toml'
-- **[BC]** The default index location is now '~/grit/index.v2'
+- **[BC]** The default config location is now `~/.config/grit.toml`
+- **[BC]** The default index location is now `~/grit/index.v2`
 - **[FIX]** Allow cloning of empty repositories
 - **[FIX]** The `index scan` command now accepts relative paths
 - **[IMPROVED]** The `rm` command now warns when deleting a clone with uncommitted changes
