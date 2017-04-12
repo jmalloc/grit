@@ -2,7 +2,8 @@ package index
 
 import (
 	"path"
-	"strings"
+
+	"github.com/jmalloc/grit/src/grit"
 
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
@@ -32,10 +33,7 @@ func slugsFromClone(dir string, filter EndpointFilter) (set, error) {
 		}
 
 		if filter == nil || filter(ep) {
-			p := strings.TrimSuffix(
-				ep.Path[1:],       // trim slash
-				path.Ext(ep.Path), // trim .git extension
-			)
+			p := grit.EndpointToSlug(ep)
 			slugs.Add(p, path.Base(p))
 		}
 	}

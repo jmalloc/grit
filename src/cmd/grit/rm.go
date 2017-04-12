@@ -13,7 +13,7 @@ import (
 )
 
 func rm(cfg grit.Config, idx *index.Index, c *cli.Context) error {
-	dir, err := dirFromFirstArg(c)
+	dir, err := dirFromArg(c, 0)
 	if err != nil {
 		return err
 	}

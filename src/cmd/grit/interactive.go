@@ -7,6 +7,9 @@ import (
 	"strconv"
 	"strings"
 
+	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/config"
+
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/grit/pathutil"
 	"github.com/urfave/cli"
@@ -90,4 +93,28 @@ func chooseCloneDir(cfg grit.Config, c *cli.Context, dirs []string) (string, boo
 	}
 
 	return "", false
+}
+
+func chooseRemote(cfg grit.Config, c *cli.Context, dir string) (*config.RemoteConfig, bool, error) {
+	r, err := git.PlainOpen(dir)
+	if err != nil {
+		return nil, false, err
+	}
+
+	remotes, err := r.Remotes()
+	if err != nil {
+		return nil, false, err
+	}
+
+	var opts []string
+	for _, rem := range remotes {
+		cfg := rem.Config()
+		opts = append(opts, fmt.Sprintf("%s %s", cfg.Name, cfg.URL))
+	}
+
+	if i, ok := choose(c, opts); ok {
+		return remotes[i].Config(), true, nil
+	}
+
+	return nil, false, nil
 }

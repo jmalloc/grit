@@ -3,15 +3,17 @@ package grit
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"html/template"
 	"os"
 	"path"
 	"strings"
 
-	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/client"
 )
+
+const slugSeparator = "/"
 
 // EndpointTemplate is template for a Git repository URL.
 type EndpointTemplate string
@@ -113,34 +115,64 @@ func EndpointExists(ep Endpoint) (ok bool, err error) {
 
 // EndpointToDir returns the absolute path for a clone of a repository.
 func EndpointToDir(base string, ep transport.Endpoint) string {
-	p := strings.TrimSuffix(ep.Path, path.Ext(ep.Path))
-
-	return path.Join(base, ep.Host+p)
+	slug := EndpointToSlug(ep)
+	parts := strings.Split(slug, slugSeparator)
+	return path.Join(base, ep.Host, path.Join(parts...))
 }
 
-// EndpointsFromDir returns all of the valid endpoints for the repo at the given
-// directory.
-func EndpointsFromDir(dir string) ([]transport.Endpoint, error) {
-	r, err := git.PlainOpen(dir)
-	if err != nil {
-		return nil, err
+// EndpointToSlug returns the "slug" from ep.
+func EndpointToSlug(ep transport.Endpoint) string {
+	return strings.TrimSuffix(
+		strings.TrimPrefix(ep.Path, slugSeparator),
+		path.Ext(ep.Path),
+	)
+}
+
+// ReplaceSlug returns a copy of ep with the slug changed to s.
+func ReplaceSlug(ep transport.Endpoint, s string) transport.Endpoint {
+	ext := path.Ext(ep.Path)
+	ep.Path = slugSeparator + s + ext
+	return ep
+}
+
+// MergeSlug returns a copy of ep with the slug changed to s. If s has less
+// path atoms then the existing slug it is merged with the existing slug such
+// that the original number of path atoms are retained.
+func MergeSlug(ep transport.Endpoint, s string) transport.Endpoint {
+	a := strings.Split(s, slugSeparator)
+
+	slug := EndpointToSlug(ep)
+	atoms := strings.Split(slug, slugSeparator)
+
+	diff := len(atoms) - len(a)
+
+	if diff > 0 {
+		s = strings.Join(atoms[0:diff], slugSeparator) + slugSeparator + s
 	}
 
-	remotes, err := r.Remotes()
-	if err != nil {
-		return nil, err
+	return ReplaceSlug(ep, s)
+}
+
+// EndpointIsSCP returns true if s is an SSH URL given in "SCP" style, that is
+// git@github.com:jmalloc/grit.git, as opposed to ssh://git@github.com/jmalloc/grit.git.
+func EndpointIsSCP(s string) bool {
+	ep, err := transport.NewEndpoint(s)
+
+	return err == nil &&
+		ep.Scheme == "ssh" &&
+		!strings.HasPrefix(s, "ssh://")
+}
+
+// EndpointToSCP converts a normalized ssh:// endpoint URL to an SCP-style URL.
+func EndpointToSCP(ep transport.Endpoint) (string, error) {
+	if ep.Scheme != "ssh" {
+		return "", errors.New("not an SSH endpoint")
 	}
 
-	var endpoints []transport.Endpoint
-	for _, rem := range remotes {
-		if ep, err := transport.NewEndpoint(rem.Config().URL); err == nil {
-			endpoints = append(endpoints, ep)
-		}
-	}
-
-	if len(endpoints) == 0 {
-		return nil, errors.New("no remotes have valid endpoint URLs")
-	}
-
-	return endpoints, nil
+	return fmt.Sprintf(
+		"%s@%s:%s",
+		ep.User,
+		ep.Host,
+		strings.TrimPrefix(ep.Path, slugSeparator),
+	), nil
 }

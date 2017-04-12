@@ -1,5 +1,9 @@
 # Changelog
 
+## Next Release
+
+- **[NEW]** Added `rename` command, which changes the remote URL and moves the clone accordingly.
+
 ## 0.6.0 (2017-04-01)
 
 This release introduces another (and hopefully the final) change to the default

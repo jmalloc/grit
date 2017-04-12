@@ -102,6 +102,18 @@ func main() {
 			},
 		},
 		{
+			Name:      "rename",
+			Usage:     "Change the remote URL and move the clone accordingly.",
+			ArgsUsage: "<slug | url> [<path>]",
+			Action:    withConfigAndIndex(rename),
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "golang, g",
+					Usage: "Move into the appropriate $GOPATH sub-directory.",
+				},
+			},
+		},
+		{
 			Name:         "rm",
 			Usage:        "Remove a clone from the filesystem and the index.",
 			ArgsUsage:    "[<path>]",
@@ -260,13 +272,30 @@ func cloneBaseDir(cfg grit.Config, c *cli.Context) (string, error) {
 	return cfg.Clone.Root, nil
 }
 
-// dirFromFirstArg returns the first arg if it set, or the current working
-// directory.
-func dirFromFirstArg(c *cli.Context) (string, error) {
-	src := c.Args().First()
-	if src == "" {
+// cloneBaseDirFromCurrent returns $GOPATH/src if p is already a child of
+// $GOPATH/src or if --golang was passed, otherwise it returns the configured
+// clone root.
+func cloneBaseDirFromCurrent(cfg grit.Config, c *cli.Context, p string) (string, error) {
+	gosrc, err := pathutil.GoSrc()
+
+	if c.Bool("golang") {
+		return gosrc, err
+	}
+
+	if err == nil {
+		if _, ok := pathutil.RelChild(gosrc, p); ok {
+			return gosrc, err
+		}
+	}
+
+	return cfg.Clone.Root, nil
+}
+
+// dirFromArg returns the n-th arg if it set, or the current working directory.
+func dirFromArg(c *cli.Context, n int) (string, error) {
+	if c.NArg() <= n {
 		return os.Getwd()
 	}
 
-	return src, nil
+	return c.Args()[n], nil
 }
