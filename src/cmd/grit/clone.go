@@ -26,7 +26,10 @@ func clone(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return err
 	}
 
-	opts := &git.CloneOptions{URL: ep.Actual}
+	opts := &git.CloneOptions{
+		URL:      ep.Actual,
+		Progress: c.App.Writer,
+	}
 	r, err := git.PlainClone(dir, false /* isBare */, opts)
 
 	switch err {
