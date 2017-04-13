@@ -1,5 +1,10 @@
 # Changelog
 
+## Next Release
+
+- **[NEW]** Added `set-url` command, which changes the remote URL then moves the clone accordingly
+- **[IMPROVED]** The `mv` command now includes remote information when prompting to choose a directory
+
 ## 0.6.0 (2017-04-01)
 
 This release introduces another (and hopefully the final) change to the default

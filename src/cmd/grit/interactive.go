@@ -2,10 +2,15 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
+
+	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/config"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/grit/pathutil"
@@ -90,4 +95,45 @@ func chooseCloneDir(cfg grit.Config, c *cli.Context, dirs []string) (string, boo
 	}
 
 	return "", false
+}
+
+func chooseRemote(
+	cfg grit.Config,
+	c *cli.Context,
+	dir string,
+	fn func(*config.RemoteConfig, transport.Endpoint) string,
+) (*config.RemoteConfig, bool, error) {
+	r, err := git.PlainOpen(dir)
+	if err != nil {
+		return nil, false, err
+	}
+
+	remotes, err := r.Remotes()
+	if err != nil {
+		return nil, false, err
+	}
+
+	var opts []string
+	invalid := map[int]struct{}{}
+
+	for i, rem := range remotes {
+		cfg := rem.Config()
+		if ep, err := transport.NewEndpoint(cfg.URL); err == nil {
+			info := fn(cfg, ep)
+			opts = append(opts, fmt.Sprintf("[%s] %s%s", cfg.Name, cfg.URL, info))
+		} else {
+			opts = append(opts, fmt.Sprintf("[%s] %s (invalid)", cfg.Name, cfg.URL))
+			invalid[i] = struct{}{}
+		}
+	}
+
+	if i, ok := choose(c, opts); ok {
+		if _, ok := invalid[i]; ok {
+			return nil, false, errors.New("the selected remote does not have a valid endpoint URL")
+		}
+
+		return remotes[i].Config(), true, nil
+	}
+
+	return nil, false, nil
 }

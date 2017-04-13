@@ -5,13 +5,16 @@ import (
 	"os"
 	"path"
 
+	"gopkg.in/src-d/go-git.v4/config"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport"
+
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/grit/index"
 	"github.com/urfave/cli"
 )
 
 func mv(cfg grit.Config, idx *index.Index, c *cli.Context) error {
-	src, err := dirFromFirstArg(c)
+	src, err := dirFromArg(c, 0)
 	if err != nil {
 		return err
 	}
@@ -21,32 +24,38 @@ func mv(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return err
 	}
 
-	endpoints, err := grit.EndpointsFromDir(src)
+	rem, ok, err := chooseRemote(cfg, c, src, func(_ *config.RemoteConfig, ep transport.Endpoint) string {
+		return " --> " + grit.EndpointToDir(base, ep)
+	})
+
+	if err != nil {
+		return err
+	} else if !ok {
+		return errSilentFailure
+	}
+
+	ep, err := transport.NewEndpoint(rem.URL)
 	if err != nil {
 		return err
 	}
 
-	var dirs []string
-	for _, ep := range endpoints {
-		dirs = append(dirs, grit.EndpointToDir(base, ep))
-	}
+	dst := grit.EndpointToDir(base, ep)
 
-	dst, ok := chooseCloneDir(cfg, c, dirs)
-	if !ok {
-		return errSilentFailure
-	}
+	return moveClone(cfg, idx, c, src, dst)
+}
 
+func moveClone(cfg grit.Config, idx *index.Index, c *cli.Context, src, dst string) error {
 	write(c, dst)
 
 	if src == dst {
 		return nil
 	}
 
-	if c.NArg() == 0 {
+	if wd, _ := os.Getwd(); wd == src {
 		exec(c, "cd", dst)
 	}
 
-	_, err = os.Stat(dst)
+	_, err := os.Stat(dst)
 	if err == nil {
 		return errors.New("destination directory already exists")
 	} else if !os.IsNotExist(err) {
