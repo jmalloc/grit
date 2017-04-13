@@ -90,10 +90,10 @@ func main() {
 			BashComplete: autocomplete.New(autocomplete.Slug),
 		},
 		{
-			Name:      "mv",
-			Usage:     "Move a clone into the correct directory.",
-			ArgsUsage: "[<path>]",
-			Action:    withConfigAndIndex(mv),
+			Name:      "rename",
+			Usage:     "Change the remote URL and move the clone if necessary.",
+			ArgsUsage: "<slug | url> [<path>]",
+			Action:    withConfigAndIndex(rename),
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "golang, g",
@@ -102,10 +102,10 @@ func main() {
 			},
 		},
 		{
-			Name:      "rename",
-			Usage:     "Change the remote URL and move the clone accordingly.",
-			ArgsUsage: "<slug | url> [<path>]",
-			Action:    withConfigAndIndex(rename),
+			Name:      "mv",
+			Usage:     "Move a clone into the correct directory.",
+			ArgsUsage: "[<path>]",
+			Action:    withConfigAndIndex(mv),
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "golang, g",

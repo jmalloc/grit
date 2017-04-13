@@ -26,17 +26,19 @@ func rename(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return err
 	}
 
-	rem, ok, err := chooseRemote(cfg, c, src)
+	rem, ok, err := chooseRemote(cfg, c, src, func(rem *config.RemoteConfig, _ transport.Endpoint) string {
+		_, u := transformURL(rem, slugOrURL)
+		return " --> " + u
+	})
+
 	if err != nil {
 		return err
 	} else if !ok {
 		return errSilentFailure
 	}
 
-	ep, err := transformURL(rem, slugOrURL)
-	if err != nil {
-		return err
-	}
+	ep, u := transformURL(rem, slugOrURL)
+	rem.URL = u
 
 	err = updateRemote(src, rem)
 	if err != nil {
@@ -48,7 +50,7 @@ func rename(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	return moveClone(cfg, idx, c, src, dst)
 }
 
-func transformURL(rem *config.RemoteConfig, slugOrURL string) (ep transport.Endpoint, err error) {
+func transformURL(rem *config.RemoteConfig, slugOrURL string) (ep transport.Endpoint, u string) {
 	existing, err := transport.NewEndpoint(rem.URL)
 	if err != nil {
 		return
@@ -60,12 +62,12 @@ func transformURL(rem *config.RemoteConfig, slugOrURL string) (ep transport.Endp
 	}
 
 	if grit.EndpointIsSCP(rem.URL) {
-		rem.URL, err = grit.EndpointToSCP(ep)
+		u, err = grit.EndpointToSCP(ep)
 		if err != nil {
-			return
+			panic(err)
 		}
 	} else {
-		rem.URL = ep.String()
+		u = ep.String()
 	}
 
 	return

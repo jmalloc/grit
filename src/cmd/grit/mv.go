@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 
+	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 
 	"github.com/jmalloc/grit/src/grit"
@@ -23,7 +24,10 @@ func mv(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return err
 	}
 
-	rem, ok, err := chooseRemote(cfg, c, src)
+	rem, ok, err := chooseRemote(cfg, c, src, func(_ *config.RemoteConfig, ep transport.Endpoint) string {
+		return " --> " + grit.EndpointToDir(base, ep)
+	})
+
 	if err != nil {
 		return err
 	} else if !ok {
