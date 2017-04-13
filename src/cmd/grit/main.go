@@ -90,18 +90,6 @@ func main() {
 			BashComplete: autocomplete.New(autocomplete.Slug),
 		},
 		{
-			Name:      "rename",
-			Usage:     "Change the remote URL and move the clone if necessary.",
-			ArgsUsage: "<slug | url> [<path>]",
-			Action:    withConfigAndIndex(rename),
-			Flags: []cli.Flag{
-				cli.BoolFlag{
-					Name:  "golang, g",
-					Usage: "Move into the appropriate $GOPATH sub-directory.",
-				},
-			},
-		},
-		{
 			Name:      "mv",
 			Usage:     "Move a clone into the correct directory.",
 			ArgsUsage: "[<path>]",
@@ -123,6 +111,18 @@ func main() {
 				&cli.BoolFlag{
 					Name:  "force, f",
 					Usage: "Do not prompt for confirmation.",
+				},
+			},
+		},
+		{
+			Name:      "set-url",
+			Usage:     "Set the URL for a Git remote and move the clone into the correct directory.",
+			ArgsUsage: "<slug | url> [<path>]",
+			Action:    withConfigAndIndex(setURL),
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "golang, g",
+					Usage: "Move into the appropriate $GOPATH sub-directory.",
 				},
 			},
 		},

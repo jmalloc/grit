@@ -10,7 +10,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func rename(cfg grit.Config, idx *index.Index, c *cli.Context) error {
+func setURL(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	slugOrURL := c.Args().First()
 	if slugOrURL == "" {
 		return errNotEnoughArguments
