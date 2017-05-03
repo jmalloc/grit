@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2 (2017-05-03)
+
+- **[IMPROVED]** Show progress when cloning
+
 ## 0.6.1 (2017-04-13)
 
 - **[NEW]** Added `set-url` command, which changes the remote URL then moves the clone accordingly
