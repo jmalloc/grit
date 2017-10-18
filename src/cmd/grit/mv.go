@@ -34,7 +34,7 @@ func mv(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return errSilentFailure
 	}
 
-	ep, err := transport.NewEndpoint(rem.URL)
+	ep, _, err := grit.EndpointFromRemote(rem)
 	if err != nil {
 		return err
 	}

@@ -38,7 +38,7 @@ func setURL(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	}
 
 	ep, u := transformURL(rem, slugOrURL)
-	rem.URL = u
+	rem.URLs = []string{u}
 
 	err = updateRemote(src, rem)
 	if err != nil {
@@ -51,17 +51,19 @@ func setURL(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 }
 
 func transformURL(rem *config.RemoteConfig, slugOrURL string) (ep transport.Endpoint, u string) {
-	existing, err := transport.NewEndpoint(rem.URL)
+	existing, url, err := grit.EndpointFromRemote(rem)
 	if err != nil {
 		return
 	}
 
-	ep, err = transport.NewEndpoint(slugOrURL)
+	ep, isURL, err := grit.ParseEndpointOrSlug(slugOrURL)
 	if err != nil {
+		panic(err)
+	} else if !isURL {
 		ep = grit.MergeSlug(existing, slugOrURL)
 	}
 
-	if grit.EndpointIsSCP(rem.URL) {
+	if grit.EndpointIsSCP(url) {
 		u, err = grit.EndpointToSCP(ep)
 		if err != nil {
 			panic(err)

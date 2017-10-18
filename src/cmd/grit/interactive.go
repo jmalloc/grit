@@ -118,11 +118,12 @@ func chooseRemote(
 
 	for i, rem := range remotes {
 		cfg := rem.Config()
-		if ep, err := transport.NewEndpoint(cfg.URL); err == nil {
+		ep, url, err := grit.EndpointFromRemote(cfg)
+		if err == nil {
 			info := fn(cfg, ep)
-			opts = append(opts, fmt.Sprintf("[%s] %s%s", cfg.Name, cfg.URL, info))
+			opts = append(opts, fmt.Sprintf("[%s] %s%s", cfg.Name, url, info))
 		} else {
-			opts = append(opts, fmt.Sprintf("[%s] %s (invalid)", cfg.Name, cfg.URL))
+			opts = append(opts, fmt.Sprintf("[%s] %s (invalid)", cfg.Name, url))
 			invalid[i] = struct{}{}
 		}
 	}

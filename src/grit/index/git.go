@@ -6,7 +6,6 @@ import (
 	"github.com/jmalloc/grit/src/grit"
 
 	git "gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 )
 
 func slugsFromClone(dir string, filter EndpointFilter) (set, error) {
@@ -27,7 +26,7 @@ func slugsFromClone(dir string, filter EndpointFilter) (set, error) {
 
 	slugs := newSet()
 	for _, rem := range remotes {
-		ep, err := transport.NewEndpoint(rem.Config().URL)
+		ep, _, err := grit.EndpointFromRemote(rem.Config())
 		if err != nil {
 			continue // skip misconfigured remotes
 		}
