@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.3 (2017-10-18)
+
+- **[FIX]** Allow proper cloning of symlinks
+
 ## 0.6.2 (2017-05-03)
 
 - **[IMPROVED]** Show progress when cloning
