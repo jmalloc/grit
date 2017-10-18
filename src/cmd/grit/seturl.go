@@ -2,6 +2,7 @@ package main
 
 import (
 	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 
 	"github.com/jmalloc/grit/src/grit"
@@ -25,7 +26,7 @@ func setURL(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return err
 	}
 
-	rem, ok, err := chooseRemote(cfg, c, src, func(rem *git.Remote, _ transport.Endpoint) string {
+	rem, ok, err := chooseRemote(cfg, c, src, func(rem *config.RemoteConfig, _ transport.Endpoint) string {
 		_, u := transformURL(rem, slugOrURL)
 		return " --> " + u
 	})
@@ -37,7 +38,7 @@ func setURL(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	}
 
 	ep, u := transformURL(rem, slugOrURL)
-	rem.Config().URLs = []string{u}
+	rem.URLs = []string{u}
 
 	err = updateRemote(src, rem)
 	if err != nil {
@@ -49,7 +50,7 @@ func setURL(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	return moveClone(cfg, idx, c, src, dst)
 }
 
-func transformURL(rem *git.Remote, slugOrURL string) (ep transport.Endpoint, u string) {
+func transformURL(rem *config.RemoteConfig, slugOrURL string) (ep transport.Endpoint, u string) {
 	existing, url, err := grit.EndpointFromRemote(rem)
 	if err != nil {
 		return
@@ -74,19 +75,17 @@ func transformURL(rem *git.Remote, slugOrURL string) (ep transport.Endpoint, u s
 	return
 }
 
-func updateRemote(dir string, rem *git.Remote) error {
-	cfg := rem.Config()
-
+func updateRemote(dir string, rem *config.RemoteConfig) error {
 	r, err := git.PlainOpen(dir)
 	if err != nil {
 		return err
 	}
 
-	err = r.DeleteRemote(cfg.Name)
+	err = r.DeleteRemote(rem.Name)
 	if err != nil {
 		return err
 	}
 
-	_, err = r.CreateRemote(cfg)
+	_, err = r.CreateRemote(rem)
 	return err
 }

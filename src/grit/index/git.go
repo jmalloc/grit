@@ -26,7 +26,7 @@ func slugsFromClone(dir string, filter EndpointFilter) (set, error) {
 
 	slugs := newSet()
 	for _, rem := range remotes {
-		ep, _, err := grit.EndpointFromRemote(rem)
+		ep, _, err := grit.EndpointFromRemote(rem.Config())
 		if err != nil {
 			continue // skip misconfigured remotes
 		}

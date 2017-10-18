@@ -8,7 +8,7 @@ import (
 	"path"
 	"strings"
 
-	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/client"
 )
@@ -189,8 +189,8 @@ func EndpointToSCP(ep transport.Endpoint) (string, error) {
 }
 
 // EndpointFromRemote returns the endpoint used to fetch from r.
-func EndpointFromRemote(r *git.Remote) (ep transport.Endpoint, url string, err error) {
-	url = r.Config().URLs[0]
+func EndpointFromRemote(cfg *config.RemoteConfig) (ep transport.Endpoint, url string, err error) {
+	url = cfg.URLs[0]
 	ep, err = transport.NewEndpoint(url)
 	return
 }

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 
 	"github.com/jmalloc/grit/src/grit"
@@ -100,8 +101,8 @@ func chooseRemote(
 	cfg grit.Config,
 	c *cli.Context,
 	dir string,
-	fn func(*git.Remote, transport.Endpoint) string,
-) (*git.Remote, bool, error) {
+	fn func(*config.RemoteConfig, transport.Endpoint) string,
+) (*config.RemoteConfig, bool, error) {
 	r, err := git.PlainOpen(dir)
 	if err != nil {
 		return nil, false, err
@@ -117,9 +118,9 @@ func chooseRemote(
 
 	for i, rem := range remotes {
 		cfg := rem.Config()
-		ep, url, err := grit.EndpointFromRemote(rem)
+		ep, url, err := grit.EndpointFromRemote(cfg)
 		if err == nil {
-			info := fn(rem, ep)
+			info := fn(cfg, ep)
 			opts = append(opts, fmt.Sprintf("[%s] %s%s", cfg.Name, url, info))
 		} else {
 			opts = append(opts, fmt.Sprintf("[%s] %s (invalid)", cfg.Name, url))
@@ -132,7 +133,7 @@ func chooseRemote(
 			return nil, false, errors.New("the selected remote does not have a valid endpoint URL")
 		}
 
-		return remotes[i], true, nil
+		return remotes[i].Config(), true, nil
 	}
 
 	return nil, false, nil
