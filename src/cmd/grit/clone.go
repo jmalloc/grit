@@ -109,8 +109,10 @@ func getCloneEndpoint(cfg grit.Config, c *cli.Context) (grit.Endpoint, error) {
 
 	source := c.String("source")
 
-	normalized, err := transport.NewEndpoint(slugOrURL)
-	if err == nil {
+	normalized, isURL, err := grit.ParseEndpointOrSlug(slugOrURL)
+	if err != nil {
+		return grit.Endpoint{}, err
+	} else if isURL {
 		if source != "" {
 			return grit.Endpoint{}, usageError("can not combine --source with a URL")
 		}

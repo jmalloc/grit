@@ -55,8 +55,10 @@ func transformURL(rem *git.Remote, slugOrURL string) (ep transport.Endpoint, u s
 		return
 	}
 
-	ep, err = transport.NewEndpoint(slugOrURL)
+	ep, isURL, err := grit.ParseEndpointOrSlug(slugOrURL)
 	if err != nil {
+		panic(err)
+	} else if !isURL {
 		ep = grit.MergeSlug(existing, slugOrURL)
 	}
 

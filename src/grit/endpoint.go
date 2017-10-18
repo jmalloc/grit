@@ -2,7 +2,6 @@ package grit
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"html/template"
 	"os"
@@ -178,7 +177,7 @@ func EndpointIsSCP(s string) bool {
 // EndpointToSCP converts a normalized ssh:// endpoint URL to an SCP-style URL.
 func EndpointToSCP(ep transport.Endpoint) (string, error) {
 	if ep.Protocol() != "ssh" {
-		return "", errors.New("not an SSH endpoint")
+		return "", fmt.Errorf("unexpected protocol: %s, expected ssh", ep.Protocol())
 	}
 
 	return fmt.Sprintf(
@@ -193,5 +192,17 @@ func EndpointToSCP(ep transport.Endpoint) (string, error) {
 func EndpointFromRemote(r *git.Remote) (ep transport.Endpoint, url string, err error) {
 	url = r.Config().URLs[0]
 	ep, err = transport.NewEndpoint(url)
+	return
+}
+
+// ParseEndpointOrSlug returns an endpoint if s contains a valid endpoint URL.
+// If s is a "slug", isEndpoint is false.
+func ParseEndpointOrSlug(s string) (ep transport.Endpoint, isEndpoint bool, err error) {
+	ep, err = transport.NewEndpoint(s)
+	if err != nil {
+		return
+	}
+
+	isEndpoint = ep.Protocol() != "file"
 	return
 }
