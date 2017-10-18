@@ -17,7 +17,7 @@ deploy:
   - artifacts/archives/grit-darwin-amd64.tar.gz
   - artifacts/archives/grit-linux-amd64.tar.gz
   - artifacts/archives/grit-windows-amd64.zip
-  go: '1.8'
+  go: '1.9'
   on:
     repo: jmalloc/grit
     tags: true
