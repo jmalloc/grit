@@ -95,18 +95,14 @@ func Download(
 
 	req = req.WithContext(ctx)
 	req.Size = int64(archive.GetSize())
-	// req.RemoveOnError = true // TODO ??
+
+	defer func() {
+		if err != nil {
+			_ = os.Remove(req.Filename)
+		}
+	}()
 
 	res := dl.Do(req)
-
-	// // wait for the download response to become ready, or the context deadline
-	// select {
-	// case <-ctx.Done():
-	// 	dl.CancelRequest(req)
-	// 	err = ctx.Err()
-	// 	return
-	// case res = <-ready:
-	// }
 
 	// create a ticker for invoking the progress function ...
 	ticker := time.NewTicker(100 * time.Millisecond)
