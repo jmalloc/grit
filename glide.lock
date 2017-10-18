@@ -1,34 +1,36 @@
 hash: 5f3b63cc6807a08c58d2f5c5683c47532649584dc3e04fbe5e94119437bcd9ea
-updated: 2017-03-23T19:24:03.414509142+10:00
+updated: 2017-10-18T10:04:17.19982567+10:00
 imports:
 - name: github.com/boltdb/bolt
-  version: 583e8937c61f1af6513608ccc75c97b6abdf4ff9
+  version: 2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8
 - name: github.com/BurntSushi/toml
   version: bbd5bb678321a0d6e58f1099321dfa73391c1b6f
 - name: github.com/cavaliercoder/grab
-  version: e403b038e10c3c6aaf022ab0f8502bd659604140
+  version: 1fa46fa9806896245c0a3707187c8b5bbd5c0701
 - name: github.com/davecgh/go-spew
   version: 346938d642f2ec3594ed81d874461961cd0faa76
 - name: github.com/dustin/go-humanize
-  version: 259d2a102b871d17f30e3cd9881a642961a1e486
-- name: github.com/golang/protobuf
-  version: c9c7427a2a70d2eb3bafa0ab2dc163e45f143317
-  subpackages:
-  - proto
+  version: 77ed807830b4df581417e7f89eb81d4872832b72
 - name: github.com/google/go-github
-  version: d683a1c6198d75c6be7a7ab5e2f9834cb6408834
+  version: a021c14a5f1960591b0e1773a4a2ef8257ec93b8
   subpackages:
   - github
 - name: github.com/google/go-querystring
   version: 53e6ce116135b80d037921a7fdd5138cf32d7a8a
   subpackages:
   - query
+- name: github.com/jbenet/go-context
+  version: d14ea06fba99483203c19d92cfcd13ebe73135f4
+  subpackages:
+  - io
 - name: github.com/logrusorgru/aurora
-  version: 962a6974312dde57d1f6f5738b4f83e1af9f38a4
+  version: b9c3722b64a1976e0624448ee7f5a0744b8cf629
 - name: github.com/Masterminds/semver
-  version: 59c29afe1a994eacb71c833025ca7acf874bb1da
+  version: 3f0ab6d4ab4bed1c61caf056b63a6e62190c7801
+- name: github.com/mitchellh/go-homedir
+  version: b8bc1bf767474819792c23f32d8286a45736f1c6
 - name: github.com/sergi/go-diff
-  version: 24e2351369ec4949b2ed0dc5c477afdd4c4034e8
+  version: feef008d51ad2b3778f85d387ccf91735543008d
   subpackages:
   - diffmatchpatch
 - name: github.com/src-d/gcfg
@@ -39,38 +41,39 @@ imports:
   - types
 - name: github.com/urfave/cli
   version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
+- name: github.com/xanzy/ssh-agent
+  version: ba9c9e33906f58169366275e3450db66139a31a9
 - name: golang.org/x/crypto
-  version: 728b753d0135da6801d45a38e6f43ff55779c5c2
+  version: 9419663f5a44be8b34ca85f08abc5fe1be11f8a3
   subpackages:
   - curve25519
   - ed25519
   - ed25519/internal/edwards25519
   - ssh
   - ssh/agent
+  - ssh/knownhosts
 - name: golang.org/x/net
-  version: a6577fac2d73be281a500b310739095313165611
+  version: 1087133bc4af3073e18add999345c6ae75918503
   subpackages:
   - context
 - name: golang.org/x/sys
-  version: 99f16d856c9836c42d24e7ab64ea72916925fa97
+  version: 8dbc5d05d6edcc104950cc299a1ce6641235bc86
   subpackages:
   - unix
-- name: google.golang.org/appengine
-  version: 56d253d1dd14aa01937e12c73a0971bcfd797ff2
+- name: golang.org/x/text
+  version: c01e4764d870b77f8abe5096ee19ad20d80e8075
   subpackages:
-  - internal
-  - internal/app_identity
-  - internal/base
-  - internal/datastore
-  - internal/log
-  - internal/modules
-  - internal/remote_api
-- name: gopkg.in/src-d/go-billy.v2
-  version: 0dfa3dd2e89c570b8e1e25f5b28647525c44c3ca
+  - transform
+  - unicode/norm
+- name: gopkg.in/src-d/go-billy.v3
+  version: c329b7bc7b9d24905d2bc1b85bfa29f7ae266314
   subpackages:
+  - helper/chroot
+  - helper/polyfill
   - osfs
+  - util
 - name: gopkg.in/src-d/go-git.v4
-  version: 4eef16a98d093057f1e4c560da4ed3bbba67cd76
+  version: f9879dd043f84936a1f8acb8a53b74332a7ae135
   subpackages:
   - config
   - internal/revision
@@ -78,6 +81,8 @@ imports:
   - plumbing/cache
   - plumbing/filemode
   - plumbing/format/config
+  - plumbing/format/diff
+  - plumbing/format/gitignore
   - plumbing/format/idxfile
   - plumbing/format/index
   - plumbing/format/objfile
@@ -105,6 +110,8 @@ imports:
   - utils/diff
   - utils/ioutil
   - utils/merkletrie
+  - utils/merkletrie/filesystem
+  - utils/merkletrie/index
   - utils/merkletrie/internal/frame
   - utils/merkletrie/noder
 - name: gopkg.in/warnings.v0

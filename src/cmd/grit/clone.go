@@ -66,7 +66,7 @@ func setupTracking(r *git.Repository, dir string) error {
 		return err
 	}
 
-	if !head.IsBranch() {
+	if !head.Name().IsBranch() {
 		return nil
 	}
 

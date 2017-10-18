@@ -85,51 +85,51 @@ func Download(
 		return
 	}
 
-	req, err := grab.NewRequest(archive.GetBrowserDownloadURL())
+	req, err := grab.NewRequest(
+		downloadPath(rel),
+		archive.GetBrowserDownloadURL(),
+	)
 	if err != nil {
 		return
 	}
 
-	req.RemoveOnError = true
-	req.Size = uint64(archive.GetSize())
-	req.Filename = downloadPath(rel)
+	req = req.WithContext(ctx)
+	req.Size = int64(archive.GetSize())
+	// req.RemoveOnError = true // TODO ??
 
-	ready := dl.DoAsync(req)
-	var res *grab.Response
+	res := dl.Do(req)
 
-	// wait for the download response to become ready, or the context deadline
-	select {
-	case <-ctx.Done():
-		dl.CancelRequest(req)
-		err = ctx.Err()
-		return
-	case res = <-ready:
-	}
+	// // wait for the download response to become ready, or the context deadline
+	// select {
+	// case <-ctx.Done():
+	// 	dl.CancelRequest(req)
+	// 	err = ctx.Err()
+	// 	return
+	// case res = <-ready:
+	// }
 
 	// create a ticker for invoking the progress function ...
 	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
 
-	seen := uint64(0)
-	for !res.IsComplete() {
+	var seen int64
+
+	for {
 		select {
-		case <-ctx.Done():
-			dl.CancelRequest(req)
-			err = ctx.Err()
+		case <-res.Done:
+			p = res.Filename
+			err = res.Err()
 			return
+
 		case <-ticker.C:
-			if res.BytesTransferred() > seen {
-				seen = res.BytesTransferred()
+			if res.BytesComplete() > seen {
+				seen = res.BytesComplete()
 				if progress != nil {
-					progress(seen, req.Size)
+					progress(uint64(seen), uint64(req.Size))
 				}
 			}
 		}
 	}
-
-	p = res.Filename
-	err = res.Error
-	return
 }
 
 func asset(rel *github.RepositoryRelease) (*github.ReleaseAsset, error) {

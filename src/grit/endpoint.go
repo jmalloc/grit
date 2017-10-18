@@ -9,6 +9,7 @@ import (
 	"path"
 	"strings"
 
+	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/client"
 )
@@ -44,7 +45,7 @@ func (t EndpointTemplate) IsMatch(e transport.Endpoint) bool {
 	}
 
 	// TODO: match slug heuristically
-	return e.Scheme == ep.Scheme && e.Host == ep.Host
+	return e.Protocol() == ep.Protocol() && e.Host() == ep.Host()
 }
 
 // virtualEndpoint returns a Git endpoint from the template as though we had
@@ -117,22 +118,33 @@ func EndpointExists(ep Endpoint) (ok bool, err error) {
 func EndpointToDir(base string, ep transport.Endpoint) string {
 	slug := EndpointToSlug(ep)
 	parts := strings.Split(slug, slugSeparator)
-	return path.Join(base, ep.Host, path.Join(parts...))
+	return path.Join(base, ep.Host(), path.Join(parts...))
 }
 
 // EndpointToSlug returns the "slug" from ep.
 func EndpointToSlug(ep transport.Endpoint) string {
 	return strings.TrimSuffix(
-		strings.TrimPrefix(ep.Path, slugSeparator),
-		path.Ext(ep.Path),
+		strings.TrimPrefix(ep.Path(), slugSeparator),
+		path.Ext(ep.Path()),
 	)
 }
 
 // ReplaceSlug returns a copy of ep with the slug changed to s.
 func ReplaceSlug(ep transport.Endpoint, s string) transport.Endpoint {
-	ext := path.Ext(ep.Path)
-	ep.Path = slugSeparator + s + ext
-	return ep
+	new, err := transport.NewEndpoint(
+		strings.Replace(
+			ep.String(),
+			ep.Path(),
+			slugSeparator+s+path.Ext(ep.Path()),
+			1,
+		),
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return new
 }
 
 // MergeSlug returns a copy of ep with the slug changed to s. If s has less
@@ -159,20 +171,27 @@ func EndpointIsSCP(s string) bool {
 	ep, err := transport.NewEndpoint(s)
 
 	return err == nil &&
-		ep.Scheme == "ssh" &&
+		ep.Protocol() == "ssh" &&
 		!strings.HasPrefix(s, "ssh://")
 }
 
 // EndpointToSCP converts a normalized ssh:// endpoint URL to an SCP-style URL.
 func EndpointToSCP(ep transport.Endpoint) (string, error) {
-	if ep.Scheme != "ssh" {
+	if ep.Protocol() != "ssh" {
 		return "", errors.New("not an SSH endpoint")
 	}
 
 	return fmt.Sprintf(
 		"%s@%s:%s",
-		ep.User,
-		ep.Host,
-		strings.TrimPrefix(ep.Path, slugSeparator),
+		ep.User(),
+		ep.Host(),
+		strings.TrimPrefix(ep.Path(), slugSeparator),
 	), nil
+}
+
+// EndpointFromRemote returns the endpoint used to fetch from r.
+func EndpointFromRemote(r *git.Remote) (ep transport.Endpoint, url string, err error) {
+	url = r.Config().URLs[0]
+	ep, err = transport.NewEndpoint(url)
+	return
 }
