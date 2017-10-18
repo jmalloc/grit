@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.4 (2017-10-19)
+
+- **[FIX]** Fix issue that prevented Grit from automatically checking for new versions
+
 ## 0.6.3 (2017-10-18)
 
 - **[FIX]** Allow proper cloning of symlinks
