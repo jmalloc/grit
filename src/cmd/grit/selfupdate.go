@@ -144,8 +144,6 @@ func checkForUpdates() {
 	updateCheckCancel = cancel
 
 	go func() {
-		defer close(updateCheckResult)
-
 		bin, err := os.Executable()
 		if err != nil {
 			return
@@ -157,12 +155,15 @@ func checkForUpdates() {
 		}
 
 		if time.Since(info.ModTime()) < updateCheckPeriod {
+			updateCheckCancel()
 			return
 		}
 
 		gh := github.NewClient(nil)
 		if latest, ok, _ := update.IsOutdated(updateCheckContext, gh, VERSION); ok {
 			updateCheckResult <- latest
+		} else {
+			close(updateCheckResult)
 		}
 	}()
 }
