@@ -3,6 +3,7 @@
 ## Next Release
 
 - **[NEW]** Added `ls` command, which lists all clones in the index
+- **[FIX]** Fix issue that prevented cloning of empty repositories
 
 ## 0.6.4 (2017-10-19)
 
