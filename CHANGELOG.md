@@ -1,5 +1,9 @@
 # Changelog
 
+## Next Release
+
+- **[NEW]** Added `ls` command, which lists all clones in the index
+
 ## 0.6.4 (2017-10-19)
 
 - **[FIX]** Fix issue that prevented Grit from automatically checking for new versions

@@ -8,5 +8,5 @@ import (
 
 // Slug provides auto-completion for indexed slugs.
 func Slug(cfg grit.Config, idx *index.Index, c *cli.Context, arg string) []string {
-	return idx.List(arg)
+	return idx.ListSlugs(arg)
 }

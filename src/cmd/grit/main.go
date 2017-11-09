@@ -90,6 +90,11 @@ func main() {
 			BashComplete: autocomplete.New(autocomplete.Slug),
 		},
 		{
+			Name:   "ls",
+			Usage:  "List all clones in the index.",
+			Action: withConfigAndIndex(ls),
+		},
+		{
 			Name:      "mv",
 			Usage:     "Move a clone into the correct directory.",
 			ArgsUsage: "[<path>]",
@@ -223,7 +228,7 @@ func main() {
 }
 
 // withConfig creates a CLI action function that calls fn with the Grit
-// config and parameter.
+// config parameter.
 func withConfig(fn func(grit.Config, *cli.Context) error) cli.ActionFunc {
 	return func(c *cli.Context) error {
 		cfg, err := grit.LoadConfig(c.GlobalString("config"))
@@ -298,4 +303,19 @@ func dirFromArg(c *cli.Context, n int) (string, error) {
 	}
 
 	return c.Args()[n], nil
+}
+
+// formatDir returns dir formatted for display.
+func formatDir(cfg grit.Config, dir string) string {
+	gosrc, _ := pathutil.GoSrc()
+
+	if rel, ok := pathutil.RelChild(gosrc, dir); ok && gosrc != "" {
+		return fmt.Sprintf("[go] %s", rel)
+	}
+
+	if rel, ok := pathutil.RelChild(cfg.Clone.Root, dir); ok {
+		return fmt.Sprintf("[grit] %s", rel)
+	}
+
+	return dir
 }

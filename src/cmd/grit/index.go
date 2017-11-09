@@ -11,7 +11,7 @@ import (
 )
 
 func indexList(cfg grit.Config, idx *index.Index, c *cli.Context) error {
-	for _, s := range idx.List(c.Args().First()) {
+	for _, s := range idx.ListSlugs(c.Args().First()) {
 		write(c, s)
 	}
 

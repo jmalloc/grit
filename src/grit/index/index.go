@@ -106,8 +106,8 @@ func (i *Index) Find(slug string) []string {
 	return rec.Dirs.Keys()
 }
 
-// List returns the slugs that begin with p, which may be empty.
-func (i *Index) List(p string) []string {
+// ListSlugs returns the slugs that begin with p, which may be empty.
+func (i *Index) ListSlugs(p string) []string {
 	var slugs []string
 
 	err := i.db.View(func(tx *bolt.Tx) error {
@@ -130,6 +130,29 @@ func (i *Index) List(p string) []string {
 	}
 
 	return slugs
+}
+
+// ListClones returns a list of all clone directories.
+func (i *Index) ListClones() []string {
+	var dirs []string
+
+	err := i.db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(dirBucket)
+		if bucket == nil {
+			return nil
+		}
+
+		return bucket.ForEach(func(dir []byte, _ []byte) error {
+			dirs = append(dirs, string(dir))
+			return nil
+		})
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	return dirs
 }
 
 // Prune removes directories that no longer exist.
