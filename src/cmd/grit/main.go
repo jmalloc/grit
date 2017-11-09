@@ -90,6 +90,12 @@ func main() {
 			BashComplete: autocomplete.New(autocomplete.Slug),
 		},
 		{
+			Name:      "ls",
+			Usage:     "List slugs that begin with a prefix (alias of \"index ls\".",
+			ArgsUsage: "[<prefix>]",
+			Action:    withConfigAndIndex(indexList),
+		},
+		{
 			Name:      "mv",
 			Usage:     "Move a clone into the correct directory.",
 			ArgsUsage: "[<path>]",
