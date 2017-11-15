@@ -2,7 +2,7 @@ set -e
 set -o pipefail
 
 dir=$(mktemp -d)
-git clone git@github.com:jmalloc/homebrew-grit "$dir"
+git clone "https://${GITHUB_TOKEN}@github.com/jmalloc/homebrew-grit" "$dir"
 cd "$dir"
 
 tee grit.rb <<EOF
