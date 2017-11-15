@@ -1,6 +1,6 @@
 # Changelog
 
-## Next Release
+## 0.6.5 (2017-11-15)
 
 - **[NEW]** Added `ls` command, which lists all clones in the index
 - **[FIX]** Fix issue that prevented cloning of empty repositories
