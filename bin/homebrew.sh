@@ -24,4 +24,4 @@ class Grit < Formula
 end
 EOF
 
-git commit -a 'Update to v${TRAVIS_TAG}'
+git commit -a -m 'Update to v${TRAVIS_TAG}'
