@@ -1,6 +1,8 @@
 set -e
 set -o pipefail
 
+HASH="$(shasum -a 256 $1 | awk '{ print $1 }')"
+
 dir=$(mktemp -d)
 git clone "https://${GITHUB_TOKEN}@github.com/jmalloc/homebrew-grit" "$dir"
 cd "$dir"
@@ -12,7 +14,7 @@ class Grit < Formula
 
   version "${TRAVIS_TAG}"
   url "https://github.com/jmalloc/grit/releases/download/${TRAVIS_TAG}/grit-darwin-amd64.tar.gz"
-  sha256 "$(shasum -a 256 "$1" | awk '{ print $1 }')"
+  sha256 "${HASH}"
 
   def install
       bin.install "grit"
@@ -24,4 +26,5 @@ class Grit < Formula
 end
 EOF
 
-git commit -a -m 'Update to v${TRAVIS_TAG}'
+git commit -a -m "Update to v${TRAVIS_TAG}"
+git push
