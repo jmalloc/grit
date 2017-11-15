@@ -32,7 +32,7 @@ it to GitHub in case it works for you too.
 If you want to get a sense of what Grit does without having to read or
 understand anything, try this:
 
-1. Download `grit` from the [releases page](https://github.com/jmalloc/grit/releases)
+1. Download `grit` from the [releases page](https://github.com/jmalloc/grit/releases) or [install with Homebrew](https://github.com/jmalloc/homebrew-grit)
 1. Clone a repository with `grit clone <repo>` maybe try `grit clone jmalloc/grit`
 1. Find a repository with `grit index find <repo>`
 
