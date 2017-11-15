@@ -1,12 +1,7 @@
 language: go
 go:
 - '1.9'
-- tip
-matrix:
-  fast_finish: true
-  allow_failures:
-  - go: tip
-script: make ci -j 8
+script: make ci
 before_deploy: make archives
 deploy:
   provider: releases
@@ -21,3 +16,4 @@ deploy:
   on:
     repo: jmalloc/grit
     tags: true
+after_deploy: make homebrew

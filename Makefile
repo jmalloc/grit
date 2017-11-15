@@ -7,3 +7,6 @@ run: artifacts/build/debug/$(GOOS)/$(GOARCH)/grit
 
 artifacts/make/%.mk:
 	bash <(curl -s https://rinq.github.io/make/install) $*
+
+homebrew: artifacts/archives/grit-darwin-amd64.tar.gz
+	bin/homebrew.sh "$<"
