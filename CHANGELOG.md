@@ -1,5 +1,9 @@
 # Changelog
 
+## Next Release
+
+- **[IMPROVED]** Only check for updates when STDOUT is a TTY
+
 ## 0.6.5 (2017-11-15)
 
 - **[NEW]** Added `ls` command, which lists all clones in the index
