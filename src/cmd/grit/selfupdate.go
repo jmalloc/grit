@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -20,6 +21,17 @@ func selfUpdate(c *cli.Context) error {
 	// cancel the automatic background check early if it's running
 	if updateCheckCancel != nil {
 		updateCheckCancel()
+	}
+
+	if !c.Bool("force") {
+		isBrew, err := isBrewBinary()
+		if err != nil {
+			return err
+		} else if isBrew {
+			return errors.New(
+				"grit was installed via homebrew, use 'brew upgrade grit' to upgrade",
+			)
+		}
 	}
 
 	// setup a deadline first ...
@@ -190,4 +202,18 @@ func waitForUpdateCheck() {
 			_ = os.Chtimes(bin, now, now)
 		}
 	}
+}
+
+func isBrewBinary() (bool, error) {
+	bin, err := os.Executable()
+	if err != nil {
+		return false, err
+	}
+
+	bin, err = filepath.EvalSymlinks(bin)
+	if err != nil {
+		return false, err
+	}
+
+	return strings.HasSuffix(bin, "/Cellar/grit/"+VERSION.String()+"/bin/grit"), nil
 }

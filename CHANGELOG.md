@@ -3,6 +3,7 @@
 ## Next Release
 
 - **[IMPROVED]** Only check for updates when STDOUT is a TTY
+- **[IMPROVED]** Don't allow `self-update` to replace binaries installed by Homebrew
 
 ## 0.6.5 (2017-11-15)
 
