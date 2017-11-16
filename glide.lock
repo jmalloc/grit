@@ -1,5 +1,5 @@
-hash: 5f3b63cc6807a08c58d2f5c5683c47532649584dc3e04fbe5e94119437bcd9ea
-updated: 2017-10-18T10:04:17.19982567+10:00
+hash: 0c5385934fa86698adf1516f64609cce26a670d70124626e9c648ac3a7facfcc
+updated: 2017-11-16T15:51:42.26142+10:00
 imports:
 - name: github.com/boltdb/bolt
   version: 2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8
@@ -27,6 +27,8 @@ imports:
   version: b9c3722b64a1976e0624448ee7f5a0744b8cf629
 - name: github.com/Masterminds/semver
   version: 3f0ab6d4ab4bed1c61caf056b63a6e62190c7801
+- name: github.com/mattn/go-isatty
+  version: 0360b2af4f38e8d38c7fce2a9f4e702702d73a39
 - name: github.com/mitchellh/go-homedir
   version: b8bc1bf767474819792c23f32d8286a45736f1c6
 - name: github.com/sergi/go-diff

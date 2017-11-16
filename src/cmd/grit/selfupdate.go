@@ -18,7 +18,9 @@ import (
 
 func selfUpdate(c *cli.Context) error {
 	// cancel the automatic background check early if it's running
-	updateCheckCancel()
+	if updateCheckCancel != nil {
+		updateCheckCancel()
+	}
 
 	// setup a deadline first ...
 	timeout := time.Duration(c.Int("timeout")) * time.Second

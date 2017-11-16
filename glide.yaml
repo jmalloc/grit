@@ -18,3 +18,5 @@ import:
   version: ~1.2.2
 - package: github.com/cavaliercoder/grab
 - package: github.com/dustin/go-humanize
+- package: github.com/mattn/go-isatty
+  version: ~0.0.3

@@ -11,6 +11,7 @@ import (
 	"github.com/jmalloc/grit/src/grit/index"
 	"github.com/jmalloc/grit/src/grit/pathutil"
 	"github.com/jmalloc/grit/src/grit/update"
+	isatty "github.com/mattn/go-isatty"
 	"github.com/urfave/cli"
 )
 
@@ -18,8 +19,10 @@ import (
 var VERSION = semver.MustParse("0.6.5")
 
 func main() {
-	checkForUpdates()
-	defer waitForUpdateCheck()
+	if isatty.IsTerminal(os.Stdout.Fd()) {
+		checkForUpdates()
+		defer waitForUpdateCheck()
+	}
 
 	app := cli.NewApp()
 	homeDir, _ := pathutil.HomeDir()
