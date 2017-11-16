@@ -1,6 +1,6 @@
 # Changelog
 
-## Next Release
+## 0.6.6 (2017-11-16)
 
 - **[IMPROVED]** Only check for updates when STDOUT is a TTY
 - **[IMPROVED]** Don't allow `self-update` to replace binaries installed by Homebrew
