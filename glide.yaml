@@ -6,11 +6,8 @@ import:
   version: ~1.19.1
 - package: github.com/BurntSushi/toml
   version: ~0.2.0
-- package: github.com/davecgh/go-spew
-  version: ~1.1.0
 - package: gopkg.in/src-d/go-git.v4
   version: ~4.0.0-rc9
-- package: github.com/logrusorgru/aurora
 - package: github.com/google/go-github
   subpackages:
   - github
