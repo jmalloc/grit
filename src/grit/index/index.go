@@ -106,6 +106,36 @@ func (i *Index) Find(slug string) []string {
 	return rec.Dirs.Keys()
 }
 
+// FindByDir returns a list of slugs that match dir. dir may be a
+// sub-directory of the clone. d is the indexed directory, i.e. the clone root.
+func (i *Index) FindByDir(dir string) (s []string, d string) {
+	err := i.db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(dirBucket)
+		if bucket != nil {
+			d = dir
+			for d != "." && d != "/" {
+				k := []byte(d)
+				v := bucket.Get(k)
+
+				if v != nil {
+					rec := unpackDirRecord(v)
+					s = rec.Slugs.Keys()
+					return nil
+				}
+
+				d = path.Dir(d)
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	return
+}
+
 // ListSlugs returns the slugs that begin with p, which may be empty.
 func (i *Index) ListSlugs(p string) []string {
 	var slugs []string

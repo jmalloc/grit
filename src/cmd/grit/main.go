@@ -123,6 +123,22 @@ func main() {
 			},
 		},
 		{
+			Name:      "slug",
+			Usage:     "Display the index slug for a clone.",
+			ArgsUsage: "[<path>]",
+			Action:    withConfigAndIndex(slug),
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "all, a",
+					Usage: "Include partial slugs.",
+				},
+				cli.BoolFlag{
+					Name:  "exact, e",
+					Usage: "Only display slugs if <path> is the clone directory.",
+				},
+			},
+		},
+		{
 			Name:      "set-url",
 			Usage:     "Set the URL for a Git remote and move the clone into the correct directory.",
 			ArgsUsage: "<slug | url> [<path>]",

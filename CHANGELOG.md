@@ -1,5 +1,9 @@
 # Changelog
 
+## Next Release
+
+- **[NEW]** Added `slug` command, which prints the slug for the current clone directory
+
 ## 0.6.6 (2017-11-16)
 
 - **[IMPROVED]** Only check for updates when STDOUT is a TTY
