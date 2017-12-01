@@ -1,36 +1,29 @@
 package main
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
-	"os"
-	"strconv"
-	"strings"
 
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 
 	"github.com/jmalloc/grit/src/grit"
+	"github.com/manifoldco/promptui"
 	"github.com/urfave/cli"
 )
 
 func confirm(c *cli.Context, msg string) bool {
-	scanner := bufio.NewScanner(os.Stdin)
+	prompt := promptui.Prompt{
+		Label:     msg,
+		IsConfirm: true,
+	}
 
 	for {
-		fmt.Fprintf(c.App.Writer, "%s [y/n]: ", msg)
-
-		scanner.Scan()
-		input := scanner.Text()
-		input = strings.TrimSpace(input)
-		input = strings.ToLower(input)
-
-		switch input {
-		case "y", "yes":
+		v, _ := prompt.Run()
+		if v == "y" {
 			return true
-		case "n", "no", "":
+		} else if v == "n" || v == "" {
 			return false
 		}
 	}
@@ -46,33 +39,13 @@ func choose(c *cli.Context, opt []string) (int, bool) {
 		return 0, true
 	}
 
-	width := len(strconv.Itoa(size))
-	f := fmt.Sprintf("  %%%dd) %%s", width)
-
-	for i, o := range opt {
-		write(c, f, i+1, o)
+	prompt := promptui.Select{
+		Label: "",
+		Items: opt,
 	}
 
-	scanner := bufio.NewScanner(os.Stdin)
-
-	for {
-		fmt.Fprint(c.App.Writer, ": ")
-
-		scanner.Scan()
-		input := scanner.Text()
-
-		switch strings.ToLower(input) {
-		case "q", "quit":
-			return 0, false
-		default:
-			i64, _ := strconv.ParseUint(input, 10, 64)
-			idx := int(i64)
-
-			if idx >= 1 && idx <= size {
-				return idx - 1, true
-			}
-		}
-	}
+	idx, _, err := prompt.Run()
+	return idx, err == nil
 }
 
 func chooseCloneDir(cfg grit.Config, c *cli.Context, dirs []string) (string, bool) {

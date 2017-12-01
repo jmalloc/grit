@@ -1,5 +1,5 @@
-hash: 319c1e2c76199ea7dfad795f0b68f17367bdc7f688fe0692b0052f20d46a74b9
-updated: 2017-11-30T21:29:47.508853+10:00
+hash: 6ee15d125c5e97e8156596d935fdd489099b904af125684e75e9fb6e4e9c3396
+updated: 2017-12-01T12:46:06.519582295+10:00
 imports:
 - name: github.com/boltdb/bolt
   version: 2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8
@@ -7,6 +7,8 @@ imports:
   version: bbd5bb678321a0d6e58f1099321dfa73391c1b6f
 - name: github.com/cavaliercoder/grab
   version: 1fa46fa9806896245c0a3707187c8b5bbd5c0701
+- name: github.com/chzyer/readline
+  version: a4d5111b617813c5d09df1ba6d76394ed71b1644
 - name: github.com/dustin/go-humanize
   version: bb3d318650d48840a39aa21a027c6630e198e626
 - name: github.com/google/go-github
@@ -21,8 +23,21 @@ imports:
   version: d14ea06fba99483203c19d92cfcd13ebe73135f4
   subpackages:
   - io
+- name: github.com/juju/ansiterm
+  version: 35c59b9e0fe275705a71bf5d58ee293f27efbbc4
+  subpackages:
+  - tabwriter
+- name: github.com/lunixbochs/vtclean
+  version: d14193dfc626125c831501c1c42340b4248e1f5a
+- name: github.com/manifoldco/promptui
+  version: f6438f6153008ee1b9ba5446d5333bbe63b622b7
+  subpackages:
+  - list
+  - screenbuf
 - name: github.com/Masterminds/semver
   version: 3f0ab6d4ab4bed1c61caf056b63a6e62190c7801
+- name: github.com/mattn/go-colorable
+  version: 6fcc0c1fd9b620311d821b106a400b35dc95c497
 - name: github.com/mattn/go-isatty
   version: 0360b2af4f38e8d38c7fce2a9f4e702702d73a39
 - name: github.com/mitchellh/go-homedir

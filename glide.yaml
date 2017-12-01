@@ -17,3 +17,5 @@ import:
 - package: github.com/dustin/go-humanize
 - package: github.com/mattn/go-isatty
   version: ~0.0.3
+- package: github.com/manifoldco/promptui
+  version: ~0.2.1
