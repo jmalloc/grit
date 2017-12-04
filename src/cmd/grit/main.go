@@ -140,7 +140,7 @@ func main() {
 		},
 		{
 			Name:         "browse",
-			Usage:        "Open the repository's webpage in the system's default browser.",
+			Usage:        "Open the repository's home page with the system's default browser.",
 			UsageText:    "This command currently assumes all sources refer to GitHub or GitHub Enterprise servers.",
 			ArgsUsage:    "[<slug>]",
 			Action:       withConfigAndIndex(browse),
