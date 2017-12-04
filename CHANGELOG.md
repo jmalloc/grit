@@ -1,6 +1,6 @@
 # Changelog
 
-## Next Release
+## 0.6.7 (2017-12-04)
 
 - **[NEW]** Added `slug` command, which prints the slug for the current clone directory
 - **[NEW]** Added `browse` command, which opens the webpage for the current repo (assumes GitHub / GHE)
@@ -39,7 +39,7 @@ This release introduces another (and hopefully the final) change to the default
 location of the configuration and index files. The configuration file is now
 at `~/.config/grit.toml`, following a convention adopted by several other Git
 utilities. The index is now stored in the clone root, at `~/grit/index.v2`.
-This means that the `~/.grit` directory is longer used.
+This means that the `~/.grit` directory is no longer used.
 
 If you are using the default locations, you can move your files into the correct
 locations by running:
