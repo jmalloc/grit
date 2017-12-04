@@ -26,25 +26,25 @@ func rm(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	}
 
 	if !c.Bool("force") {
-		write(c, "%s:", dir)
-		write(c, "")
+		writef(c, "%s:", dir)
+		writeln(c, "")
 
 		if idx.Has(dir) {
-			write(c, " ✓ is in the index")
+			writeln(c, " ✓ is in the index")
 		} else {
-			write(c, " - is not in the index")
+			writeln(c, " - is not in the index")
 		}
 
 		uncommitted, err := uncommittedModifications(dir)
 		if err != nil {
-			write(c, " ✗ does not appear to be a git clone")
+			writeln(c, " ✗ does not appear to be a git clone")
 		} else if uncommitted == 0 {
-			write(c, " ✓ has a clean work tree")
+			writeln(c, " ✓ has a clean work tree")
 		} else {
-			write(c, " ✗ has %d uncommitted modification(s)", uncommitted)
+			writef(c, " ✗ has %d uncommitted modification(s)", uncommitted)
 		}
 
-		write(c, "")
+		writeln(c, "")
 
 		if !confirm(c, "Are you sure you want to delete this directory?") {
 			return errSilentFailure

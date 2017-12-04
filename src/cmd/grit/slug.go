@@ -23,7 +23,7 @@ func slug(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 
 	if c.Bool("all") {
 		for _, s := range slugs {
-			write(c, s)
+			writeln(c, s)
 		}
 	} else {
 		longest := ""
@@ -32,7 +32,7 @@ func slug(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 				longest = s
 			}
 		}
-		write(c, longest)
+		writeln(c, longest)
 	}
 
 	return nil

@@ -39,7 +39,7 @@ func selfUpdate(c *cli.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	write(c, "searching for the latest release")
+	writeln(c, "searching for the latest release")
 
 	gh := github.NewClient(nil)
 	preRelease := c.Bool("pre-release")
@@ -60,7 +60,7 @@ func selfUpdate(c *cli.Context) error {
 
 	if !c.Bool("force") {
 		if cmp == 0 {
-			write(c, "current version (%s) is up to date", VERSION)
+			writef(c, "current version (%s) is up to date", VERSION)
 			return nil
 		} else if cmp < 0 {
 			return fmt.Errorf(
@@ -106,7 +106,7 @@ func selfUpdate(c *cli.Context) error {
 			messageLen = l
 		},
 	)
-	write(c, "")
+	writeln(c, "")
 	if err != nil {
 		return err
 	}
@@ -130,13 +130,13 @@ func selfUpdate(c *cli.Context) error {
 	}
 
 	if cmp > 0 {
-		write(c, "upgraded from version %s to %s", VERSION, latest)
+		writef(c, "upgraded from version %s to %s", VERSION, latest)
 	} else if cmp < 0 {
-		write(c, "downgraded from version %s to %s", VERSION, latest)
+		writef(c, "downgraded from version %s to %s", VERSION, latest)
 	} else if VERSION.String() == latest.String() {
-		write(c, "reinstalled version %s", VERSION)
+		writef(c, "reinstalled version %s", VERSION)
 	} else {
-		write(c, "reinstalled version %s as %s", VERSION, latest)
+		writef(c, "reinstalled version %s as %s", VERSION, latest)
 	}
 
 	return os.Remove(backupBin)

@@ -266,7 +266,7 @@ func withConfig(fn func(grit.Config, *cli.Context) error) cli.ActionFunc {
 		err = fn(cfg, c)
 
 		if _, ok := err.(usageError); ok {
-			write(c, "Incorrect Usage: %s\n", err)
+			writef(c, "Incorrect Usage: %s\n", err)
 			_ = cli.ShowCommandHelp(c, c.Command.Name)
 			return errSilentFailure
 		}
@@ -289,9 +289,14 @@ func withConfigAndIndex(fn func(grit.Config, *index.Index, *cli.Context) error) 
 	})
 }
 
-// write prints to the terminal using the app's output writer
-func write(c *cli.Context, s string, v ...interface{}) {
+// writef prints to the terminal using the app's output writer.
+func writef(c *cli.Context, s string, _ interface{}, v ...interface{}) {
 	fmt.Fprintf(c.App.Writer, s+"\n", v...)
+}
+
+// writef prints to the terminal using the app's output writer.
+func writeln(c *cli.Context, s string) {
+	fmt.Fprintln(c.App.Writer, s)
 }
 
 // cloneBaseDir returns $GOPATH/src if --golang was passed, otherwise it

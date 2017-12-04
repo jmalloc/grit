@@ -50,7 +50,7 @@ func clone(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return err
 	}
 
-	write(c, dir)
+	writeln(c, dir)
 	exec(c, "cd", dir)
 
 	return idx.Add(dir)

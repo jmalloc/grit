@@ -36,7 +36,7 @@ func browse(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		Path:   strings.TrimSuffix(ep.Path(), ".git"),
 	}
 
-	write(c, "opening %s", u.String())
+	writef(c, "opening %s", u.String())
 
 	return open.Run(u.String())
 }

@@ -13,8 +13,8 @@ func configShow(cfg grit.Config, c *cli.Context) error {
 		return err
 	}
 
-	write(c, "Config file: %s", file)
-	write(c, "")
+	writef(c, "Config file: %s", file)
+	writeln(c, "")
 
 	return toml.NewEncoder(c.App.Writer).Encode(cfg)
 }

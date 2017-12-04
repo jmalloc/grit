@@ -45,7 +45,7 @@ func mv(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 }
 
 func moveClone(cfg grit.Config, idx *index.Index, c *cli.Context, src, dst string) error {
-	write(c, dst)
+	writeln(c, dst)
 
 	if src == dst {
 		return nil

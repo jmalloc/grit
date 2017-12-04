@@ -12,7 +12,7 @@ import (
 
 func indexList(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	for _, s := range idx.ListSlugs(c.Args().First()) {
-		write(c, s)
+		writeln(c, s)
 	}
 
 	return nil
@@ -31,7 +31,7 @@ func indexFind(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	}
 
 	for _, dir := range dirs {
-		write(c, dir)
+		writeln(c, dir)
 	}
 
 	return nil

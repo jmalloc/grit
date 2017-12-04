@@ -18,7 +18,7 @@ func cd(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	}
 
 	if dir, ok := chooseCloneDir(cfg, c, dirs); ok {
-		write(c, dir)
+		writeln(c, dir)
 		exec(c, "cd", dir)
 		return nil
 	}
