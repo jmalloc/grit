@@ -19,3 +19,6 @@ import:
   version: ~0.0.3
 - package: github.com/manifoldco/promptui
   version: ~0.2.1
+- package: github.com/skratchdot/open-golang
+  subpackages:
+  - open
