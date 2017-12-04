@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.8 (2017-12-04)
+
+- **[FIX]** Fix CLI output bug introduced in 0.6.7
+
 ## 0.6.7 (2017-12-04)
 
 - **[NEW]** Added `slug` command, which prints the slug for the current clone directory
