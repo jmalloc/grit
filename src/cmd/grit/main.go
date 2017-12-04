@@ -290,7 +290,7 @@ func withConfigAndIndex(fn func(grit.Config, *index.Index, *cli.Context) error) 
 }
 
 // writef prints to the terminal using the app's output writer.
-func writef(c *cli.Context, s string, _ interface{}, v ...interface{}) {
+func writef(c *cli.Context, s string, v ...interface{}) {
 	fmt.Fprintf(c.App.Writer, s+"\n", v...)
 }
 
