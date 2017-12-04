@@ -85,7 +85,10 @@ func chooseRemote(
 		cfg := rem.Config()
 		ep, url, err := grit.EndpointFromRemote(cfg)
 		if err == nil {
-			info := fn(cfg, ep)
+			var info string
+			if fn != nil {
+				info = fn(cfg, ep)
+			}
 			opts = append(opts, fmt.Sprintf("[%s] %s%s", cfg.Name, url, info))
 		} else {
 			opts = append(opts, fmt.Sprintf("[%s] %s (invalid)", cfg.Name, url))

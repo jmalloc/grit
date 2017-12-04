@@ -139,6 +139,14 @@ func main() {
 			},
 		},
 		{
+			Name:         "browse",
+			Usage:        "Open the repository's webpage in the system's default browser.",
+			UsageText:    "This command currently assumes all sources refer to GitHub or GitHub Enterprise servers.",
+			ArgsUsage:    "[<slug>]",
+			Action:       withConfigAndIndex(browse),
+			BashComplete: autocomplete.New(autocomplete.Slug),
+		},
+		{
 			Name:      "set-url",
 			Usage:     "Set the URL for a Git remote and move the clone into the correct directory.",
 			ArgsUsage: "<slug | url> [<path>]",
@@ -322,6 +330,24 @@ func dirFromArg(c *cli.Context, n int) (string, error) {
 	}
 
 	return c.Args()[n], nil
+}
+
+// dirFromSlugArgs returns the dir for the slug in the n-th arg, if present, or
+// the current working directory.
+func dirFromSlugArg(cfg grit.Config, idx *index.Index, c *cli.Context, n int) (string, bool, error) {
+	if c.Args().Present() {
+		slug := c.Args().First()
+		dirs := idx.Find(slug)
+		if len(dirs) == 0 {
+			return "", false, notIndexed(slug)
+		}
+
+		dir, ok := chooseCloneDir(cfg, c, dirs)
+		return dir, ok, nil
+	}
+
+	dir, err := os.Getwd()
+	return dir, true, err
 }
 
 // formatDir returns dir formatted for display.

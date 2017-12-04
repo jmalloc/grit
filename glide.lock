@@ -1,5 +1,5 @@
-hash: 6ee15d125c5e97e8156596d935fdd489099b904af125684e75e9fb6e4e9c3396
-updated: 2017-12-01T12:46:06.519582295+10:00
+hash: 8f4a5b2d76a282b6f4f9924e9743b2f2b44eb61e7031c658a28d3fb8795b8981
+updated: 2017-12-04T17:03:00.79294+10:00
 imports:
 - name: github.com/boltdb/bolt
   version: 2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8
@@ -46,6 +46,10 @@ imports:
   version: 1744e2970ca51c86172c8190fadad617561ed6e7
   subpackages:
   - diffmatchpatch
+- name: github.com/skratchdot/open-golang
+  version: 75fb7ed4208cf72d323d7d02fd1a5964a7a9073c
+  subpackages:
+  - open
 - name: github.com/src-d/gcfg
   version: f187355171c936ac84a82793659ebb4936bc1c23
   subpackages:

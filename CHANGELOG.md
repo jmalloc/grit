@@ -3,6 +3,8 @@
 ## Next Release
 
 - **[NEW]** Added `slug` command, which prints the slug for the current clone directory
+- **[NEW]** Added `browse` command, which opens the webpage for the current repo (assumes GitHub / GHE)
+- **[IMPROVED]** Use `promptui` for interactive CLI elements
 
 ## 0.6.6 (2017-11-16)
 
