@@ -53,7 +53,7 @@ func choose(c *cli.Context, opt []string) (int, bool) {
 	return idx, err == nil
 }
 
-// pathDistsance returns the "distance" from base to target. The lower the
+// pathDistance returns the "distance" from base to target. The lower the
 // distance the "closer" target is to "base".
 func pathDistance(base, target string) (dist uint32) {
 	if base == target {
