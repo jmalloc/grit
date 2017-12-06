@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
+	"strings"
 
 	"github.com/Masterminds/semver"
 	"github.com/jmalloc/grit/src/cmd/grit/autocomplete"
@@ -357,14 +359,32 @@ func dirFromSlugArg(cfg grit.Config, idx *index.Index, c *cli.Context, n int) (s
 
 // formatDir returns dir formatted for display.
 func formatDir(cfg grit.Config, dir string) string {
+	var tags []string
+
+	cwd, _ := os.Getwd()
+	abs, _ := filepath.Abs(dir)
 	gosrc, _ := pathutil.GoSrc()
 
 	if rel, ok := pathutil.RelChild(gosrc, dir); ok && gosrc != "" {
-		return fmt.Sprintf("[go] %s", rel)
+		dir = rel
+		tags = append(tags, "go")
 	}
 
 	if rel, ok := pathutil.RelChild(cfg.Clone.Root, dir); ok {
-		return fmt.Sprintf("[grit] %s", rel)
+		dir = rel
+		tags = append(tags, "grit")
+	}
+
+	if abs == cwd {
+		tags = append(tags, "current")
+	}
+
+	if len(tags) > 0 {
+		return fmt.Sprintf(
+			"[%s] %s",
+			strings.Join(tags, ", "),
+			dir,
+		)
 	}
 
 	return dir
