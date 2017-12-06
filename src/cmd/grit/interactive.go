@@ -3,9 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"math"
 	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 
@@ -14,6 +12,7 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 
 	"github.com/jmalloc/grit/src/grit"
+	"github.com/jmalloc/grit/src/grit/pathutil"
 	"github.com/manifoldco/promptui"
 	"github.com/urfave/cli"
 )
@@ -53,39 +52,13 @@ func choose(c *cli.Context, opt []string) (int, bool) {
 	return idx, err == nil
 }
 
-// pathDistance returns the "distance" from base to target. The lower the
-// distance the "closer" target is to "base".
-func pathDistance(base, target string) (dist uint32) {
-	if base == target {
-		return 0
-	}
-
-	rel, err := filepath.Rel(base, target)
-	if err != nil {
-		return math.MaxUint32
-	}
-
-	// count the number of path separators to get the distance
-	dist = uint32(strings.Count(
-		rel,
-		string(filepath.Separator),
-	))
-
-	// increase the distance for targets that are not a subfolder of base
-	if strings.HasPrefix("..", rel) {
-		dist += math.MaxUint32 / 2
-	}
-
-	return
-}
-
 func chooseCloneDir(cfg grit.Config, c *cli.Context, dirs []string) (string, bool) {
 	cwd, _ := os.Getwd()
 
 	// compute "distance from cwd" for each dir
 	dists := make([]uint32, len(dirs))
 	for idx, dir := range dirs {
-		dists[idx] = pathDistance(cwd, dir)
+		dists[idx] = pathutil.Distance(cwd, dir)
 	}
 
 	// sort the dirs such that dirs closest to cwd are listed first
