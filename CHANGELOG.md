@@ -1,5 +1,10 @@
 # Changelog
 
+## Next Release
+
+- **[IMPROVED]** Interactive clone directory prompts now order the options by their distance from the current working directory
+- **[IMPROVED]** Interactive clone directory prompts now indicate if one of the options is the current working directory
+
 ## 0.6.8 (2017-12-04)
 
 - **[FIX]** Fix CLI output bug introduced in 0.6.7
