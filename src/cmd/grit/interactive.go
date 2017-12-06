@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"sort"
@@ -52,17 +53,39 @@ func choose(c *cli.Context, opt []string) (int, bool) {
 	return idx, err == nil
 }
 
+// pathDistsance returns the "distance" from base to target. The lower the
+// distance the "closer" target is to "base".
+func pathDistance(base, target string) (dist uint32) {
+	if base == target {
+		return 0
+	}
+
+	rel, err := filepath.Rel(base, target)
+	if err != nil {
+		return math.MaxUint32
+	}
+
+	// count the number of path separators to get the distance
+	dist = uint32(strings.Count(
+		rel,
+		string(filepath.Separator),
+	))
+
+	// increase the distance for targets that are not a subfolder of base
+	if strings.HasPrefix("..", rel) {
+		dist += math.MaxUint32 / 2
+	}
+
+	return
+}
+
 func chooseCloneDir(cfg grit.Config, c *cli.Context, dirs []string) (string, bool) {
 	cwd, _ := os.Getwd()
 
 	// compute "distance from cwd" for each dir
-	dists := make([]int, len(dirs))
+	dists := make([]uint32, len(dirs))
 	for idx, dir := range dirs {
-		if rel, err := filepath.Rel(cwd, dir); err == nil {
-			dists[idx] = strings.Count(rel, string(filepath.Separator))
-		} else {
-			dists[idx] = int(^uint(0) >> 1) // max int
-		}
+		dists[idx] = pathDistance(cwd, dir)
 	}
 
 	// sort the dirs such that dirs closest to cwd are listed first
