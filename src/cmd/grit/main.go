@@ -341,20 +341,30 @@ func dirFromArg(c *cli.Context, n int) (string, error) {
 
 // dirFromSlugArgs returns the dir for the slug in the n-th arg, if present, or
 // the current working directory.
-func dirFromSlugArg(cfg grit.Config, idx *index.Index, c *cli.Context, n int) (string, bool, error) {
-	if c.Args().Present() {
-		slug := c.Args().First()
-		dirs := idx.Find(slug)
-		if len(dirs) == 0 {
-			return "", false, notIndexed(slug)
-		}
-
-		dir, ok := chooseCloneDir(cfg, c, dirs)
-		return dir, ok, nil
+func dirFromSlugArg(
+	cfg grit.Config,
+	idx *index.Index,
+	c *cli.Context,
+	n int,
+	cwdDist pathutil.Distance,
+) (string, bool, error) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return "", false, err
+	} else if !c.Args().Present() {
+		return cwd, true, nil
 	}
 
-	dir, err := os.Getwd()
-	return dir, true, err
+	slug := c.Args().First()
+	dirs := idx.Find(slug)
+	if len(dirs) == 0 {
+		return "", false, notIndexed(slug)
+	}
+
+	pathutil.SortByDistance(cwd, dirs, cwdDist)
+	dir, ok := chooseCloneDir(cfg, c, dirs)
+
+	return dir, ok, nil
 }
 
 // formatDir returns dir formatted for display.

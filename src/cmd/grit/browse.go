@@ -6,12 +6,13 @@ import (
 
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/grit/index"
+	"github.com/jmalloc/grit/src/grit/pathutil"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/urfave/cli"
 )
 
 func browse(cfg grit.Config, idx *index.Index, c *cli.Context) error {
-	dir, ok, err := dirFromSlugArg(cfg, idx, c, 0)
+	dir, ok, err := dirFromSlugArg(cfg, idx, c, 0, pathutil.PreferBase)
 	if err != nil {
 		return err
 	} else if !ok {
