@@ -3,25 +3,23 @@ package main
 import (
 	"github.com/jmalloc/grit/src/grit"
 	"github.com/jmalloc/grit/src/grit/index"
+	"github.com/jmalloc/grit/src/grit/pathutil"
 	"github.com/urfave/cli"
 )
 
 func cd(cfg grit.Config, idx *index.Index, c *cli.Context) error {
-	slug := c.Args().First()
-	if slug == "" {
+	if !c.Args().Present() {
 		return errNotEnoughArguments
 	}
 
-	dirs := idx.Find(slug)
-	if len(dirs) == 0 {
-		return notIndexed(slug)
+	dir, ok, err := dirFromSlugArg(cfg, idx, c, 0, pathutil.PreferOther)
+	if err != nil {
+		return err
+	} else if !ok {
+		return errSilentFailure
 	}
 
-	if dir, ok := chooseCloneDir(cfg, c, dirs); ok {
-		writeln(c, dir)
-		exec(c, "cd", dir)
-		return nil
-	}
-
-	return errSilentFailure
+	writeln(c, dir)
+	exec(c, "cd", dir)
+	return nil
 }

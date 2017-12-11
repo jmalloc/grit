@@ -3,16 +3,12 @@ package main
 import (
 	"errors"
 	"fmt"
-	"os"
-	"sort"
-	"strings"
 
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 
 	"github.com/jmalloc/grit/src/grit"
-	"github.com/jmalloc/grit/src/grit/pathutil"
 	"github.com/manifoldco/promptui"
 	"github.com/urfave/cli"
 )
@@ -53,30 +49,10 @@ func choose(c *cli.Context, opt []string) (int, bool) {
 }
 
 func chooseCloneDir(cfg grit.Config, c *cli.Context, dirs []string) (string, bool) {
-	cwd, _ := os.Getwd()
+	var opts []string
 
-	// compute "distance from cwd" for each dir
-	dists := make([]uint32, len(dirs))
-	for idx, dir := range dirs {
-		dists[idx] = pathutil.Distance(cwd, dir)
-	}
-
-	// sort the dirs such that dirs closest to cwd are listed first
-	// any two dirs with the same distance are further sorted by name
-	sort.Slice(dirs, func(i, j int) bool {
-		di, dj := dists[i], dists[j]
-
-		if di == dj {
-			return strings.Compare(dirs[i], dirs[j]) < 0
-		}
-
-		return di < dj
-	})
-
-	// make options list from the sorted list of dirs
-	opts := make([]string, len(dirs))
-	for idx, dir := range dirs {
-		opts[idx] = formatDir(cfg, dir)
+	for _, dir := range dirs {
+		opts = append(opts, formatDir(cfg, dir))
 	}
 
 	if i, ok := choose(c, opts); ok {
