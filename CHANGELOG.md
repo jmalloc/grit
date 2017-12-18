@@ -5,6 +5,7 @@
 - **[IMPROVED]** Interactive clone directory prompts now order the options by their distance from the current working directory
 - **[IMPROVED]** Interactive clone directory prompts now indicate if one of the options is the current working directory
 - **[IMPROVED]** Add `open` as an alias for the `browse` command
+- **[FIX]** Naive support for multiple `$GOPATH` directories (grit always used the first one in the list)
 
 ## 0.6.8 (2017-12-04)
 

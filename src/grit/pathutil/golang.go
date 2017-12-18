@@ -3,13 +3,15 @@ package pathutil
 import (
 	"os"
 	"path"
+	"path/filepath"
 )
 
 // GoPath returns the current user's $GOPATH directory.
 func GoPath() (string, error) {
-	dir := os.Getenv("GOPATH")
-	if dir != "" {
-		return dir, nil
+	p := os.Getenv("GOPATH")
+	if p != "" {
+		dirs := filepath.SplitList(p)
+		return dirs[0], nil
 	}
 
 	home, err := HomeDir()
