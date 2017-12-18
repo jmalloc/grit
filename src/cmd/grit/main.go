@@ -142,6 +142,7 @@ func main() {
 		},
 		{
 			Name:         "browse",
+			Aliases:      []string{"open"},
 			Usage:        "Open the repository's home page with the system's default browser.",
 			UsageText:    "This command currently assumes all sources refer to GitHub or GitHub Enterprise servers.",
 			ArgsUsage:    "[<slug>]",
