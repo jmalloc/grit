@@ -13,7 +13,7 @@ import (
 	"github.com/cavaliercoder/grab"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/google/go-github/github"
-	"github.com/jmalloc/grit/src/grit/update"
+	"github.com/jmalloc/grit/update"
 	"github.com/urfave/cli"
 )
 

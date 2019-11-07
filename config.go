@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"github.com/jmalloc/grit/src/grit/pathutil"
+	"github.com/jmalloc/grit/pathutil"
 )
 
 // Config holds Grit configuration.

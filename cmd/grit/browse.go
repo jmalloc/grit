@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/jmalloc/grit"
-	"github.com/jmalloc/grit/src/grit/index"
-	"github.com/jmalloc/grit/src/grit/pathutil"
+	"github.com/jmalloc/grit/index"
+	"github.com/jmalloc/grit/pathutil"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/urfave/cli"
 )

@@ -10,9 +10,9 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/jmalloc/grit/cmd/grit/autocomplete"
 	"github.com/jmalloc/grit"
-	"github.com/jmalloc/grit/src/grit/index"
-	"github.com/jmalloc/grit/src/grit/pathutil"
-	"github.com/jmalloc/grit/src/grit/update"
+	"github.com/jmalloc/grit/index"
+	"github.com/jmalloc/grit/pathutil"
+	"github.com/jmalloc/grit/update"
 	isatty "github.com/mattn/go-isatty"
 	"github.com/urfave/cli"
 )

@@ -4,7 +4,6 @@ import (
 	"path"
 
 	"github.com/jmalloc/grit"
-
 	git "gopkg.in/src-d/go-git.v4"
 )
 
