@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/BurntSushi/toml"
-	"github.com/jmalloc/grit/src/grit"
+	"github.com/jmalloc/grit"
 	"github.com/jmalloc/grit/src/grit/pathutil"
 	"github.com/urfave/cli"
 )

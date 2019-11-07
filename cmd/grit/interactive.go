@@ -8,7 +8,7 @@ import (
 	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 
-	"github.com/jmalloc/grit/src/grit"
+	"github.com/jmalloc/grit"
 	"github.com/manifoldco/promptui"
 	"github.com/urfave/cli"
 )

@@ -5,7 +5,7 @@ import (
 
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 
-	"github.com/jmalloc/grit/src/grit"
+	"github.com/jmalloc/grit"
 	"github.com/jmalloc/grit/src/grit/index"
 	"github.com/urfave/cli"
 )

@@ -3,7 +3,7 @@ package index
 import (
 	"path"
 
-	"github.com/jmalloc/grit/src/grit"
+	"github.com/jmalloc/grit"
 
 	git "gopkg.in/src-d/go-git.v4"
 )

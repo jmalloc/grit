@@ -9,7 +9,7 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/jmalloc/grit/cmd/grit/autocomplete"
-	"github.com/jmalloc/grit/src/grit"
+	"github.com/jmalloc/grit"
 	"github.com/jmalloc/grit/src/grit/index"
 	"github.com/jmalloc/grit/src/grit/pathutil"
 	"github.com/jmalloc/grit/src/grit/update"

@@ -5,7 +5,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/jmalloc/grit/src/grit"
+	"github.com/jmalloc/grit"
 	"github.com/urfave/cli"
 )
 

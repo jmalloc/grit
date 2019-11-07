@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/jmalloc/grit/src/grit"
+	"github.com/jmalloc/grit"
 	"github.com/jmalloc/grit/src/grit/index"
 	"github.com/jmalloc/grit/src/grit/pathutil"
 	"github.com/skratchdot/open-golang/open"

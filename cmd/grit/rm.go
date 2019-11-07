@@ -7,7 +7,7 @@ import (
 
 	git "gopkg.in/src-d/go-git.v4"
 
-	"github.com/jmalloc/grit/src/grit"
+	"github.com/jmalloc/grit"
 	"github.com/jmalloc/grit/src/grit/index"
 	"github.com/urfave/cli"
 )
