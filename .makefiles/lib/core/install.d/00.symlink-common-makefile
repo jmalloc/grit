@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "$MF_PROJECT_ROOT/.makefiles/lib/core/include/common.bash"
+
+ln -s "$MF_ROOT/lib/core/include/common.mk" "$MF_ROOT/Makefile"

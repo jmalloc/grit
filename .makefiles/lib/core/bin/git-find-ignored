@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "$(dirname ${BASH_SOURCE[0]})/../include/common.bash"
+
+if [[ $# < 1 ]]; then
+    echo "Usage: git-find-ignored pattern"
+    echo
+    echo "  Lists files within the Git repository that match the given filename"
+    echo "  pattern and have been ignored by a .gitignore file within the"
+    echo "  repository. It does not include files that have been ignored by a"
+    echo "  global ignore file."
+    echo
+    exit 1
+fi
+
+find "$MF_PROJECT_ROOT" -iname "$1" \
+    | git check-ignore --stdin --verbose \
+    | egrep -v '^\/' \
+    | cut -f2-

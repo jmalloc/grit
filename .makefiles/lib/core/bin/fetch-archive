@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "$(dirname ${BASH_SOURCE[0]})/../include/common.bash"
+
+if [[ $# < 1 ]]; then
+    echo "Usage: fetch-archive slug [branch]"
+    echo
+    echo "  Downloads an archive of a GitHub repository and stores it in the"
+    echo "  cache. It prints the path to the downloaded archive. If the archive"
+    echo "  is already in the cache it is not re-downloaded."
+    echo
+    echo "  GitHub produces archives with a single top-level directory named"
+    echo "  after this repository and branch name. This directory is stripped"
+    echo "  from the downloaded archive."
+    echo
+    exit 1
+fi
+
+slug="$1"
+branch="${2:-master}"
+url="https://github.com/$slug/archive/$branch.zip"
+cache="$MF_ROOT/cache/github/$slug/$branch.zip"
+
+if [[ -f "$cache" ]]; then
+    log "found $slug@$branch repository archive in the cache"
+    echo $cache
+    exit 0
+fi
+
+log "fetching $slug@$branch repository archive"
+
+tmpdir=$(mktemp -d)
+trap "rm -rf '$tmpdir'" EXIT
+
+if ! curl \
+    --fail \
+    --silent \
+    --show-error \
+    --location \
+    --create-dirs \
+    --output "$tmpdir/original.zip" \
+    "$url?nonce=$(uuidgen)"; then
+    2>&1 echo "failed downloading $URL"
+    exit 1
+fi
+
+unzip -q "$tmpdir/original.zip" -d "$tmpdir"
+cd "$(find "$tmpdir" -mindepth 1 -maxdepth 1 -type d)"
+zip -q "$tmpdir/content.zip" --move --recurse-paths .
+mkdir -p $(dirname "$cache")
+mv "$tmpdir/content.zip" "$cache"
+
+log "added $slug@$branch repository archive to the cache"
+
+echo $cache

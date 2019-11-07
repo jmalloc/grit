@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "$MF_PROJECT_ROOT/.makefiles/lib/core/include/common.bash"
+
+if [[ -n "${TRAVIS:-}" ]]; then
+    install-lib travisci
+fi
+
+if [[ -n "${GITHUB_ACTION:-}" ]]; then
+    install-lib gha
+fi
