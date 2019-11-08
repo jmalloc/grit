@@ -13,7 +13,7 @@ class Grit < Formula
   homepage "https://github.com/jmalloc/grit"
 
   version "${TRAVIS_TAG}"
-  url "https://github.com/jmalloc/grit/releases/download/${TRAVIS_TAG}/grit-darwin-amd64.tar.gz"
+  url "https://github.com/jmalloc/grit/releases/download/${TRAVIS_TAG}/grit-${TRAVIS_TAG}-darwin-amd64.zip"
   sha256 "${HASH}"
 
   def install

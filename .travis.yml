@@ -1,6 +1,6 @@
 language: go
 go:
-- '1.9'
+- '1.13'
 script: make ci
 before_deploy: make archives
 deploy:
@@ -9,10 +9,10 @@ deploy:
   api_key:
     secure: Mw2nKgobCNw+B437xubdRlnvnt/4zwFGNFJlJMN/jSKCWKHOTxyoguvIRvnx//b6LOOl32+34RJxLdQmmP7nlte3ceJf47C39HB8+nhIyFYmf3NMmI1B6CN0WTyZ3SB0Zba91GkShCRkczQf6k+SGgNYbUvfVnBcWwaE8W5TN+NPYrwmsu/hMqluOjK06scox1xqm+6Xg5KOu5J1LnkTV0Xp0Cj69XduhpL+KOJmTgCmQb98ACaiwXHEUQJf2fxRzKE6XjGsnP1YyaPFLdstlshhAm0rSU6gj6tT7jIvyH2bdw2rvtwICNSgNix2rsYcKk92TQUP2dNfgKMH/SIDpzqRU3ZwVlqmf+ayQ4B9qKVMrtIP4xvAus8bDUIkEHcT/TKz+xczFAW+5Bosc4Jc9ZJ5fTcSnYtPmfhVCn+lPByj+MWgBfIgM435mXv9Ss3WFv7l3Iiju7NZ5jUVKJe/56+jHbUn4fKcCxgHbtr12WY6AXqW7OaLIBZfgtL/ixz2KrnK6NWk3svE7Jh9JDi0eru4nZZZdD39Cz3H/IeBwScnxsG1BCjmjF9t7yWhdG4/tCRb+1qXj/xDMqiTvJrwOGNntZkt4vdhQgIPaB0++mvtS4keWwXsclarbC7QyRcfvJwOi03zqD1CrdaZV15vPLqB6nre8szLaA5hFyJVgQw=
   file:
-  - artifacts/archives/grit-darwin-amd64.tar.gz
-  - artifacts/archives/grit-linux-amd64.tar.gz
-  - artifacts/archives/grit-windows-amd64.zip
-  go: '1.9'
+  - artifacts/archives/grit-${TRAVIS_TAG}-darwin-amd64.zip
+  - artifacts/archives/grit-${TRAVIS_TAG}-linux-amd64.zip
+  - artifacts/archives/grit-${TRAVIS_TAG}-windows-amd64.zip
+  go: '1.13'
   on:
     repo: jmalloc/grit
     tags: true

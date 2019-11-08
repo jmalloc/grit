@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver"
-	"github.com/jmalloc/grit/cmd/grit/autocomplete"
 	"github.com/jmalloc/grit"
+	"github.com/jmalloc/grit/cmd/grit/autocomplete"
 	"github.com/jmalloc/grit/index"
 	"github.com/jmalloc/grit/pathutil"
 	"github.com/jmalloc/grit/update"
