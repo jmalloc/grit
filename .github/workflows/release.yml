@@ -20,7 +20,6 @@ jobs:
     - name: Upload Archives
       uses: softprops/action-gh-release@v1
       with:
-        name: Version ${{ github.ref }}
         prerelease: true
         files: artifacts/archives/*
       env:
