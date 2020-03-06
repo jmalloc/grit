@@ -21,7 +21,6 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         name: Version ${{ github.ref }}
-        draft: true
         prerelease: true
         files: artifacts/archives/*
       env:
