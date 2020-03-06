@@ -1,0 +1,28 @@
+name: Release
+on:
+  push:
+    tags:
+    - '*'
+jobs:
+  release:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+      id: go
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Make Archives
+      run: make archives
+    - name: Upload Archives
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Version ${{ github.ref }}
+        draft: true
+        prerelease: true
+        files: artifacts/archives/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
