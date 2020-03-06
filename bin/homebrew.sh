@@ -1,8 +1,8 @@
 set -e
 set -o pipefail
 
-HASH="$(shasum -a 256 $1 | awk '{ print $1 }')"
-
+hash="$(shasum -a 256 $1 | awk '{ print $1 }')"
+tag="${GITHUB_REF#refs/tags/}"
 dir=$(mktemp -d)
 git clone "https://${GITHUB_TOKEN}@github.com/jmalloc/homebrew-grit" "$dir"
 cd "$dir"
@@ -12,9 +12,9 @@ class Grit < Formula
   desc "Keep track of your local Git clones."
   homepage "https://github.com/jmalloc/grit"
 
-  version "${TRAVIS_TAG}"
-  url "https://github.com/jmalloc/grit/releases/download/${TRAVIS_TAG}/grit-${TRAVIS_TAG}-darwin-amd64.zip"
-  sha256 "${HASH}"
+  version "${tag}"
+  url "https://github.com/jmalloc/grit/releases/download/${tag}/grit-${tag}-darwin-amd64.zip"
+  sha256 "${hash}"
 
   def install
       bin.install "grit"
@@ -26,5 +26,5 @@ class Grit < Formula
 end
 EOF
 
-git commit -a -m "Update to v${TRAVIS_TAG}"
+git commit -a -m "Update to v${tag}"
 git push

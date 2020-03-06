@@ -24,3 +24,10 @@ jobs:
         files: artifacts/archives/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload Archives
+      uses: softprops/action-gh-release@v1
+      with:
+        prerelease: true
+        files: artifacts/archives/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

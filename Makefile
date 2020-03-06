@@ -6,7 +6,7 @@ GO_MATRIX_OS := darwin linux windows
 run: artifacts/build/debug/$(GOHOSTOS)/$(GOHOSTARCH)/grit
 	GRIT_CONFIG=etc/testing.toml "$<" $(RUN_ARGS)
 
-homebrew: artifacts/archives/grit-darwin-amd64.tar.gz
+homebrew: artifacts/archives/grit-darwin-amd64.zip
 	bin/homebrew.sh "$<"
 
 .makefiles/%:
