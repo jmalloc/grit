@@ -10,14 +10,13 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"gopkg.in/src-d/go-git.v4/plumbing/transport"
-
 	"github.com/boltdb/bolt"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 )
 
 // EndpointFilter is a function that returns true if the given endpoint should
 // be included for indexing when scanning.
-type EndpointFilter func(ep transport.Endpoint) bool
+type EndpointFilter func(ep *transport.Endpoint) bool
 
 // Index is an index of repository locations.
 type Index struct {

@@ -24,7 +24,7 @@ func mv(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return err
 	}
 
-	rem, ok, err := chooseRemote(cfg, c, src, func(_ *config.RemoteConfig, ep transport.Endpoint) string {
+	rem, ok, err := chooseRemote(cfg, c, src, func(_ *config.RemoteConfig, ep *transport.Endpoint) string {
 		return " --> " + grit.EndpointToDir(base, ep)
 	})
 

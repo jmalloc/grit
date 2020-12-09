@@ -46,7 +46,7 @@ func indexScan(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 
 	return idx.Scan(
 		c.App.Writer,
-		func(ep transport.Endpoint) bool {
+		func(ep *transport.Endpoint) bool {
 			for _, t := range cfg.Clone.Sources {
 				if t.IsMatch(ep) {
 					return true

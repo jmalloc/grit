@@ -27,7 +27,7 @@ type Endpoint struct {
 
 	// The substituted and normalized endpoint template. SCP-style Git URLs
 	// are converted to ssh:// URLs.
-	Normalized transport.Endpoint
+	Normalized *transport.Endpoint
 }
 
 // Validate returns an error if the template is invalid.
@@ -37,19 +37,19 @@ func (t EndpointTemplate) Validate() error {
 }
 
 // IsMatch returns true if may have been derived from the endpoint template.
-func (t EndpointTemplate) IsMatch(e transport.Endpoint) bool {
+func (t EndpointTemplate) IsMatch(e *transport.Endpoint) bool {
 	ep, err := t.virtualEndpoint()
 	if err != nil {
 		return false
 	}
 
 	// TODO: match slug heuristically
-	return e.Protocol() == ep.Protocol() && e.Host() == ep.Host()
+	return e.Protocol == ep.Protocol && e.Host == ep.Host
 }
 
 // virtualEndpoint returns a Git endpoint from the template as though we had
 // a slug to resolve.
-func (t EndpointTemplate) virtualEndpoint() (transport.Endpoint, error) {
+func (t EndpointTemplate) virtualEndpoint() (*transport.Endpoint, error) {
 	ep, err := t.Resolve("__virtual__")
 	return ep.Normalized, err
 }
@@ -114,27 +114,27 @@ func EndpointExists(ep Endpoint) (ok bool, err error) {
 }
 
 // EndpointToDir returns the absolute path for a clone of a repository.
-func EndpointToDir(base string, ep transport.Endpoint) string {
+func EndpointToDir(base string, ep *transport.Endpoint) string {
 	slug := EndpointToSlug(ep)
 	parts := strings.Split(slug, slugSeparator)
-	return path.Join(base, ep.Host(), path.Join(parts...))
+	return path.Join(base, ep.Host, path.Join(parts...))
 }
 
 // EndpointToSlug returns the "slug" from ep.
-func EndpointToSlug(ep transport.Endpoint) string {
+func EndpointToSlug(ep *transport.Endpoint) string {
 	return strings.TrimSuffix(
-		strings.TrimPrefix(ep.Path(), slugSeparator),
-		path.Ext(ep.Path()),
+		strings.TrimPrefix(ep.Path, slugSeparator),
+		path.Ext(ep.Path),
 	)
 }
 
 // ReplaceSlug returns a copy of ep with the slug changed to s.
-func ReplaceSlug(ep transport.Endpoint, s string) transport.Endpoint {
+func ReplaceSlug(ep *transport.Endpoint, s string) *transport.Endpoint {
 	new, err := transport.NewEndpoint(
 		strings.Replace(
 			ep.String(),
-			ep.Path(),
-			slugSeparator+s+path.Ext(ep.Path()),
+			ep.Path,
+			slugSeparator+s+path.Ext(ep.Path),
 			1,
 		),
 	)
@@ -149,7 +149,7 @@ func ReplaceSlug(ep transport.Endpoint, s string) transport.Endpoint {
 // MergeSlug returns a copy of ep with the slug changed to s. If s has less
 // path atoms then the existing slug it is merged with the existing slug such
 // that the original number of path atoms are retained.
-func MergeSlug(ep transport.Endpoint, s string) transport.Endpoint {
+func MergeSlug(ep *transport.Endpoint, s string) *transport.Endpoint {
 	a := strings.Split(s, slugSeparator)
 
 	slug := EndpointToSlug(ep)
@@ -170,26 +170,26 @@ func EndpointIsSCP(s string) bool {
 	ep, err := transport.NewEndpoint(s)
 
 	return err == nil &&
-		ep.Protocol() == "ssh" &&
+		ep.Protocol == "ssh" &&
 		!strings.HasPrefix(s, "ssh://")
 }
 
 // EndpointToSCP converts a normalized ssh:// endpoint URL to an SCP-style URL.
-func EndpointToSCP(ep transport.Endpoint) (string, error) {
-	if ep.Protocol() != "ssh" {
-		return "", fmt.Errorf("unexpected protocol: %s, expected ssh", ep.Protocol())
+func EndpointToSCP(ep *transport.Endpoint) (string, error) {
+	if ep.Protocol != "ssh" {
+		return "", fmt.Errorf("unexpected protocol: %s, expected ssh", ep.Protocol)
 	}
 
 	return fmt.Sprintf(
 		"%s@%s:%s",
-		ep.User(),
-		ep.Host(),
-		strings.TrimPrefix(ep.Path(), slugSeparator),
+		ep.User,
+		ep.Host,
+		strings.TrimPrefix(ep.Path, slugSeparator),
 	), nil
 }
 
 // EndpointFromRemote returns the endpoint used to fetch from r.
-func EndpointFromRemote(cfg *config.RemoteConfig) (ep transport.Endpoint, url string, err error) {
+func EndpointFromRemote(cfg *config.RemoteConfig) (ep *transport.Endpoint, url string, err error) {
 	url = cfg.URLs[0]
 	ep, err = transport.NewEndpoint(url)
 	return
@@ -197,12 +197,12 @@ func EndpointFromRemote(cfg *config.RemoteConfig) (ep transport.Endpoint, url st
 
 // ParseEndpointOrSlug returns an endpoint if s contains a valid endpoint URL.
 // If s is a "slug", isEndpoint is false.
-func ParseEndpointOrSlug(s string) (ep transport.Endpoint, isEndpoint bool, err error) {
+func ParseEndpointOrSlug(s string) (ep *transport.Endpoint, isEndpoint bool, err error) {
 	ep, err = transport.NewEndpoint(s)
 	if err != nil {
 		return
 	}
 
-	isEndpoint = ep.Protocol() != "file"
+	isEndpoint = ep.Protocol != "file"
 	return
 }

@@ -33,8 +33,8 @@ func browse(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 
 	u := url.URL{
 		Scheme: "https",
-		Host:   ep.Host(),
-		Path:   strings.TrimSuffix(ep.Path(), ".git"),
+		Host:   ep.Host,
+		Path:   strings.TrimSuffix(ep.Path, ".git"),
 	}
 
 	writef(c, "opening %s", u.String())

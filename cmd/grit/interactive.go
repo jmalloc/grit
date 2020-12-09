@@ -66,7 +66,7 @@ func chooseRemote(
 	cfg grit.Config,
 	c *cli.Context,
 	dir string,
-	fn func(*config.RemoteConfig, transport.Endpoint) string,
+	fn func(*config.RemoteConfig, *transport.Endpoint) string,
 ) (*config.RemoteConfig, bool, error) {
 	r, err := git.PlainOpen(dir)
 	if err != nil {

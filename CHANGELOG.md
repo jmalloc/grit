@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **[FIX]** Fix "invalid capabilities" error when cloning from GitHub
+
 ## 0.6.9 (2018-06-07)
 
 - **[IMPROVED]** Interactive clone directory prompts now order the options by their distance from the current working directory
