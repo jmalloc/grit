@@ -1,4 +1,4 @@
-MATRIX_OS := darwin linux windows
+GO_MATRIX_OS := darwin linux windows
 
 -include .makefiles/Makefile
 -include .makefiles/pkg/go/v1/Makefile
