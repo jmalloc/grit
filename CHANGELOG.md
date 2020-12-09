@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.10 (2020-12-09)
 
 - **[FIX]** Fix "invalid capabilities" error when cloning from GitHub
 
