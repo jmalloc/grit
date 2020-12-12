@@ -18,14 +18,14 @@ handle cloning in a consistent way.
 
 This worked well for a while, until the list of places I needed to clone from
 increased further, and I started working more heavily in [Go](http://golang.org),
-which places it's [own requirements](https://github.com/golang/go/wiki/GOPATH)
+which, at the time, placed it's [own requirements](https://github.com/golang/go/wiki/GOPATH)
 on the location of your Git clones.
 
 Grit is the logical evolution of those original scripts into a standalone
-project that clones from multiple Git sources and handles Go's peculiarities.
-It's hacked together, there are no tests, and there are other more general
-solutions for navigating your filesystem; but this works for me. I've published
-it to GitHub in case it works for you too.
+project that clones from multiple Git sources. It's hacked together, there are
+no tests, and there are other more general solutions for navigating your
+filesystem; but this works for me. I've published it to GitHub in case it works
+for you too.
 
 ## How?
 
@@ -110,47 +110,32 @@ more than one matching path, it just prints them all. It's relentless.
 If nothing is found, Grit exits with a non-zero exit code. The universal signal
 that you should re-think your actions.
 
-### What about Go?
-
-We've already cloned `jmalloc/grit` into `~/grit/github.com/jmalloc/grit`, but
-Grit is written in Go, so it needs to live somewhere special, and that somewhere
-is `$GOPATH`.
-
-Sure, you could just `mv` the directory; but `mv` isn't written in Go, and
-therefore it isn't web-scale!
-
-Try this instead:
-
-    grit clone --golang jmalloc/grit
-
-*Again*, Grit ruthlessly prints the clone path to the terminal. This time
-however, you'll notice that the clone is in a subfolder of `$GOPATH` instead of
-`~/grit`. What a relief!
-
-If you're an avid Gopher, you might be wondering "Why not use `go get`?". Well,
-that doesn't update the Grit index, of course!
-
-So now you've got two clones of `jmalloc/grit` on your system. This increases
-the counter on my traffic graph, making me feel quite special. Beyond that, it
-also brings us to our next example ...
-
 ### Selecting between multiple clones
 
-Try this:
+"What happens if I have two repositories with the same name?", you ask me in a
+contrived way perfectly suited to this next example.
 
+Well, try this...
+
+First, clone the `mojombo/grit` repository; an unsuspecting pawn in our example
+that has nothing to do with `jmalloc/grit`. Then, change to the directory of
+your "grit" clone.
+
+    grit clone mojombo/grit
     grit cd grit
 
 If you've followed all the steps until now, and I haven't messed up the examples
-too badly, you should be presented with a list of matching directories:
+too badly, you should be presented with a list of matching repositories:
 
-      1) [go] src/github.com/jmalloc/grit
-      2) [grit] github.com/jmalloc/grit
-    >
+    Use the arrow keys to navigate: ↓ ↑ → ←
+    ? :
+      ▸ github.com/jmalloc/grit
+        [current] github.com/mojombo/grit
 
 This time, Grit isn't content to blindly print paths to the terminal. Oh no!
 This time Grit wants to know what's on your mind. It prints a list of all
-matching directories and eagerly awaits your decision. Enter your selection
-(numerically) and press enter.
+matching directories and eagerly awaits your decision. Navigate to your
+selection using the arrow keys and press enter.
 
 Grit diligently prints the absolute path to your selection, just like before.
 Interminable!

@@ -19,13 +19,8 @@ func mv(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return err
 	}
 
-	base, err := cloneBaseDir(cfg, c)
-	if err != nil {
-		return err
-	}
-
 	rem, ok, err := chooseRemote(cfg, c, src, func(_ *config.RemoteConfig, ep *transport.Endpoint) string {
-		return " --> " + grit.EndpointToDir(base, ep)
+		return " --> " + grit.EndpointToDir(cfg.Clone.Root, ep)
 	})
 
 	if err != nil {
@@ -39,7 +34,7 @@ func mv(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return err
 	}
 
-	dst := grit.EndpointToDir(base, ep)
+	dst := grit.EndpointToDir(cfg.Clone.Root, ep)
 
 	return moveClone(cfg, idx, c, src, dst)
 }
