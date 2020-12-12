@@ -146,27 +146,6 @@ func main() {
 			Action:    withConfigAndIndex(setURL),
 		},
 		{
-			Name:  "source",
-			Usage: "Manage Git sources.",
-			Subcommands: []cli.Command{
-				{
-					Name:         "probe",
-					Usage:        "Discover which sources have a repository.",
-					ArgsUsage:    "<slug>",
-					Action:       withConfig(sourceProbe),
-					BashComplete: autocomplete.New(autocomplete.Slug),
-				},
-				{
-					Name:      "ls",
-					Usage:     "List the configured sources.",
-					ArgsUsage: "[<slug>]",
-					Description: "If <slug> is provided the source URLs are rendered as though <slug> were being cloned.\n" +
-						"   Otherwise, the URL templates are rendered as they appear in the configuration file.",
-					Action: withConfig(sourceList),
-				},
-			},
-		},
-		{
 			Name:  "index",
 			Usage: "Manage the Grit repository index.",
 			Subcommands: []cli.Command{
