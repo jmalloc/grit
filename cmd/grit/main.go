@@ -142,6 +142,7 @@ func main() {
 		{
 			Name:      "set-url",
 			Usage:     "Set the URL for a Git remote and move the clone into the correct directory.",
+			UsageText: "If there is more than one remote Grit prompts for the remote to be changed.",
 			ArgsUsage: "<slug | url> [<path>]",
 			Action:    withConfigAndIndex(setURL),
 		},
