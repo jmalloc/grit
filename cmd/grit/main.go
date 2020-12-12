@@ -79,10 +79,6 @@ func main() {
 					Name:  "target, t",
 					Usage: "Clone into `<dir>` instead of the default location.",
 				},
-				cli.BoolFlag{
-					Name:  "golang, g",
-					Usage: "Clone into the appropriate $GOPATH sub-directory.",
-				},
 			},
 			Action:       withConfigAndIndex(clone),
 			BashComplete: autocomplete.New(autocomplete.Slug),
@@ -104,12 +100,6 @@ func main() {
 			Usage:     "Move a clone into the correct directory.",
 			ArgsUsage: "[<path>]",
 			Action:    withConfigAndIndex(mv),
-			Flags: []cli.Flag{
-				cli.BoolFlag{
-					Name:  "golang, g",
-					Usage: "Move into the appropriate $GOPATH sub-directory.",
-				},
-			},
 		},
 		{
 			Name:         "rm",
@@ -154,12 +144,6 @@ func main() {
 			Usage:     "Set the URL for a Git remote and move the clone into the correct directory.",
 			ArgsUsage: "<slug | url> [<path>]",
 			Action:    withConfigAndIndex(setURL),
-			Flags: []cli.Flag{
-				cli.BoolFlag{
-					Name:  "golang, g",
-					Usage: "Move into the appropriate $GOPATH sub-directory.",
-				},
-			},
 		},
 		{
 			Name:  "source",
@@ -302,35 +286,6 @@ func writeln(c *cli.Context, s string) {
 	fmt.Fprintln(c.App.Writer, s)
 }
 
-// cloneBaseDir returns $GOPATH/src if --golang was passed, otherwise it
-// returns the configured clone root.
-func cloneBaseDir(cfg grit.Config, c *cli.Context) (string, error) {
-	if c.Bool("golang") {
-		return pathutil.GoSrc()
-	}
-
-	return cfg.Clone.Root, nil
-}
-
-// cloneBaseDirFromCurrent returns $GOPATH/src if p is already a child of
-// $GOPATH/src or if --golang was passed, otherwise it returns the configured
-// clone root.
-func cloneBaseDirFromCurrent(cfg grit.Config, c *cli.Context, p string) (string, error) {
-	gosrc, err := pathutil.GoSrc()
-
-	if c.Bool("golang") {
-		return gosrc, err
-	}
-
-	if err == nil {
-		if _, ok := pathutil.RelChild(gosrc, p); ok {
-			return gosrc, err
-		}
-	}
-
-	return cfg.Clone.Root, nil
-}
-
 // dirFromArg returns the n-th arg if it set, or the current working directory.
 func dirFromArg(c *cli.Context, n int) (string, error) {
 	if c.NArg() <= n {
@@ -374,17 +329,6 @@ func formatDir(cfg grit.Config, dir string) string {
 
 	cwd, _ := os.Getwd()
 	abs, _ := filepath.Abs(dir)
-	gosrc, _ := pathutil.GoSrc()
-
-	if rel, ok := pathutil.RelChild(gosrc, dir); ok && gosrc != "" {
-		dir = rel
-		tags = append(tags, "go")
-	}
-
-	if rel, ok := pathutil.RelChild(cfg.Clone.Root, dir); ok {
-		dir = rel
-		tags = append(tags, "grit")
-	}
 
 	if abs == cwd {
 		tags = append(tags, "current")

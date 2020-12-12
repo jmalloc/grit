@@ -21,11 +21,6 @@ func setURL(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return err
 	}
 
-	base, err := cloneBaseDirFromCurrent(cfg, c, src)
-	if err != nil {
-		return err
-	}
-
 	rem, ok, err := chooseRemote(cfg, c, src, func(rem *config.RemoteConfig, _ *transport.Endpoint) string {
 		_, u := transformURL(rem, slugOrURL)
 		return " --> " + u
@@ -45,7 +40,7 @@ func setURL(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		return err
 	}
 
-	dst := grit.EndpointToDir(base, ep)
+	dst := grit.EndpointToDir(cfg.Clone.Root, ep)
 
 	return moveClone(cfg, idx, c, src, dst)
 }

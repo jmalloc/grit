@@ -88,26 +88,12 @@ func (c *Config) normalizeIndex(base string) error {
 		c.Index.Paths = []string{c.Clone.Root}
 	}
 
-	goSrc, err := pathutil.GoSrc()
-	useGoSrc := err == nil
-
 	for i, p := range c.Index.Paths {
 		r, err := pathutil.ResolveFrom(base, p)
 		if err != nil {
 			return err
 		}
 		c.Index.Paths[i] = r
-
-		// don't add $GOPATH/src if it's a sub-folder of another indexed path.
-		if useGoSrc {
-			if _, ok := pathutil.RelChild(r, goSrc); ok {
-				useGoSrc = false
-			}
-		}
-	}
-
-	if useGoSrc {
-		c.Index.Paths = append(c.Index.Paths, goSrc)
 	}
 
 	return resolveWithDefault(&c.Index.Store, c.Clone.Root, "index.v2")
