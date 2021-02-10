@@ -10,11 +10,17 @@ import (
 	"github.com/jmalloc/grit/pathutil"
 )
 
+const (
+	// DefaultBranchName is used when cloning an empty repository for the initial setup.
+	DefaultBranchName = "master"
+)
+
 // Config holds Grit configuration.
 type Config struct {
 	Clone struct {
-		Root    string                      `toml:"root"`
-		Sources map[string]EndpointTemplate `toml:"sources"`
+		Root          string                      `toml:"root"`
+		Sources       map[string]EndpointTemplate `toml:"sources"`
+		DefaultBranch string                      `toml:"default-branch"`
 	} `toml:"clone"`
 	Index struct {
 		Paths []string `toml:"paths"`
