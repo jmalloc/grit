@@ -11,6 +11,7 @@ require (
 	github.com/chzyer/readline v0.0.0-20171103131923-a4d5111b6178 // indirect
 	github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1 // indirect
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
+	github.com/go-git/go-git/v5 v5.2.0
 	github.com/google/go-github v14.0.1-0.20171126021131-a89ea1cdf799+incompatible
 	github.com/google/go-querystring v0.0.0-20170111101155-53e6ce116135 // indirect
 	github.com/juju/ansiterm v0.0.0-20161107204639-35c59b9e0fe2 // indirect
@@ -20,5 +21,4 @@ require (
 	github.com/mattn/go-isatty v0.0.3
 	github.com/skratchdot/open-golang v0.0.0-20160302144031-75fb7ed4208c
 	github.com/urfave/cli v1.19.1
-	gopkg.in/src-d/go-git.v4 v4.13.1
 )

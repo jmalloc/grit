@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	git "gopkg.in/src-d/go-git.v4"
+	git "github.com/go-git/go-git/v5"
 
 	"github.com/jmalloc/grit"
 	"github.com/jmalloc/grit/index"

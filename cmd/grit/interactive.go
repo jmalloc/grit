@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	git "gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/config"
-	"gopkg.in/src-d/go-git.v4/plumbing/transport"
+	git "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/config"
+	"github.com/go-git/go-git/v5/plumbing/transport"
 
 	"github.com/jmalloc/grit"
 	"github.com/manifoldco/promptui"
