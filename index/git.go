@@ -3,8 +3,8 @@ package index
 import (
 	"path"
 
+	git "github.com/go-git/go-git/v5"
 	"github.com/jmalloc/grit"
-	git "gopkg.in/src-d/go-git.v4"
 )
 
 func slugsFromClone(dir string, filter EndpointFilter) (set, error) {
