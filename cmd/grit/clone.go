@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 	"sync"
 
@@ -31,7 +29,7 @@ func clone(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		URL:      ep.Actual,
 		Progress: c.App.Writer,
 	}
-	r, err := git.PlainClone(dir, false /* isBare */, opts)
+	_, err = git.PlainClone(dir, false /* isBare */, opts)
 
 	switch err {
 	case git.ErrRepositoryAlreadyExists:
@@ -41,10 +39,7 @@ func clone(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		fmt.Fprintln(os.Stderr, "cloned an empty repository")
 
 	case nil:
-		err = setupTracking(r, dir)
-		if err != nil {
-			return err
-		}
+		return nil
 
 	default:
 		_ = os.RemoveAll(dir)
@@ -55,32 +50,6 @@ func clone(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	exec(c, "cd", dir)
 
 	return idx.Add(dir)
-}
-
-func setupTracking(r *git.Repository, dir string) error {
-	head, err := r.Head()
-	if err != nil {
-		return err
-	}
-
-	if !head.Name().IsBranch() {
-		return nil
-	}
-
-	buf := &bytes.Buffer{}
-	fmt.Fprintf(buf, "\n[branch \"%s\"]\n", head.Name().Short())
-	fmt.Fprintf(buf, "\tremote = origin\n")
-	fmt.Fprintf(buf, "\tmerge = %s\n", head.Name())
-
-	p := path.Join(dir, ".git", "config")
-	f, err := os.OpenFile(p, os.O_WRONLY|os.O_APPEND, 0644)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	_, err = buf.WriteTo(f)
-	return err
 }
 
 func getCloneEndpoint(cfg grit.Config, c *cli.Context) (grit.Endpoint, error) {
