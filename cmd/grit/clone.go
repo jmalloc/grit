@@ -63,6 +63,9 @@ func clone(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	default:
 		_ = os.RemoveAll(dir)
 		return err
+
+	case nil:
+		// fallthrough ...
 	}
 
 	writeln(c, dir)
