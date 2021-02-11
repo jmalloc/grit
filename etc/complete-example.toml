@@ -26,6 +26,12 @@
 # Will clone git@github.com:jmalloc/grit.git to ~/grit/github.com/jmalloc/grit
 root = "~/my-repos"
 
+# "default-branch" is is used when cloning an empty repo.
+#
+# This is "main" on github.com, but "master" by convention elsewhere, 
+# you can override the default of "master" here.
+default-branch = "master"
+
 # "clone.sources" is a list of additional Git sources.
 #
 # The key is an arbitrary label for the source. It can be used when cloning to
