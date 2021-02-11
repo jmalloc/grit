@@ -38,9 +38,6 @@ func clone(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	case transport.ErrEmptyRemoteRepository:
 		fmt.Fprintln(os.Stderr, "cloned an empty repository")
 
-	case nil:
-		return nil
-
 	default:
 		_ = os.RemoveAll(dir)
 		return err
