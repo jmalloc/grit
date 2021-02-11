@@ -75,6 +75,7 @@ artifacts/test/normal-clone-cd.txt: artifacts/build/debug/$(GOHOSTOS)/$(GOHOSTAR
 	GRIT_CONFIG=etc/testing-file.toml "$(<)" cd tmp/grit-repos/testorg/testrepo | grep /tmp/grit-test/clone/tmp/grit-repos/testorg/testrepo
 
 test:: $(TEST_TARGETS)
+ci:: $(TEST_TARGETS)
 
 .PHONY: clean-test
 clean-test::
