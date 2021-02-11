@@ -38,14 +38,14 @@ func clone(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		fmt.Fprintln(os.Stderr, "found existing clone")
 
 	case transport.ErrEmptyRemoteRepository:
-		fmt.Fprintln(os.Stderr, "cloned an empty repository")
-
 		r, err := git.PlainInit(dir, false /* isBare */)
 		if err != nil {
+			_ = os.RemoveAll(dir)
 			return err
 		}
 
 		if _, err := r.CreateRemote(&config.RemoteConfig{Name: git.DefaultRemoteName, URLs: []string{ep.Actual}}); err != nil {
+			_ = os.RemoveAll(dir)
 			return err
 		}
 
@@ -54,11 +54,11 @@ func clone(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 			branchName = grit.DefaultBranchName
 		}
 		if err = r.CreateBranch(&config.Branch{Name: branchName, Remote: git.DefaultRemoteName, Merge: plumbing.Master}); err != nil {
+			_ = os.RemoveAll(dir)
 			return err
 		}
 
-	case nil:
-		return nil
+		fmt.Fprintln(os.Stderr, "cloned an empty repository")
 
 	default:
 		_ = os.RemoveAll(dir)
