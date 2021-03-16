@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1 (2021-03-17)
+
+- **[IMPROVED]** Automatically populate version string during build process
+
 ## 0.7.0 (2021-03-16)
 
 - **[FIX]** Fix issue that prevented cloning empty repositories

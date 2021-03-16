@@ -17,8 +17,11 @@ import (
 	"github.com/urfave/cli"
 )
 
+// Populated by build process.
+var version string
+
 // VERSION is the current Grit version.
-var VERSION = semver.MustParse("0.6.10")
+var VERSION = semver.MustParse(version)
 
 func main() {
 	if isatty.IsTerminal(os.Stdout.Fd()) {
