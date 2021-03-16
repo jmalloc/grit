@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0 (2021-03-16)
+
+- **[FIX]** Fix issue that prevented cloning empty repositories
+- **[FIX]** Fix issue where the default branch was added to `.git/config` twice
+- **[BC]** Remove `source` sub-command
+- **[BC]** Remove `--golang` flag from the `clone` sub-command
+- **[BC]** Remove `--golang` flag from the `mv` sub-command
+- **[BC]** Remove `--golang` flag from the `set-url` sub-command
+
 ## 0.6.10 (2020-12-09)
 
 - **[FIX]** Fix "invalid capabilities" error when cloning from GitHub
