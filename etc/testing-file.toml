@@ -2,7 +2,7 @@
 root = "/tmp/grit-test/clone"
 
 [clone.sources]
-github = "https://github.com/{{slug}}.git"
+github = "file:///tmp/grit-repos/{{slug}}.git"
 
 [index]
 paths = ["/tmp/grit-test/clone"]
