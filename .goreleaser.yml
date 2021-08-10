@@ -1,0 +1,68 @@
+env:
+  - CGO_ENABLED=0
+
+dist: artifacts/dist
+
+before:
+  hooks:
+    - make test
+    - go generate ./...
+    - go mod tidy
+    - go mod download
+
+builds:
+  - id: grit
+    main: ./cmd/grit
+    binary: grit
+    goarm:
+      - 5
+      - 7
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm
+      - arm64
+
+archives:
+
+checksum:
+  algorithm: sha256
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+nfpms:
+  -
+    id: grit
+    package_name: grit
+    file_name_template: "grit_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    builds:
+      - grit
+    homepage: https://github.com/jmalloc/grit
+    maintainer: jmalloc <jmalloc@users.noreply.github.com>
+    description: Keep track of your local Git clones.
+    formats:
+      - apk
+      - deb
+    bindir: /usr/bin
+
+brews:
+  -
+    name: grit
+    tap:
+      owner: jmalloc
+      name: homebrew-grit
+    commit_author:
+      name: goreleaserbot
+      email: jmalloc@users.noreply.github.com
+    folder: Formula
+    homepage: https://github.com/jmalloc/grit
+    description: Keep track of your local Git clones.
+    test: |
+      system "#{bin}/grit --version"
+    install: |
+      bin.install "grit"
