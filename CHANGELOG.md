@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.2 (2021-08-10)
+
+- **[NEW]** Introduce ARM 64 builds for Darwin and Linux, adding Apple Silicon M1 support
+
 ## 0.7.1 (2021-03-17)
 
 - **[IMPROVED]** Automatically populate version string during build process
