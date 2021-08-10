@@ -15,7 +15,7 @@ class Grit < Formula
   desc "Keep track of your local Git clones."
   homepage "https://github.com/jmalloc/grit"
 
-  version "${1}"
+  version "${TAG}"
   bottle :unneeded
 
   on_macos do
