@@ -14,6 +14,14 @@ builds:
   - id: grit
     main: ./cmd/grit
     binary: grit
+    flags:
+      - -tags=release
+      - -buildmode=default
+      - -trimpath
+      - -v
+    ldflags:
+      - -X main.version={{.Version}}+{{.ShortCommit}} -s -w
+    mod_timestamp: '{{ .CommitTimestamp }}'
     goarm:
       - 5
       - 7
@@ -38,8 +46,7 @@ snapshot:
 nfpms:
   -
     id: grit
-    package_name: grit
-    file_name_template: "grit_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     builds:
       - grit
     homepage: https://github.com/jmalloc/grit
