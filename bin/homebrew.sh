@@ -3,7 +3,8 @@ set -e
 set -o pipefail
 
 TAG="$1"
-HASH="$(shasum -a 256 $2 | awk '{ print $1 }')"
+HASH_AMD64="$(shasum -a 256 artifacts/archives/grit-${TAG}-darwin-amd64.zip | awk '{ print $1 }')"
+HASH_ARM64="$(shasum -a 256 artifacts/archives/grit-${TAG}-darwin-arm64.zip | awk '{ print $1 }')"
 
 dir=$(mktemp -d)
 git clone "https://${GITHUB_TOKEN}@github.com/jmalloc/homebrew-grit" "$dir"
@@ -15,8 +16,20 @@ class Grit < Formula
   homepage "https://github.com/jmalloc/grit"
 
   version "${1}"
-  url "https://github.com/jmalloc/grit/releases/download/${TAG}/grit-${TAG}-darwin-amd64.zip"
-  sha256 "${HASH}"
+  bottle :unneeded
+
+  on_macos do
+    if Hardware::CPU.intel?
+      url "https://github.com/jmalloc/grit/releases/download/${TAG}/grit-${TAG}-darwin-amd64.zip"
+      sha256 "${HASH_AMD64}"
+    end
+
+    if Hardware::CPU.arm?
+      url "https://github.com/jmalloc/grit/releases/download/${TAG}/grit-${TAG}-darwin-arm64.zip"
+      sha256 "${HASH_ARM64}"
+    end
+  end
+
 
   def install
       bin.install "grit"
