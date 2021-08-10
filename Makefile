@@ -1,5 +1,6 @@
-GO_MATRIX_OS := darwin linux windows
-GO_MATRIX_ARCH := amd64 arm64
+GO_MATRIX += darwin/amd64 darwin/arm64
+GO_MATRIX += linux/amd64
+GO_MATRIX += windows/amd64
 
 -include .makefiles/Makefile
 -include .makefiles/pkg/go/v1/Makefile

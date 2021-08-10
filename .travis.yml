@@ -1,6 +1,6 @@
 language: go
 go:
-- '1.13'
+- '1.16'
 script: make ci
 before_deploy: make archives
 deploy:
@@ -14,8 +14,7 @@ deploy:
   - artifacts/archives/grit-${TRAVIS_TAG}-linux-amd64.zip
   - artifacts/archives/grit-${TRAVIS_TAG}-linux-arm64.zip
   - artifacts/archives/grit-${TRAVIS_TAG}-windows-amd64.zip
-  - artifacts/archives/grit-${TRAVIS_TAG}-windows-arm64.zip
-  go: '1.13'
+  go: '1.16'
   on:
     repo: jmalloc/grit
     tags: true
