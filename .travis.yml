@@ -10,8 +10,11 @@ deploy:
     secure: o7g1ucpRt3Vptve3ONlzNN/qcdvj04Tpq5YUlSacMLUPaJ1m4jrEIoGOVQDD69aUXmJdLNu7w0U145H/nCDzbMWDP+P1SNOBiZ3uK+1ZJi/3C7mj7tcokRplNNm4McWmm8sLFouIKmi68g9hdRS2q+cP/Lu+QrZmjSqskyvFpVx4p1vDTaxjzQ0aDHEflVNe47WDkCJ328yv3VlC6L7+DLN1ijc/xE5jHjNCHFFzL1O+VoO8sd/1oBil/IPBgHJ/MOGvivwsG89RG5K508YiQwh2he7WxQ8cXvwCRjxCb67AFWsDanJ+tJ6ljsqr9z/l+sexCCPZ98MqlO5JJBFQ2brqNZYBCFpZ6jPyxFa0CibkHu/9rG6kF9csR2DdyB19nETWYEeE4wLSJacm2qxeTbPBgqA4vH9460B0W9BlZ9Yr466eMwIuVi0lM1t4O8IbBNkoc51/BFKSLazO7Xns36PFPOFl6LgjjUwAd0goNcEW3uGdL2kClkPSfjZdVBBhAqq2iDtYTykOTrgSFCp6vul+wYbGVZWSvcUJDRty76y9C6DmDjKg5wG20MoMbj0fKpcs2gAEkBVa9QTthMOtL9aBzViHFX2897/PK7sNAHzOplCIiu9onsg0pvJm76SU2epIfo3bGHODCQWAyJaLdp/JlAKDjz4ethmUzuSXUBU=
   file:
   - artifacts/archives/grit-${TRAVIS_TAG}-darwin-amd64.zip
+  - artifacts/archives/grit-${TRAVIS_TAG}-darwin-arm64.zip
   - artifacts/archives/grit-${TRAVIS_TAG}-linux-amd64.zip
+  - artifacts/archives/grit-${TRAVIS_TAG}-linux-arm64.zip
   - artifacts/archives/grit-${TRAVIS_TAG}-windows-amd64.zip
+  - artifacts/archives/grit-${TRAVIS_TAG}-windows-arm64.zip
   go: '1.13'
   on:
     repo: jmalloc/grit
