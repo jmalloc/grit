@@ -1,0 +1,12 @@
+This command configures the shell to allow grit to change the current working
+directory.
+
+Add the following command to your to your shell's initialization script (for
+example .bash_profile, .zprofile, etc).
+
+    eval $({{ executable }} shell-integration)
+
+Note that this does not configure shell auto-completion. For instructions on
+configuring auto-completion run:
+
+    {{ executable }} help completion

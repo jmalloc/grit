@@ -1,0 +1,7 @@
+This command makes a local clone of a Git repository then changes the shell's
+current working directory to the clone's working tree.
+
+The <repo> parameter may be either a Git URL or a (partial) repository name. If
+a name is provided the configured sources are probed for matches. If there are
+multiple matches and the shell is interactive the user is prompted to select the
+desired repository.

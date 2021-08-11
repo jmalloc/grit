@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jmalloc/grit/cmd/grit2/internal/di"
+	"github.com/jmalloc/grit/shell"
 	"github.com/spf13/cobra"
 )
 
@@ -22,11 +23,17 @@ func init() {
 			cmd *cobra.Command,
 			args []string,
 		) error {
-			return di.WithinCommand(
+			return di.Invoke(
 				cmd,
-				func(ctx context.Context) error {
-					<-ctx.Done()
-					return ctx.Err()
+				func(
+					ctx context.Context,
+					exec shell.Executor,
+				) error {
+					if err := exec("cd", "whatever"); err != nil {
+						return err
+					}
+
+					return nil
 				},
 			)
 		},

@@ -3,27 +3,38 @@ package di
 import (
 	"context"
 
+	"github.com/spf13/cobra"
 	"go.uber.org/dig"
 )
 
-// newContainer returns a new DI container.
-func newContainer(ctx context.Context, providers ...interface{}) *dig.Container {
-	c := dig.New()
+var container = dig.New()
+var deferrer Deferrer
 
-	provide(c, func() context.Context {
-		return ctx
+func init() {
+	provide(func() *Deferrer {
+		return &deferrer
 	})
-
-	for _, p := range providers {
-		provide(c, p)
-	}
-
-	return c
 }
 
-// provide calls c.Provide(p) or panics if unable to do so.
-func provide(c *dig.Container, p interface{}) {
-	if err := c.Provide(p); err != nil {
+func Provide(cmd *cobra.Command, fn interface{}) error {
+	return container.Provide(fn)
+}
+
+func Invoke(cmd *cobra.Command, fn interface{}) error {
+	provide(func() context.Context {
+		return cmd.Context()
+	})
+
+	return container.Invoke(fn)
+}
+
+func Close() error {
+	return deferrer.Close()
+}
+
+// provide calls container.Provide(fn) or panics if unable to do so.
+func provide(fn interface{}) {
+	if err := container.Provide(fn); err != nil {
 		panic(err)
 	}
 }
