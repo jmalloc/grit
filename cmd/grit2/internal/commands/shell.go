@@ -10,10 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// shellExecutorOutputFlag is the name of the flag used to configure where shell
-// commands are written.
-const shellExecutorOutputFlag = "shell-executor-output"
-
 // init adds the "shell-integration" command to the root command.
 func init() {
 	cmd := &cobra.Command{
@@ -29,19 +25,20 @@ func init() {
 
 	root.AddCommand(cmd)
 
-	// Add the shellExecutorOutputFlag as a persistent flag on the root command
-	// so that it is available to all commands. It is marked as hidden as it
-	// should only be passed by the auto generated grit shell function, and
-	// never by the user directly.
+	// Add the --shell-executor-output flag as a persistent flag on the root
+	// command so that it is available to all commands.
+	//
+	// It is marked as hidden as it should only be passed by the auto generated
+	// grit shell function, and never by the user directly.
 	f := root.PersistentFlags()
-	f.String(shellExecutorOutputFlag, "", "output file for shell commands to execute")
-	f.MarkHidden(shellExecutorOutputFlag) //nolint:errcheck
+	f.String("shell-executor-output", "", "output file for shell commands to execute")
+	f.MarkHidden("shell-executor-output") //nolint:errcheck
 }
 
 // provideShellExecutor adds a shell.Executor to the DI configuration.
-func provideShellExecutor(cmd *cobra.Command) error {
-	return di.Provide(func(d *di.Deferrer) (shell.Executor, error) {
-		filename, err := cmd.Flags().GetString(shellExecutorOutputFlag)
+func provideShellExecutor(cmd *cobra.Command) {
+	di.Provide(func(d *di.Deferrer) (shell.Executor, error) {
+		filename, err := cmd.Flags().GetString("shell-executor-output")
 		if err != nil {
 			return nil, err
 		}

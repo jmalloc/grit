@@ -6,6 +6,15 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+var _ = Describe("var DefaultConfig", func() {
+	It("is populated with the default values", func() {
+		def, err := Load("testdata/default.toml")
+		Expect(err).ShouldNot(HaveOccurred())
+
+		Expect(DefaultConfig).To(Equal(def))
+	})
+})
+
 var _ = Describe("func Load()", func() {
 	It("treats an empty configuration the same as the defaults", func() {
 		def, err := Load("testdata/default.toml")

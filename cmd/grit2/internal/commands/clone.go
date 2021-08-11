@@ -1,10 +1,8 @@
 package commands
 
 import (
-	"context"
-
 	"github.com/jmalloc/grit/cmd/grit2/internal/di"
-	"github.com/jmalloc/grit/shell"
+	"github.com/jmalloc/grit/config"
 	"github.com/spf13/cobra"
 )
 
@@ -25,13 +23,8 @@ func init() {
 			args []string,
 		) error {
 			return di.Invoke(func(
-				ctx context.Context,
-				exec shell.Executor,
+				cfg config.Config,
 			) error {
-				if err := exec("cd", "whatever"); err != nil {
-					return err
-				}
-
 				return nil
 			})
 		},

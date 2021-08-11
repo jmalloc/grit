@@ -11,8 +11,9 @@ import (
 var root = &cobra.Command{
 	Use:   executableName(),
 	Short: "keep track of your local git clones",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		return provideShellExecutor(cmd)
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		provideConfig(cmd)
+		provideShellExecutor(cmd)
 	},
 }
 

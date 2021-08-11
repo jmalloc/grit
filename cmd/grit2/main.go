@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -18,7 +17,6 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	if err := run(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }

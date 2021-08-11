@@ -46,7 +46,7 @@ func (d *Deferrer) Close() error {
 }
 
 func init() {
-	provide(func() *Deferrer {
+	Provide(func() *Deferrer {
 		return &Deferrer{}
 	})
 }

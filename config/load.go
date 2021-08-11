@@ -7,6 +7,12 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
+// DefaultFile is the default path for the Grit configuration file.
+const DefaultFile = "~/.config/grit.yaml"
+
+// DefaultConfig is the default configuration.
+var DefaultConfig Config
+
 // Load parses the Grit configuration from a file.
 func Load(file string) (Config, error) {
 	var cfg Config
@@ -33,4 +39,10 @@ func Load(file string) (Config, error) {
 	}
 
 	return cfg, nil
+}
+
+func init() {
+	if err := normalize(&DefaultConfig); err != nil {
+		panic(err)
+	}
 }
