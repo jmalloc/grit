@@ -32,7 +32,5 @@ func run() error {
 	)
 	defer cancel()
 
-	commands.Root.Version = version
-
-	return commands.Root.ExecuteContext(ctx)
+	return commands.Root(version).ExecuteContext(ctx)
 }

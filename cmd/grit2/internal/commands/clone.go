@@ -9,7 +9,7 @@ import (
 
 func init() {
 	cmd := &cobra.Command{
-		Use:   "clone",
+		Use:   "clone <repo>",
 		Short: "clone a repository",
 		ValidArgsFunction: func(
 			cmd *cobra.Command,
@@ -32,5 +32,5 @@ func init() {
 		},
 	}
 
-	Root.AddCommand(cmd)
+	root.AddCommand(cmd)
 }
