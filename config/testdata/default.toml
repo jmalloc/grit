@@ -23,10 +23,6 @@ base_dir = "~/grit"
   #
   # Individual properties may be overridden without specifying the others.
   [sources.github.public]
-    # enabled is a boolean describing whether this source should be used when
-    # cloning repositories.
-    enabled = true                     
-
     # clone_dir is the directory into which Grit will clone repositories from
     # this source. It may be specified relative to the global "base_dir"
     # setting, or as a fully-qualified directory name.
@@ -34,3 +30,7 @@ base_dir = "~/grit"
 
     # api_url is the URL of the GitHub API for this installation.
     api_url = "https://api.github.com" 
+
+    # disabled is a boolean describing whether this source should be used when
+    # cloning repositories.
+    disabled = false

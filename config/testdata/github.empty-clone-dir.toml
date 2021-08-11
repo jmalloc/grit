@@ -1,0 +1,5 @@
+# This configuration has a custom GitHub source defined with an empty clone_dir
+# setting.
+[sources.github]
+  [sources.github.ghe]
+    api_url = "https://github.example.com" 

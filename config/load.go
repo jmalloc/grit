@@ -28,5 +28,9 @@ func Load(file string) (Config, error) {
 		)
 	}
 
+	if err := normalize(&cfg); err != nil {
+		return Config{}, err
+	}
+
 	return cfg, nil
 }
