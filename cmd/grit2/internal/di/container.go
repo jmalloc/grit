@@ -1,35 +1,30 @@
 package di
 
 import (
-	"context"
-
-	"github.com/spf13/cobra"
 	"go.uber.org/dig"
 )
 
+// container is the singleton dependency injection container.
 var container = dig.New()
-var deferrer Deferrer
 
-func init() {
-	provide(func() *Deferrer {
-		return &deferrer
-	})
-}
-
-func Provide(cmd *cobra.Command, fn interface{}) error {
+// Provide registers a new provider with the container.
+//
+// See container.Provide() for more information.
+func Provide(fn interface{}) error {
 	return container.Provide(fn)
 }
 
-func Invoke(cmd *cobra.Command, fn interface{}) error {
-	provide(func() context.Context {
-		return cmd.Context()
-	})
-
+// Invoke invokes fn with arguments supplied by the container.
+func Invoke(fn interface{}) error {
 	return container.Invoke(fn)
 }
 
+// Close closes the container, calling any functions that were deferred via a
+// Deferrer.
 func Close() error {
-	return deferrer.Close()
+	return container.Invoke(func(d *Deferrer) error {
+		return d.Close()
+	})
 }
 
 // provide calls container.Provide(fn) or panics if unable to do so.

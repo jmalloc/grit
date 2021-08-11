@@ -44,3 +44,9 @@ func (d *Deferrer) Close() error {
 
 	return err
 }
+
+func init() {
+	provide(func() *Deferrer {
+		return &Deferrer{}
+	})
+}

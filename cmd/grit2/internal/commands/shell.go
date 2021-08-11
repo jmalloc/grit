@@ -14,11 +14,11 @@ import (
 // commands are written.
 const shellExecutorOutputFlag = "shell-executor-output"
 
+// init adds the "shell-integration" command to the root command.
 func init() {
 	cmd := &cobra.Command{
 		Use:   "shell-integration",
 		Short: "setup shell integration",
-
 		RunE: func(
 			cmd *cobra.Command,
 			args []string,
@@ -29,17 +29,18 @@ func init() {
 
 	root.AddCommand(cmd)
 
-	// Add the
-	pflags := root.PersistentFlags()
-	pflags.String(shellExecutorOutputFlag, "", "")
-	if err := pflags.MarkHidden(shellExecutorOutputFlag); err != nil {
-		panic(err)
-	}
+	// Add the shellExecutorOutputFlag as a persistent flag on the root command
+	// so that it is available to all commands. It is marked as hidden as it
+	// should only be passed by the auto generated grit shell function, and
+	// never by the user directly.
+	f := root.PersistentFlags()
+	f.String(shellExecutorOutputFlag, "", "output file for shell commands to execute")
+	f.MarkHidden(shellExecutorOutputFlag) //nolint:errcheck
 }
 
 // provideShellExecutor adds a shell.Executor to the DI configuration.
 func provideShellExecutor(cmd *cobra.Command) error {
-	return di.Provide(cmd, func(d *di.Deferrer) (shell.Executor, error) {
+	return di.Provide(func(d *di.Deferrer) (shell.Executor, error) {
 		filename, err := cmd.Flags().GetString(shellExecutorOutputFlag)
 		if err != nil {
 			return nil, err
