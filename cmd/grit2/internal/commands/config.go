@@ -20,6 +20,7 @@ func init() {
 // to the DI configuration.
 func provideConfig(cmd *cobra.Command) {
 	di.Provide(func() (config.Config, error) {
+
 		filename, err := cmd.Flags().GetString("config")
 		if err != nil {
 			return config.Config{}, err
@@ -28,7 +29,11 @@ func provideConfig(cmd *cobra.Command) {
 		cfg, err := config.ParseFile(filename)
 		if err != nil {
 			if os.IsNotExist(err) {
-				return config.DefaultConfig, nil
+				if !cmd.Flags().Changed("config") {
+					// If the --config flag was not specified and the config
+					// file doesn't exist we fall back to the default config.
+					return config.DefaultConfig, nil
+				}
 			}
 
 			return config.Config{}, err
