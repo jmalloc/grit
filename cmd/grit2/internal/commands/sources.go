@@ -17,11 +17,18 @@ func init() {
 			args []string,
 			sources []source.Source,
 		) error {
+			ctx := cmd.Context()
+
 			for _, src := range sources {
+				desc, err := src.Description(ctx)
+				if err != nil {
+					desc = "error: " + err.Error()
+				}
+
 				cmd.Printf(
-					"%s\t%s\n",
+					"%s: %s\n",
 					src.Name(),
-					src.Description(),
+					desc,
 				)
 			}
 

@@ -1,13 +1,16 @@
 package source
 
 import (
+	"context"
+
 	"github.com/jmalloc/grit/internal/config"
 )
 
 // Source is an interface for a source of repositories.
 type Source interface {
 	Name() string
-	Description() string
+	Type() string
+	Description(ctx context.Context) (string, error)
 }
 
 // FromConfig creates a new source from a source configuration element.

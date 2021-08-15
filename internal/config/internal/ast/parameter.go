@@ -15,18 +15,9 @@ func (n Parameter) Visit(v Visitor) error {
 }
 
 type Value struct {
-	Pos lexer.Position
-	// BoolToken   *bool   `parser:"  @Bool"`
+	Pos         lexer.Position
 	StringToken *string `parser:"@String"`
 }
-
-// func (v *Value) AsBool() (bool, bool) {
-// 	if v.BoolToken != nil {
-// 		return *v.BoolToken, true
-// 	}
-
-// 	return false, false
-// }
 
 func (v *Value) AsString() (string, bool) {
 	if v.StringToken != nil {

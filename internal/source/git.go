@@ -1,6 +1,8 @@
 package source
 
 import (
+	"context"
+
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/jmalloc/grit/internal/config"
 )
@@ -11,16 +13,20 @@ type Git struct {
 	Endpoint   *transport.Endpoint
 }
 
-func (s Git) Name() string {
+func (s *Git) Name() string {
 	return s.SourceName
 }
 
-func (s Git) Description() string {
-	return s.Endpoint.String()
+func (s *Git) Type() string {
+	return "git"
+}
+
+func (s *Git) Description(ctx context.Context) (string, error) {
+	return s.Endpoint.Host, nil
 }
 
 func (f *factory) VisitGitSource(src config.GitSource) error {
-	f.Result = Git{
+	f.Result = &Git{
 		SourceName: src.Name(),
 		Endpoint:   src.Endpoint,
 	}
