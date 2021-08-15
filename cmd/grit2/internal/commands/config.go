@@ -25,7 +25,7 @@ func provideConfig(cmd *cobra.Command) {
 			return config.Config{}, err
 		}
 
-		cfg, err := config.Load(filename)
+		cfg, err := config.ParseFile(filename)
 		if err != nil {
 			if os.IsNotExist(err) {
 				return config.DefaultConfig, nil

@@ -1,2 +1,0 @@
-# This file does not contain valid TOML.
-]

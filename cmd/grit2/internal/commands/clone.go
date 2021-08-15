@@ -1,8 +1,10 @@
 package commands
 
 import (
+	"errors"
+
 	"github.com/jmalloc/grit/cmd/grit2/internal/di"
-	"github.com/jmalloc/grit/config"
+	"github.com/jmalloc/grit/source"
 	"github.com/spf13/cobra"
 )
 
@@ -11,23 +13,14 @@ func init() {
 	cmd := &cobra.Command{
 		Use:   "clone <repo>",
 		Short: "clone a remote repository",
-		ValidArgsFunction: func(
+		Args:  cobra.ExactArgs(1),
+		RunE: di.RunE(func(
 			cmd *cobra.Command,
 			args []string,
-			toComplete string,
-		) ([]string, cobra.ShellCompDirective) {
-			return nil, cobra.ShellCompDirectiveDefault
-		},
-		RunE: func(
-			cmd *cobra.Command,
-			args []string,
+			resolver *source.Resolver,
 		) error {
-			return di.Invoke(func(
-				cfg config.Config,
-			) error {
-				return nil
-			})
-		},
+			return errors.New("not implemented")
+		}),
 	}
 
 	root.AddCommand(cmd)
