@@ -8,7 +8,7 @@ import (
 	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
 	"github.com/go-git/go-git/v5/plumbing/transport"
-	"github.com/jmalloc/grit/config/internal/ast"
+	"github.com/jmalloc/grit/internal/config/internal/ast"
 )
 
 // ParseFile parses configuration from a file.

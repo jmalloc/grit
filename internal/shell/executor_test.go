@@ -3,7 +3,7 @@ package shell_test
 import (
 	"strings"
 
-	. "github.com/jmalloc/grit/shell"
+	. "github.com/jmalloc/grit/internal/shell"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

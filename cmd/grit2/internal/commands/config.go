@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/jmalloc/grit/cmd/grit2/internal/di"
-	"github.com/jmalloc/grit/config"
+	"github.com/jmalloc/grit/internal/config"
 	"github.com/spf13/cobra"
 )
 

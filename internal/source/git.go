@@ -2,7 +2,7 @@ package source
 
 import (
 	"github.com/go-git/go-git/v5/plumbing/transport"
-	"github.com/jmalloc/grit/config"
+	"github.com/jmalloc/grit/internal/config"
 )
 
 // Git is an implementation of the Source interface for "vanilla" Git sources.

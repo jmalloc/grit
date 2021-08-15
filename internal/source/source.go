@@ -1,7 +1,7 @@
 package source
 
 import (
-	"github.com/jmalloc/grit/config"
+	"github.com/jmalloc/grit/internal/config"
 )
 
 // Source is an interface for a source of repositories.

@@ -2,7 +2,7 @@ package commands
 
 import (
 	"github.com/jmalloc/grit/cmd/grit2/internal/di"
-	"github.com/jmalloc/grit/source"
+	"github.com/jmalloc/grit/internal/source"
 	"github.com/spf13/cobra"
 )
 

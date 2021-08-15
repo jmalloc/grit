@@ -4,7 +4,7 @@ import (
 	"net/url"
 
 	"github.com/go-git/go-git/v5/plumbing/transport"
-	. "github.com/jmalloc/grit/config"
+	. "github.com/jmalloc/grit/internal/config"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"

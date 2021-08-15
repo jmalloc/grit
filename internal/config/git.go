@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/go-git/go-git/v5/plumbing/transport"
-	"github.com/jmalloc/grit/config/internal/ast"
+	"github.com/jmalloc/grit/internal/config/internal/ast"
 )
 
 // GitSource holds the configuration for a repository source that clones

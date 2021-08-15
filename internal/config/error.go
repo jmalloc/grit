@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/alecthomas/participle/v2/lexer"
-	"github.com/jmalloc/grit/config/internal/ast"
+	"github.com/jmalloc/grit/internal/config/internal/ast"
 )
 
 // newError returns an error that indicates a problem with a configuration file.
