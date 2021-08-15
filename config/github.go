@@ -14,6 +14,9 @@ type GitHubSource struct {
 
 	// API is the URL to the GitHub API.
 	API *url.URL
+
+	// Token is the access token used to authenticate with the GitHub API.
+	Token string
 }
 
 func (s GitHubSource) Name() string {
@@ -38,11 +41,17 @@ func (b *gitHubSourceBuilder) VisitSource(n ast.Source) error {
 	}
 
 	if b.Result.API == nil {
-		return missingParameterInSource(
-			n.Pos,
-			b.Result.Name(),
-			"api",
-		)
+		if b.Result.Name() != "github" {
+			// Require the "api" parameter for custom github sources.
+			return missingParameterInSource(
+				n.Pos,
+				b.Result.Name(),
+				"api",
+			)
+		}
+
+		// Otherwise use the default API URL for the implicit github source.
+		b.Result.API = DefaultConfig.Sources["github"].(GitHubSource).API
 	}
 
 	return nil
@@ -52,6 +61,8 @@ func (b *gitHubSourceBuilder) VisitParameter(n ast.Parameter) error {
 	switch n.Key {
 	case "api":
 		return parameterAsURL(n, &b.Result.API)
+	case "token":
+		return parameterAsString(n, &b.Result.Token)
 	default:
 		return unrecognizedParameterInSource(n, b.Result.Name())
 	}

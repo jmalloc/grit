@@ -50,6 +50,23 @@ var _ = Describe("func ParseFile()", func() {
 			},
 		),
 		Entry(
+			"implicit github source augmented with token",
+			"testdata/valid/github-augmented.conf",
+			Config{
+				Dir: "~/grit",
+				Sources: map[string]Source{
+					"github": GitHubSource{
+						SourceName: "github",
+						API: &url.URL{
+							Scheme: "https",
+							Host:   "api.github.com",
+						},
+						Token: "<token>",
+					},
+				},
+			},
+		),
+		Entry(
 			"custom git source defined",
 			"testdata/valid/git-custom.conf",
 			Config{
@@ -82,6 +99,7 @@ var _ = Describe("func ParseFile()", func() {
 							Scheme: "https",
 							Host:   "github.example.com",
 						},
+						Token: "<token>",
 					},
 				},
 			},
@@ -117,7 +135,7 @@ var _ = Describe("func ParseFile()", func() {
 		Entry(
 			`github source missing "api" key`,
 			`testdata/invalid/github-missing-api.conf`,
-			`testdata/invalid/github-missing-api.conf:4:1 missing required "api" parameter in "github" source`,
+			`testdata/invalid/github-missing-api.conf:4:1 missing required "api" parameter in "my-company" source`,
 		),
 		Entry(
 			`github source with unrecognized parameter`,

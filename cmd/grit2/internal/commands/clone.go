@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/jmalloc/grit/cmd/grit2/internal/di"
-	"github.com/jmalloc/grit/source"
 	"github.com/spf13/cobra"
 )
 
@@ -17,7 +16,6 @@ func init() {
 		RunE: di.RunE(func(
 			cmd *cobra.Command,
 			args []string,
-			resolver *source.Resolver,
 		) error {
 			return errors.New("not implemented")
 		}),
