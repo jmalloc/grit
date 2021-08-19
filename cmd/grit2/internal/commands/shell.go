@@ -10,9 +10,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// init adds the "shell-integration" command to the root command.
-func init() {
-	cmd := &cobra.Command{
+// newSHellIntegrationCommand returns the "shell-integration" command.
+func newShellIntegrationCommand() *cobra.Command {
+	return &cobra.Command{
 		Use:   "shell-integration",
 		Short: "setup shell integration",
 		RunE: func(
@@ -22,14 +22,14 @@ func init() {
 			return errors.New("not implemented")
 		},
 	}
+}
 
-	root.AddCommand(cmd)
-
-	// Add the --shell-executor-output flag as a persistent flag on the root
-	// command so that it is available to all commands.
-	//
-	// It is marked as hidden as it should only be passed by the auto generated
-	// grit shell function, and never by the user directly.
+// setupShellExecutor adds the --shell-executor-output flag as a persistent flag
+// on the root command so that it is available to all commands.
+//
+// It is marked as hidden as it should only be passed by the auto generated grit
+// shell function, and never by the user directly.
+func setupShellExecutor(root *cobra.Command) {
 	f := root.PersistentFlags()
 	f.String("shell-executor-output", "", "output file for shell commands to execute")
 	f.MarkHidden("shell-executor-output") //nolint:errcheck

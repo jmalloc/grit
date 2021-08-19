@@ -1,9 +1,0 @@
-This command makes a local clone of a Git repository then changes the shell's
-current working directory to the clone's working tree.
-
-The <repo> argument is a repository name or a part thereof. For example, the
-Grit repository itself may be referred to as "jmalloc/grit" or just "grit".
-
-Each of the repository sources defined in the Grit configuration file is probed
-for matches to the provided repository name. If there are multiple matches and
-the shell is interactive the user is prompted to select the desired repository.

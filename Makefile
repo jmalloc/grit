@@ -1,5 +1,3 @@
-GO_EMBEDDED_FILES += $(shell find cmd -iname '*.txt')
-
 -include .makefiles/Makefile
 -include .makefiles/pkg/go/v1/Makefile
 

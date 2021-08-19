@@ -8,7 +8,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
+// setupConfig adds the --config flag as a persistent flag on the root
+// command so that it is available to all commands.
+func setupConfig(root *cobra.Command) {
 	root.PersistentFlags().StringP(
 		"config", "c",
 		config.DefaultFile,
@@ -20,7 +22,6 @@ func init() {
 // to the DI configuration.
 func provideConfig(cmd *cobra.Command) {
 	di.Provide(func() (config.Config, error) {
-
 		filename, err := cmd.Flags().GetString("config")
 		if err != nil {
 			return config.Config{}, err

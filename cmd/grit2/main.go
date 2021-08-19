@@ -39,5 +39,7 @@ func run() (err error) {
 		)
 	}()
 
-	return commands.Root(version).ExecuteContext(ctx)
+	return commands.
+		NewRoot(version).
+		ExecuteContext(ctx)
 }

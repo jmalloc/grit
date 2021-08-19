@@ -4,26 +4,34 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/jmalloc/grit/cmd/grit2/internal/commands/source"
 	"github.com/spf13/cobra"
 )
 
-// root is the top-level "grit" command.
-var root = &cobra.Command{
-	Use:   executableName(),
-	Short: "keep track of your local git clones",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		provideConfig(cmd)
-		provideShellExecutor(cmd)
-	},
-}
-
-// Root returns the root command.
+// NewRoot returns the root command.
 //
 // v is the version to display. It is passed from the main package where it is
 // made available as part of the build process.
-func Root(v string) *cobra.Command {
-	setupHelp()
-	root.Version = v
+func NewRoot(v string) *cobra.Command {
+	var root *cobra.Command
+	root = &cobra.Command{
+		Version: v,
+		Use:     executableName(),
+		Short:   "keep track of your local git clones",
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			provideConfig(cmd)
+			provideShellExecutor(cmd)
+		},
+	}
+
+	setupConfig(root)
+	setupShellExecutor(root)
+
+	root.AddCommand(
+		source.NewRoot(),
+		newShellIntegrationCommand(),
+		newCloneCommand(),
+	)
 
 	return root
 }
