@@ -16,7 +16,6 @@ class Grit < Formula
   homepage "https://github.com/jmalloc/grit"
 
   version "${TAG}"
-  bottle :unneeded
 
   on_macos do
     if Hardware::CPU.intel?
