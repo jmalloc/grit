@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.7.3 (2022-03-23)
 
 - The `default-branch` configuration setting now defaults to `main`
 - **[FIX]** Fix bug with `grit index scan` that prevented any on-disk clones from being recognized
