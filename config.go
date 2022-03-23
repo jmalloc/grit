@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	// DefaultBranchName is used when cloning an empty repository for the initial setup.
-	DefaultBranchName = "master"
+	// DefaultBranchName is used when cloning an empty repository for the
+	// initial setup.
+	DefaultBranchName = "main"
 )
 
 // Config holds Grit configuration.

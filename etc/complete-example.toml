@@ -28,9 +28,9 @@ root = "~/my-repos"
 
 # "default-branch" is is used when cloning an empty repo.
 #
-# This is "main" on github.com, but "master" by convention elsewhere, 
-# you can override the default of "master" here.
-default-branch = "master"
+# This is "main" on github.com, but "master" by convention elsewhere,
+# you can override the default of "main" here.
+default-branch = "main"
 
 # "clone.sources" is a list of additional Git sources.
 #
