@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **[FIX]** Fix bug with `grit index scan` that prevented any on-disk clones from being recognized
+
 ## 0.7.2 (2021-08-10)
 
 - **[NEW]** Introduce ARM 64 builds for Darwin and Linux, adding Apple Silicon M1 support

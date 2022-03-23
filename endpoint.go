@@ -50,7 +50,7 @@ func (t EndpointTemplate) IsMatch(e *transport.Endpoint) bool {
 // virtualEndpoint returns a Git endpoint from the template as though we had
 // a slug to resolve.
 func (t EndpointTemplate) virtualEndpoint() (*transport.Endpoint, error) {
-	ep, err := t.Resolve("__virtual__")
+	ep, err := t.Resolve("__virtual/slug__")
 	return ep.Normalized, err
 }
 
