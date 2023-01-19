@@ -1,5 +1,9 @@
 # Grit
 
+> Not working? Try the [troubleshooting guide].
+
+[troubleshooting guide]: TROUBLESHOOTING.md
+
 ## What?
 
 Grit keeps track of your local clones of Git repositories, allowing you to
@@ -147,7 +151,7 @@ Interminable!
 
 That's what you sound like right now. Shh bby is ok.
 
-What we need is some glue that makes Grit's `cd` command behave like the *real*
+What we need is some glue that makes Grit's `cd` command behave like the _real_
 `cd` command, and that glue is:
 
     eval "$(grit shell-integration)"
