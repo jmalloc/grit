@@ -21,5 +21,5 @@ require (
 	github.com/mattn/go-isatty v0.0.3
 	github.com/skratchdot/open-golang v0.0.0-20160302144031-75fb7ed4208c
 	github.com/urfave/cli v1.19.1
-	golang.org/x/sys v0.0.0-20220319134239-a9b59b0215f8 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 )
