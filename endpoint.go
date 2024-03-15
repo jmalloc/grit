@@ -133,7 +133,7 @@ func ReplaceSlug(ep *transport.Endpoint, s string) *transport.Endpoint {
 	new, err := transport.NewEndpoint(
 		strings.Replace(
 			ep.String(),
-			ep.Path,
+			slugSeparator+strings.TrimPrefix(ep.Path, slugSeparator),
 			slugSeparator+s+path.Ext(ep.Path),
 			1,
 		),
