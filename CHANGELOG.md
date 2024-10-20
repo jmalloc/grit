@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.4 (2024-10-21)
+
+- **[IMPROVED]** `grit open` (aka `browse`) now opens the GitHub tree view for
+  the current branch, tag or hash, instead of always showing the default branch.
+
 ## 0.7.3 (2022-03-23)
 
 - The `default-branch` configuration setting now defaults to `main`
