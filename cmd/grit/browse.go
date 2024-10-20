@@ -11,7 +11,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func browse(cfg grit.Config, idx *index.Index, c *cli.Context) error {
+func browse(cfg grit.Config, idx *index.Index, c *cli.Context, branchName *string) error {
 	dir, ok, err := dirFromSlugArg(cfg, idx, c, 0, pathutil.PreferBase)
 	if err != nil {
 		return err
@@ -35,6 +35,10 @@ func browse(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		Scheme: "https",
 		Host:   ep.Host,
 		Path:   strings.TrimSuffix(ep.Path, ".git"),
+	}
+
+	if branchName != nil && *branchName != "" {
+		u.Path += "/tree/" + *branchName
 	}
 
 	writef(c, "opening %s", u.String())
