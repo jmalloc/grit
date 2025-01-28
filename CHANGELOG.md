@@ -1,8 +1,15 @@
 # Changelog
 
+## 0.7.5 (2025-01-29)
+
+- **[IMPROVED]** `grit browse` (aka `open`) now checks if the remote URL exists
+  before opening the tree view. If it does not it opens the repository's "root"
+  page instead. This prevents opening a 404 page when the current branch has not
+  yet been pushed to `origin`.
+
 ## 0.7.4 (2024-10-21)
 
-- **[IMPROVED]** `grit open` (aka `browse`) now opens the GitHub tree view for
+- **[IMPROVED]** `grit browse` (aka `open`) now opens the GitHub tree view for
   the current branch, tag or hash, instead of always showing the default branch.
 
 ## 0.7.3 (2022-03-23)

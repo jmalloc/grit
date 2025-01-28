@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"net/url"
 	"path"
 	"strings"
@@ -48,7 +49,6 @@ func browse(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	// If we can determine the "HEAD" of the local clone, open the tree view for
 	// that commit. Otherwise, open the repository's root.
 	if head, err := r.Head(); err == nil {
-
 		// If the head's name is "HEAD", it's a detached HEAD. If the HEAD
 		// refers to a branch, the name will be the reference to that branch.
 		if head.Name() == "HEAD" {
@@ -67,7 +67,15 @@ func browse(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 			ref = head.Hash().String()
 		}
 
+		orig := u.Path
 		u.Path = path.Join(u.Path, "tree", ref)
+
+		// Check if the target URL actually exists, and if not, revert to the
+		// original path.
+		res, err := http.Head(u.String())
+		if err != nil || res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
+			u.Path = orig
+		}
 	}
 
 	writef(c, "opening %s", u.String())
