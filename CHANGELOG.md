@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.6 (2025-01-29)
+
+- **[IMPROVED]** Use local Git information instead of an HTTP probe to determine
+  if a branch has been pushed to the remote, as the HTTP probe would fail for
+  private repositories.
+
 ## 0.7.5 (2025-01-29)
 
 - **[IMPROVED]** `grit browse` (aka `open`) now checks if the remote URL exists

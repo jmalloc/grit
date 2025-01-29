@@ -1,7 +1,6 @@
 package main
 
 import (
-	"net/http"
 	"net/url"
 	"path"
 	"strings"
@@ -41,41 +40,8 @@ func browse(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 		Path:   strings.TrimSuffix(ep.Path, ".git"),
 	}
 
-	r, err := git.PlainOpen(dir)
-	if err != nil {
+	if err := injectGitHubTreeViewPath(&u, dir); err != nil {
 		return err
-	}
-
-	// If we can determine the "HEAD" of the local clone, open the tree view for
-	// that commit. Otherwise, open the repository's root.
-	if head, err := r.Head(); err == nil {
-		// If the head's name is "HEAD", it's a detached HEAD. If the HEAD
-		// refers to a branch, the name will be the reference to that branch.
-		if head.Name() == "HEAD" {
-			// In this case, we check to see if there is a singular tag that
-			// refers to the commit, and if so open the tree for the tag name.
-			//
-			// This is purely for UX, as the user probably expects to see the
-			// tag name in the URL.
-			head = resolveUniqueTag(r, head)
-		}
-
-		// If we still have a detached head, load the tree view for the commit
-		// hash; we have no more user-friendly tag or branch name.
-		ref := head.Name().Short()
-		if ref == "HEAD" {
-			ref = head.Hash().String()
-		}
-
-		orig := u.Path
-		u.Path = path.Join(u.Path, "tree", ref)
-
-		// Check if the target URL actually exists, and if not, revert to the
-		// original path.
-		res, err := http.Head(u.String())
-		if err != nil || res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
-			u.Path = orig
-		}
 	}
 
 	writef(c, "opening %s", u.String())
@@ -83,12 +49,42 @@ func browse(cfg grit.Config, idx *index.Index, c *cli.Context) error {
 	return open.Run(u.String())
 }
 
+func injectGitHubTreeViewPath(u *url.URL, dir string) error {
+	// HACK: Assume anything with github in the host is either GitHub.com or a
+	// GitHub Enterprise Server installation.
+	if !strings.Contains(u.Host, "github") {
+		return nil
+	}
+
+	r, err := git.PlainOpen(dir)
+	if err != nil {
+		return err
+	}
+
+	head, err := r.Head()
+	if err != nil {
+		// Most likely a repository with no commits, but we don't want this to
+		// prevent the user from opening the repository in the browser.
+		return nil
+	}
+
+	if branch, err := r.Branch(head.Name().Short()); err == nil {
+		if branch.Remote != "" {
+			u.Path = path.Join(u.Path, "tree", branch.Name)
+		}
+	} else if tag, ok := resolveUniqueTag(r, head); ok {
+		u.Path = path.Join(u.Path, "tree", tag.Name().Short())
+	}
+
+	return nil
+}
+
 // resolveUniqueTag returns the reference to a tag that refers to ref, if
 // exactly one exists; otherwise, it returns ref.
-func resolveUniqueTag(r *git.Repository, ref *plumbing.Reference) *plumbing.Reference {
+func resolveUniqueTag(r *git.Repository, ref *plumbing.Reference) (*plumbing.Reference, bool) {
 	tags, err := r.Tags()
 	if err != nil {
-		return ref
+		return ref, false
 	}
 	defer tags.Close()
 
@@ -111,8 +107,8 @@ func resolveUniqueTag(r *git.Repository, ref *plumbing.Reference) *plumbing.Refe
 	)
 
 	if len(refs) == 1 {
-		return refs[0]
+		return refs[0], true
 	}
 
-	return ref
+	return ref, false
 }
