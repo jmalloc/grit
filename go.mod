@@ -10,7 +10,7 @@ require (
 	github.com/boltdb/bolt v1.3.1
 	github.com/cavaliercoder/grab v1.0.1-0.20170812025647-1fa46fa98068
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
-	github.com/go-git/go-git/v5 v5.17.1
+	github.com/go-git/go-git/v5 v5.18.0
 	github.com/google/go-github v14.0.1-0.20171126021131-a89ea1cdf799+incompatible
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-isatty v0.0.3
