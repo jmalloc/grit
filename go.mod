@@ -8,7 +8,7 @@ require (
 	github.com/boltdb/bolt v1.3.1
 	github.com/cavaliercoder/grab v1.0.1-0.20170812025647-1fa46fa98068
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
-	github.com/go-git/go-git/v5 v5.18.0
+	github.com/go-git/go-git/v5 v5.19.0
 	github.com/google/go-github v14.0.1-0.20171126021131-a89ea1cdf799+incompatible
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-isatty v0.0.3
@@ -30,7 +30,8 @@ require (
 	github.com/google/go-querystring v0.0.0-20170111101155-53e6ce116135 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
-	github.com/pjbgf/sha1cd v0.3.2 // indirect
+	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
+	github.com/pjbgf/sha1cd v0.6.0 // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/skeema/knownhosts v1.3.1 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
